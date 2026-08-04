@@ -425,6 +425,15 @@ let watchlist = JSON.parse(localStorage.getItem('antenna_watchlist') || '[]');
 let charts = {};
 let state = { growth:'all', country:'all', category:'all', sort:'growth', search:'', ideaCountry:'all' };
 
+function waitForChart(timeoutMs){
+  return new Promise(resolve=>{
+    const start = Date.now();
+    (function poll(){
+      if(typeof Chart !== 'undefined' || Date.now()-start > timeoutMs) return resolve();
+      setTimeout(poll, 100);
+    })();
+  });
+}
 function parseSeries(s){
   if(!s) return [];
   if(Array.isArray(s)) return s.map(Number);
@@ -448,17 +457,23 @@ async function loadData(){
       fetch(`${API_BASE}/trends`),
       fetch(`${API_BASE}/startup-ideas`)
     ]);
+    if(!tRes.ok) throw new Error(`/trends returned HTTP ${tRes.status}`);
+    if(!iRes.ok) throw new Error(`/startup-ideas returned HTTP ${iRes.status}`);
     const tData = await tRes.json();
     const iData = await iRes.json();
     trends = (Array.isArray(tData) ? tData : [tData]).filter(Boolean);
     ideas = (Array.isArray(iData) ? iData : [iData]).filter(Boolean);
     document.getElementById('lastRefreshed').textContent = 'Synced ' + new Date().toLocaleTimeString();
     populateCategoryFilter();
+    await waitForChart(3000);
     renderAll();
   }catch(e){
     document.getElementById('lastRefreshed').textContent = 'Connection issue — retry refresh';
     console.error(e);
-    toast('Could not reach the live backend. Try Refresh.');
+    const isNetworkErr = e instanceof TypeError && /fetch/i.test(e.message||'');
+    toast(isNetworkErr
+      ? 'Could not reach the live backend — check your connection or an ad-blocker/privacy extension, then hit Refresh.'
+      : 'Could not load data. Try Refresh.');
   }
 }
 
@@ -549,7 +564,7 @@ function sparkline(canvas, series, color){
 
 function growthColor(g){ return g==='breakout'?'#ff6b5e':g==='rising'?'#ffb648':'#5ea1ff'; }
 
-function trendCardHtml(t){
+function trendCardHtml(t, scope){
   const saved = watchlist.includes(t.id);
   return `
   <div class="trend-card" data-id="${t.id}">
@@ -565,7 +580,7 @@ function trendCardHtml(t){
       <button class="star-btn ${saved?'saved':''}" data-star="${t.id}" title="Toggle watchlist">${saved?'★':'☆'}</button>
     </div>
     <div class="tc-blurb">${escapeHtml(t.blurb||'')}</div>
-    <div class="tc-spark"><canvas id="spark-${t.id}"></canvas></div>
+    <div class="tc-spark"><canvas id="spark-${scope}-${t.id}"></canvas></div>
     <div class="tc-foot"><span class="src">${escapeHtml(t.source||'')}</span><span>${fmtDate(t.updatedAt)}</span></div>
   </div>`;
 }
@@ -573,7 +588,7 @@ function trendCardHtml(t){
 function mountSparklines(scopeId, list){
   if(typeof Chart === 'undefined') return;
   list.forEach(t=>{
-    const el = document.getElementById(`spark-${t.id}`);
+    const el = document.getElementById(`spark-${scopeId}-${t.id}`);
     if(!el) return;
     const key = scopeId+'-spark-'+t.id;
     try{
@@ -586,7 +601,7 @@ function mountSparklines(scopeId, list){
 function renderTopBreakout(){
   const top = trends.filter(t=>t.growth==='breakout').slice(0,3);
   const el = document.getElementById('topBreakoutGrid');
-  el.innerHTML = top.length ? top.map(trendCardHtml).join('') : `<div class="empty-state" style="grid-column:1/-1;"><div class="ic">🔥</div><h3>No breakout trends yet</h3><p>Once the feed marks a trend "breakout," it'll show up here first.</p></div>`;
+  el.innerHTML = top.length ? top.map(t=>trendCardHtml(t,'top')).join('') : `<div class="empty-state" style="grid-column:1/-1;"><div class="ic">🔥</div><h3>No breakout trends yet</h3><p>Once the feed marks a trend "breakout," it'll show up here first.</p></div>`;
   bindCardEvents(el);
   mountSparklines('top', top);
 }
@@ -611,7 +626,7 @@ function renderTrendGrid(){
   const list = applyTrendFilters();
   document.getElementById('trendResultCount').textContent = `${list.length} of ${trends.length} trends`;
   const el = document.getElementById('trendGrid');
-  el.innerHTML = list.length ? list.map(trendCardHtml).join('') : `<div class="empty-state" style="grid-column:1/-1;"><div class="ic">🔍</div><h3>No trends match</h3><p>Try clearing a filter or searching a different term.</p></div>`;
+  el.innerHTML = list.length ? list.map(t=>trendCardHtml(t,'grid')).join('') : `<div class="empty-state" style="grid-column:1/-1;"><div class="ic">🔍</div><h3>No trends match</h3><p>Try clearing a filter or searching a different term.</p></div>`;
   bindCardEvents(el);
   mountSparklines('grid', list);
 }
@@ -639,7 +654,7 @@ function toggleWatch(id){
 function renderWatchlist(){
   const list = trends.filter(t=>watchlist.includes(t.id));
   const el = document.getElementById('watchGrid');
-  el.innerHTML = list.length ? list.map(trendCardHtml).join('') : `<div class="empty-state" style="grid-column:1/-1;"><div class="ic">★</div><h3>Your watchlist is empty</h3><p>Star any trend from the feed to track it here. Saved locally in your browser.</p></div>`;
+  el.innerHTML = list.length ? list.map(t=>trendCardHtml(t,'watch')).join('') : `<div class="empty-state" style="grid-column:1/-1;"><div class="ic">★</div><h3>Your watchlist is empty</h3><p>Star any trend from the feed to track it here. Saved locally in your browser.</p></div>`;
   bindCardEvents(el);
   mountSparklines('watch', list);
 }
