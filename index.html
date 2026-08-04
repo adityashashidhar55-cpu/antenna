@@ -181,6 +181,19 @@ select.filter-select{
 .badge.rising{color:var(--rising); background:var(--rising-bg);}
 .badge.steady{color:var(--steady); background:var(--steady-bg);}
 .cat-pill{font-size:10.5px; color:var(--text-dim); background:var(--bg-elev-2); padding:2.5px 8px; border-radius:20px; font-weight:600;}
+.src-pill{font-size:10.5px; padding:2.5px 8px; border-radius:20px; font-weight:600;}
+.src-pill.src-research{color:#a78bfa; background:rgba(167,139,250,.14);}
+.src-pill.src-social{color:#38bdf8; background:rgba(56,189,248,.14);}
+.channel-row{display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text-dim); margin-bottom:8px;}
+.channel-row .ch-name{width:100px; flex-shrink:0; font-weight:600; color:var(--text);}
+.channel-row .ch-bar-wrap{flex:1; background:var(--bg-elev-2); border-radius:6px; height:8px; overflow:hidden;}
+.channel-row .ch-bar{height:100%; background:linear-gradient(90deg,#38bdf8,#22d3a8); border-radius:6px;}
+.channel-row .ch-val{width:56px; text-align:right; flex-shrink:0; font-weight:700; color:var(--text);}
+.related-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+.related-card{background:var(--bg-card); border:1px solid var(--border-soft); border-radius:10px; padding:10px 12px; cursor:pointer; transition:border-color .15s;}
+.related-card:hover{border-color:var(--border);}
+.related-card .rc-name{font-size:12.5px; font-weight:700; margin-bottom:4px;}
+.related-card .rc-meta{font-size:10.5px; color:var(--text-dim); display:flex; gap:6px; align-items:center;}
 .star-btn{
   background:none; border:none; color:var(--text-faint); font-size:16px; cursor:pointer; padding:2px;
   transition:color .15s, transform .15s; line-height:1;
@@ -353,6 +366,11 @@ select.filter-select{
             <option value="BOTH">🌐 Both</option>
           </select>
           <select class="filter-select" id="categoryFilter"><option value="all">All categories</option></select>
+          <select class="filter-select" id="sourceTypeFilter">
+            <option value="all">All sources</option>
+            <option value="research">🔬 Research-backed</option>
+            <option value="social">📡 Social-backed</option>
+          </select>
           <select class="filter-select" id="sortFilter">
             <option value="growth">Sort: Growth</option>
             <option value="name">Sort: Name (A–Z)</option>
@@ -404,7 +422,9 @@ select.filter-select{
     <div class="modal-body">
       <p class="blurb" id="modalBlurb"></p>
       <div class="modal-chart-wrap"><canvas id="modalChart"></canvas></div>
+      <div id="modalChannels"></div>
       <div id="modalInsights"></div>
+      <div id="modalRelated"></div>
       <div class="modal-actions">
         <button class="btn" id="modalWatchBtn">☆ Add to watchlist</button>
         <a class="btn primary" id="modalSourceBtn" href="#" target="_blank" rel="noopener">↗ View source</a>
@@ -421,9 +441,10 @@ const GROWTH_ICON = {breakout:'🔥', rising:'↗', steady:'→'};
 
 let trends = [];
 let ideas = [];
+let trendChannels = [];
 let watchlist = JSON.parse(localStorage.getItem('antenna_watchlist') || '[]');
 let charts = {};
-let state = { growth:'all', country:'all', category:'all', sort:'growth', search:'', ideaCountry:'all' };
+let state = { growth:'all', country:'all', category:'all', sourceType:'all', sort:'growth', search:'', ideaCountry:'all' };
 
 function waitForChart(timeoutMs){
   return new Promise(resolve=>{
@@ -453,9 +474,10 @@ function toast(msg){
 /* ---------------- data load ---------------- */
 async function loadData(){
   try{
-    const [tRes, iRes] = await Promise.all([
+    const [tRes, iRes, cRes] = await Promise.all([
       fetch(`${API_BASE}/trends`),
-      fetch(`${API_BASE}/startup-ideas`)
+      fetch(`${API_BASE}/startup-ideas`),
+      fetch(`${API_BASE}/trend-channels`).catch(()=>null)
     ]);
     if(!tRes.ok) throw new Error(`/trends returned HTTP ${tRes.status}`);
     if(!iRes.ok) throw new Error(`/startup-ideas returned HTTP ${iRes.status}`);
@@ -463,6 +485,12 @@ async function loadData(){
     const iData = await iRes.json();
     trends = (Array.isArray(tData) ? tData : [tData]).filter(Boolean);
     ideas = (Array.isArray(iData) ? iData : [iData]).filter(Boolean);
+    try{
+      if(cRes && cRes.ok){
+        const cData = await cRes.json();
+        trendChannels = (Array.isArray(cData) ? cData : [cData]).filter(Boolean);
+      }
+    }catch(e){ trendChannels = []; }
     document.getElementById('lastRefreshed').textContent = 'Synced ' + new Date().toLocaleTimeString();
     populateCategoryFilter();
     await waitForChart(3000);
@@ -575,6 +603,7 @@ function trendCardHtml(t, scope){
           <span class="flag">${COUNTRY_FLAG[t.country]||'🌐'}</span>
           <span class="badge ${t.growth}">${GROWTH_ICON[t.growth]||''} ${escapeHtml(t.growth||'')}</span>
           <span class="cat-pill">${escapeHtml(t.category||'')}</span>
+          <span class="src-pill src-${t.sourceType||'research'}">${t.sourceType==='social' ? '📡 Social' : '🔬 Research'}</span>
         </div>
       </div>
       <button class="star-btn ${saved?'saved':''}" data-star="${t.id}" title="Toggle watchlist">${saved?'★':'☆'}</button>
@@ -611,6 +640,7 @@ function applyTrendFilters(){
   if(state.growth!=='all') list = list.filter(t=>t.growth===state.growth);
   if(state.country!=='all') list = list.filter(t=>t.country===state.country);
   if(state.category!=='all') list = list.filter(t=>t.category===state.category);
+  if(state.sourceType!=='all') list = list.filter(t=>(t.sourceType||'research')===state.sourceType);
   if(state.search){
     const q = state.search.toLowerCase();
     list = list.filter(t=> (t.name||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q) || (t.blurb||'').toLowerCase().includes(q));
@@ -692,7 +722,8 @@ function openModal(id){
   document.getElementById('modalMeta').innerHTML = `
     <span class="flag">${COUNTRY_FLAG[t.country]||''}</span>
     <span class="badge ${t.growth}">${GROWTH_ICON[t.growth]||''} ${escapeHtml(t.growth||'')}</span>
-    <span class="cat-pill">${escapeHtml(t.category||'')}</span>`;
+    <span class="cat-pill">${escapeHtml(t.category||'')}</span>
+    <span class="src-pill src-${t.sourceType||'research'}">${t.sourceType==='social' ? '📡 Social-backed' : '🔬 Research-backed'}</span>`;
   document.getElementById('modalBlurb').textContent = t.blurb || '';
   const saved = watchlist.includes(t.id);
   const wb = document.getElementById('modalWatchBtn');
@@ -728,8 +759,56 @@ function openModal(id){
     box.innerHTML = '';
   }
 
+  renderModalChannels(t);
+  renderModalRelated(t);
+
   document.getElementById('modalOverlay').classList.add('open');
 }
+
+function renderModalChannels(t){
+  const box = document.getElementById('modalChannels');
+  const rows = trendChannels.filter(c=>c.trendId===t.id);
+  if(t.sourceType==='social' && rows.length){
+    const maxVal = Math.max(...rows.map(r=>r.mentionCount||0), 1);
+    box.innerHTML = `
+      <div class="insight-box">
+        <div class="lbl">Channel breakdown (real signal)</div>
+        ${rows.map(r=>`
+          <div class="channel-row">
+            <span class="ch-name">${escapeHtml(r.platform||'')}</span>
+            <span class="ch-bar-wrap"><span class="ch-bar" style="width:${Math.round((r.mentionCount||0)/maxVal*100)}%"></span></span>
+            <span class="ch-val">${r.mentionCount||0} posts</span>
+          </div>`).join('')}
+        ${rows[0] && rows[0].sampleTitle ? `<div class="ai-note" style="margin-top:6px;">Top post: "${escapeHtml(rows[0].sampleTitle)}" · avg score ${rows[0].engagementScore||0}</div>` : ''}
+        <div class="ai-note">✦ Measured directly from real posts found at generation time — not a live/continuously-updated count.</div>
+      </div>`;
+  } else if(t.sourceType==='social'){
+    box.innerHTML = `<div class="insight-box"><div class="lbl">Channel breakdown</div><p style="font-size:12px; color:var(--text-dim);">Channel data unavailable for this trend.</p></div>`;
+  } else {
+    box.innerHTML = `<div class="insight-box"><div class="lbl">Channel breakdown</div><p style="font-size:12px; color:var(--text-dim);">This trend is research-backed (synthesized from named sources like ${escapeHtml(t.source||'industry publications')}), not from live social-platform scraping — no per-channel mention data to show. See the "Social-backed" trends for real platform signal.</p></div>`;
+  }
+}
+
+function renderModalRelated(t){
+  const box = document.getElementById('modalRelated');
+  const related = trends.filter(x=>x.id!==t.id && x.category===t.category).slice(0,4);
+  if(!related.length){ box.innerHTML=''; return; }
+  box.innerHTML = `
+    <div class="insight-box">
+      <div class="lbl">Related topics in ${escapeHtml(t.category||'this category')}</div>
+      <div class="related-grid">
+        ${related.map(r=>`
+          <div class="related-card" data-related-id="${r.id}">
+            <div class="rc-name">${escapeHtml(r.name)}</div>
+            <div class="rc-meta"><span>${COUNTRY_FLAG[r.country]||''}</span><span class="badge ${r.growth}" style="padding:1.5px 6px;">${GROWTH_ICON[r.growth]||''} ${escapeHtml(r.growth||'')}</span></div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  box.querySelectorAll('.related-card').forEach(card=>{
+    card.addEventListener('click', ()=> openModal(Number(card.dataset.relatedId)));
+  });
+}
+
 function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); destroyChart('modal'); modalTrendId=null; }
 document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('modalOverlay').addEventListener('click', e=>{ if(e.target.id==='modalOverlay') closeModal(); });
@@ -775,6 +854,7 @@ document.getElementById('growthFilter').addEventListener('click', e=>{
 });
 document.getElementById('countryFilter').addEventListener('change', e=>{ state.country = e.target.value; renderTrendGrid(); });
 document.getElementById('categoryFilter').addEventListener('change', e=>{ state.category = e.target.value; renderTrendGrid(); });
+document.getElementById('sourceTypeFilter').addEventListener('change', e=>{ state.sourceType = e.target.value; renderTrendGrid(); });
 document.getElementById('sortFilter').addEventListener('change', e=>{ state.sort = e.target.value; renderTrendGrid(); });
 document.getElementById('ideaCountryFilter').addEventListener('change', e=>{ state.ideaCountry = e.target.value; renderIdeaGrid(); });
 document.getElementById('searchInput').addEventListener('input', e=>{
