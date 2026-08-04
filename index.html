@@ -220,6 +220,36 @@ select.filter-select{
 .idea-block ol{padding-left:16px;}
 .based-on{font-size:11px; color:var(--text-faint); font-style:italic;}
 
+/* ---------- Pain point cards ---------- */
+.pain-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px;}
+.pain-card{
+  background:var(--bg-card); border:1px solid var(--border-soft); border-radius:var(--radius);
+  padding:16px 17px; display:flex; flex-direction:column; gap:10px;
+}
+.pain-card .pc-top{display:flex; align-items:flex-start; justify-content:space-between; gap:8px;}
+.pain-card .pc-name{font-size:14.5px; font-weight:700; line-height:1.3;}
+.pain-card .pc-meta{display:flex; align-items:center; gap:6px; margin-top:5px; flex-wrap:wrap;}
+.pain-card .pc-rating{font-size:11px; color:var(--text-faint); font-weight:600; white-space:nowrap;}
+.pain-block{border-top:1px solid var(--border-soft); padding-top:9px;}
+.pain-block .pb-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; font-weight:700; margin-bottom:5px;}
+.pain-block.pains .pb-label{color:#f87171;}
+.pain-block.features .pb-label{color:var(--accent);}
+.pain-block p{font-size:12px; color:var(--text-dim); line-height:1.6;}
+.pain-quote{font-size:11.5px; color:var(--text-faint); font-style:italic; border-left:2px solid var(--border-soft); padding-left:9px; line-height:1.5;}
+
+/* ---------- Tools / keyword research ---------- */
+.tools-intro{margin-bottom:16px; max-width:640px;}
+.tools-intro h3{font-size:15px; font-weight:800; margin-bottom:6px;}
+.tools-intro p{font-size:12.5px; color:var(--text-dim); line-height:1.6;}
+.kw-search-box{display:flex; gap:8px; max-width:520px; margin-bottom:20px;}
+.kw-search-box input{
+  flex:1; background:var(--bg-elev-2); border:1px solid var(--border-soft); color:var(--text);
+  padding:10px 13px; border-radius:9px; font-size:13px; outline:none;
+}
+.kw-search-box input:focus{border-color:var(--accent);}
+.kw-note{font-size:11.5px; color:var(--text-faint); background:var(--bg-elev-2); border:1px solid var(--border-soft); border-radius:10px; padding:10px 13px; margin-bottom:16px; line-height:1.55;}
+.kw-suggest-wrap{margin-bottom:16px;}
+
 /* ---------- Watchlist / empty state ---------- */
 .empty-state{
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -307,6 +337,8 @@ select.filter-select{
       <div class="nav-item" data-view="trends"><span class="ic">📈</span> Trends <span class="count" id="navCountTrends">–</span></div>
       <div class="nav-item" data-view="ideas"><span class="ic">💡</span> Startup Ideas <span class="count" id="navCountIdeas">–</span></div>
       <div class="nav-item" data-view="watchlist"><span class="ic">★</span> Watchlist <span class="count" id="navCountWatch">0</span></div>
+      <div class="nav-item" data-view="painpoints"><span class="ic">🩹</span> Pain Points <span class="count" id="navCountPains">–</span></div>
+      <div class="nav-item" data-view="tools"><span class="ic">🛠</span> Tools</div>
       <div class="nav-label">Markets</div>
       <div class="nav-item" data-quick-country="IN"><span class="ic">🇮🇳</span> India</div>
       <div class="nav-item" data-quick-country="FR"><span class="ic">🇫🇷</span> France</div>
@@ -399,6 +431,27 @@ select.filter-select{
         <div class="trend-grid" id="watchGrid"></div>
       </section>
 
+      <!-- PAIN POINTS -->
+      <section class="view" id="view-painpoints">
+        <div class="toolbar" style="margin-bottom:14px;">
+          <span class="result-count" id="painResultCount"></span>
+        </div>
+        <div class="pain-grid" id="painGrid"></div>
+      </section>
+
+      <!-- TOOLS / SEO -->
+      <section class="view" id="view-tools">
+        <div class="tools-intro">
+          <h3>Keyword Research</h3>
+          <p>Live Google Autocomplete suggestions for any keyword, plus AI-estimated search intent, difficulty, and content angles. This is a free-data alternative to paid tools like Semrush/Ahrefs — see the disclosure note on every result.</p>
+        </div>
+        <div class="kw-search-box">
+          <input type="text" id="kwInput" placeholder="Enter a keyword, e.g. &quot;protein coffee&quot;…" autocomplete="off">
+          <button class="btn primary" id="kwSearchBtn">Research</button>
+        </div>
+        <div id="kwResults"></div>
+      </section>
+
     </div>
 
     <div class="page-footer">
@@ -442,6 +495,7 @@ const GROWTH_ICON = {breakout:'🔥', rising:'↗', steady:'→'};
 let trends = [];
 let ideas = [];
 let trendChannels = [];
+let painPoints = [];
 let watchlist = JSON.parse(localStorage.getItem('antenna_watchlist') || '[]');
 let charts = {};
 let state = { growth:'all', country:'all', category:'all', sourceType:'all', sort:'growth', search:'', ideaCountry:'all' };
@@ -474,10 +528,11 @@ function toast(msg){
 /* ---------------- data load ---------------- */
 async function loadData(){
   try{
-    const [tRes, iRes, cRes] = await Promise.all([
+    const [tRes, iRes, cRes, pRes] = await Promise.all([
       fetch(`${API_BASE}/trends`),
       fetch(`${API_BASE}/startup-ideas`),
-      fetch(`${API_BASE}/trend-channels`).catch(()=>null)
+      fetch(`${API_BASE}/trend-channels`).catch(()=>null),
+      fetch(`${API_BASE}/pain-points`).catch(()=>null)
     ]);
     if(!tRes.ok) throw new Error(`/trends returned HTTP ${tRes.status}`);
     if(!iRes.ok) throw new Error(`/startup-ideas returned HTTP ${iRes.status}`);
@@ -491,6 +546,12 @@ async function loadData(){
         trendChannels = (Array.isArray(cData) ? cData : [cData]).filter(Boolean);
       }
     }catch(e){ trendChannels = []; }
+    try{
+      if(pRes && pRes.ok){
+        const pData = await pRes.json();
+        painPoints = (Array.isArray(pData) ? pData : [pData]).filter(Boolean);
+      }
+    }catch(e){ painPoints = []; }
     document.getElementById('lastRefreshed').textContent = 'Synced ' + new Date().toLocaleTimeString();
     populateCategoryFilter();
     await waitForChart(3000);
@@ -525,12 +586,15 @@ function renderAll(){
   safeRender('trendGrid', renderTrendGrid);
   safeRender('ideaGrid', renderIdeaGrid);
   safeRender('watchlist', renderWatchlist);
+  safeRender('painPoints', renderPainPoints);
 }
 
 function renderNavCounts(){
   document.getElementById('navCountTrends').textContent = trends.length || '–';
   document.getElementById('navCountIdeas').textContent = ideas.length || '–';
   document.getElementById('navCountWatch').textContent = watchlist.length;
+  const painEl = document.getElementById('navCountPains');
+  if(painEl) painEl.textContent = painPoints.length || '–';
 }
 
 function renderKPIs(){
@@ -689,6 +753,73 @@ function renderWatchlist(){
   mountSparklines('watch', list);
 }
 
+/* ---------------- pain points ---------------- */
+function painCardHtml(p){
+  const rating = (p.avgRating!=null && p.avgRating!=='') ? Number(p.avgRating).toFixed(1) : null;
+  return `
+  <div class="pain-card">
+    <div class="pc-top">
+      <div>
+        <div class="pc-name">${escapeHtml(p.appName||'')}</div>
+        <div class="pc-meta">
+          <span class="flag">${COUNTRY_FLAG[p.country]||''}</span>
+          <span class="cat-pill">${escapeHtml(p.category||'')}</span>
+          ${p.reviewCount ? `<span class="cat-pill">${escapeHtml(String(p.reviewCount))} reviews</span>` : ''}
+        </div>
+      </div>
+      ${rating ? `<span class="pc-rating">★ ${rating}</span>` : ''}
+    </div>
+    ${p.pains ? `<div class="pain-block pains"><div class="pb-label">User pains</div><p>${escapeHtml(p.pains)}</p></div>` : ''}
+    ${p.featureRequests ? `<div class="pain-block features"><div class="pb-label">Feature requests</div><p>${escapeHtml(p.featureRequests)}</p></div>` : ''}
+    ${p.sampleQuote ? `<div class="pain-quote">“${escapeHtml(p.sampleQuote)}”</div>` : ''}
+    ${p.appUrl ? `<a class="btn" style="align-self:flex-start;" href="${escapeHtml(p.appUrl)}" target="_blank" rel="noopener">↗ View app</a>` : ''}
+  </div>`;
+}
+function renderPainPoints(){
+  const grid = document.getElementById('painGrid');
+  const countEl = document.getElementById('painResultCount');
+  if(!grid) return;
+  let list = [...painPoints];
+  if(state.search){ const q=state.search.toLowerCase(); list = list.filter(p=>(p.appName||'').toLowerCase().includes(q)||(p.pains||'').toLowerCase().includes(q)||(p.featureRequests||'').toLowerCase().includes(q)); }
+  if(countEl) countEl.textContent = `${list.length} of ${painPoints.length} apps mined`;
+  grid.innerHTML = list.length ? list.map(painCardHtml).join('') : `<div class="empty-state" style="grid-column:1/-1;"><div class="ic">🩹</div><h3>No pain points yet</h3><p>Real user pains and feature requests mined from App Store reviews of small/indie apps will appear here.</p></div>`;
+}
+
+/* ---------------- tools / keyword research ---------------- */
+async function runKeywordResearch(){
+  const q = (document.getElementById('kwInput').value || '').trim();
+  const resultsEl = document.getElementById('kwResults');
+  if(!q){ toast('Enter a keyword first'); return; }
+  resultsEl.innerHTML = `<div class="empty-state"><div class="ic">⏳</div><h3>Researching…</h3><p>Fetching live autocomplete data and generating content angles.</p></div>`;
+  try{
+    const res = await fetch(`${API_BASE}/keyword-research?q=${encodeURIComponent(q)}`);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const d = Array.isArray(data) ? data[0] : data;
+    if(!d){ throw new Error('empty response'); }
+    const suggestions = d.realSuggestions || d.suggestions || [];
+    const angles = d.contentAngles || [];
+    resultsEl.innerHTML = `
+      ${d.note ? `<div class="kw-note">ℹ️ ${escapeHtml(d.note)}</div>` : ''}
+      <div class="insight-grid">
+        <div class="insight-box kw-suggest-wrap">
+          <div class="lbl">Real Google autocomplete suggestions</div>
+          ${suggestions.length ? suggestions.map(s=>`<span class="kw-pill">${escapeHtml(typeof s==='string'?s:(s.suggestion||s.value||''))}</span>`).join('') : '<p style="font-size:12px;color:var(--text-dim);">No suggestions returned.</p>'}
+        </div>
+        <div class="insight-box">
+          <div class="lbl">AI estimates (not measured data)</div>
+          <p style="font-size:12px;color:var(--text-dim);margin-bottom:8px;"><strong>Search intent:</strong> ${escapeHtml(d.searchIntent||'—')}</p>
+          <p style="font-size:12px;color:var(--text-dim);"><strong>Difficulty:</strong> ${escapeHtml(d.difficulty||'—')}</p>
+        </div>
+      </div>
+      ${angles.length ? `<div class="idea-block" style="margin-top:14px;"><div class="ib-label">Content angle ideas (AI-generated)</div><ol>${angles.map(a=>`<li>${escapeHtml(typeof a==='string'?a:(a.angle||a.title||JSON.stringify(a)))}</li>`).join('')}</ol></div>` : ''}
+    `;
+  }catch(e){
+    console.error(e);
+    resultsEl.innerHTML = `<div class="empty-state"><div class="ic">⚠️</div><h3>Couldn't fetch keyword data</h3><p>Try again in a moment, or try a different keyword.</p></div>`;
+  }
+}
+
 /* ---------------- ideas ---------------- */
 function ideaCardHtml(i){
   const trend = trends.find(t=>t.name===i.basedOnTrend);
@@ -822,7 +953,7 @@ document.querySelectorAll('.nav-item[data-view]').forEach(item=>{
     const view = item.dataset.view;
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById('view-'+view).classList.add('active');
-    const titles = { overview:['Overview','Everything tracked, at a glance'], trends:['Trends','Live feed across India & France'], ideas:['Startup Ideas','AI-generated, grounded in real trend data'], watchlist:['Watchlist','Trends you\'re personally tracking'] };
+    const titles = { overview:['Overview','Everything tracked, at a glance'], trends:['Trends','Live feed across India & France'], ideas:['Startup Ideas','AI-generated, grounded in real trend data'], watchlist:['Watchlist','Trends you\'re personally tracking'], painpoints:['Pain Points','Real user pains & feature requests mined from app reviews'], tools:['Tools','Free-data keyword research — a Semrush-class alternative'] };
     document.getElementById('viewTitle').innerHTML = `${titles[view][0]}<span class="sub">${titles[view][1]}</span>`;
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('scrim').classList.remove('open');
@@ -861,6 +992,7 @@ document.getElementById('searchInput').addEventListener('input', e=>{
   state.search = e.target.value.trim();
   renderTrendGrid();
   renderIdeaGrid();
+  safeRender('painPoints', renderPainPoints);
 });
 document.getElementById('refreshBtn').addEventListener('click', ()=>{ toast('Refreshing…'); loadData(); });
 document.getElementById('exportBtn').addEventListener('click', ()=>{
@@ -874,6 +1006,12 @@ document.getElementById('exportBtn').addEventListener('click', ()=>{
   a.download = 'antenna-trends.csv';
   a.click();
 });
+const kwBtn = document.getElementById('kwSearchBtn');
+const kwInput = document.getElementById('kwInput');
+if(kwBtn){
+  kwBtn.addEventListener('click', runKeywordResearch);
+  kwInput.addEventListener('keydown', e=>{ if(e.key==='Enter') runKeywordResearch(); });
+}
 
 loadData();
 </script>
