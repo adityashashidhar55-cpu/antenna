@@ -250,6 +250,27 @@ select.filter-select{
 .kw-note{font-size:11.5px; color:var(--text-faint); background:var(--bg-elev-2); border:1px solid var(--border-soft); border-radius:10px; padding:10px 13px; margin-bottom:16px; line-height:1.55;}
 .kw-suggest-wrap{margin-bottom:16px;}
 
+/* ---------- SEO analyzer scores ---------- */
+.seo-score-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:16px;}
+.seo-score-card{background:var(--bg-card); border:1px solid var(--border-soft); border-radius:12px; padding:14px 15px; text-align:center;}
+.seo-score-card .ssc-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--text-faint); font-weight:700; margin-bottom:8px;}
+.seo-score-card .ssc-val{font-size:26px; font-weight:800;}
+.seo-score-card .ssc-val.good{color:var(--accent);}
+.seo-score-card .ssc-val.mid{color:var(--rising);}
+.seo-score-card .ssc-val.low{color:#f87171;}
+.seo-rec-list{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
+.seo-rec-card{background:var(--bg-card); border:1px solid var(--border-soft); border-radius:10px; padding:12px 14px; display:flex; gap:10px; align-items:flex-start;}
+.seo-rec-card .src-pill{flex-shrink:0; margin-top:1px;}
+.seo-rec-card .src-pill.pri-high{color:#f87171; background:rgba(248,113,113,.14);}
+.seo-rec-card .src-pill.pri-medium{color:var(--rising); background:var(--rising-bg);}
+.seo-rec-card .src-pill.pri-low{color:var(--text-dim); background:var(--bg-elev-2);}
+.seo-rec-card .src-title{font-size:13px; font-weight:700; margin-bottom:4px;}
+.seo-rec-card .src-detail{font-size:12px; color:var(--text-dim); line-height:1.55;}
+.seo-signals-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; font-size:11.5px; color:var(--text-dim);}
+.seo-signals-grid .sig-row{display:flex; justify-content:space-between; gap:8px; background:var(--bg-elev-2); padding:6px 10px; border-radius:8px;}
+.seo-signals-grid .sig-row .sig-ok{color:var(--accent); font-weight:700;}
+.seo-signals-grid .sig-row .sig-no{color:var(--text-faint); font-weight:700;}
+
 /* ---------- Watchlist / empty state ---------- */
 .empty-state{
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -450,6 +471,16 @@ select.filter-select{
           <button class="btn primary" id="kwSearchBtn">Research</button>
         </div>
         <div id="kwResults"></div>
+
+        <div class="tools-intro" style="margin-top:32px; padding-top:24px; border-top:1px solid var(--border-soft);">
+          <h3>AI-SEO Website Analyzer</h3>
+          <p>Checks a live website's real technical &amp; content signals — schema.org structured data, AI-crawler access (robots.txt / llms.txt), heading structure, authority signals — then an AI classifies the site's category and gives prioritized recommendations for ranking better in AI answer engines (ChatGPT, Perplexity, Google AI Overviews). A free-data alternative to a paid Semrush-class GEO audit.</p>
+        </div>
+        <div class="kw-search-box">
+          <input type="text" id="seoInput" placeholder="Enter a website URL, e.g. &quot;example.com&quot;…" autocomplete="off">
+          <button class="btn primary" id="seoSearchBtn">Analyze</button>
+        </div>
+        <div id="seoResults"></div>
       </section>
 
     </div>
@@ -820,6 +851,75 @@ async function runKeywordResearch(){
   }
 }
 
+/* ---------------- tools / AI-SEO website analyzer ---------------- */
+function scoreClass(v){ return v>=70 ? 'good' : v>=40 ? 'mid' : 'low'; }
+async function runSeoAnalysis(){
+  const q = (document.getElementById('seoInput').value || '').trim();
+  const resultsEl = document.getElementById('seoResults');
+  if(!q){ toast('Enter a website URL first'); return; }
+  resultsEl.innerHTML = `<div class="empty-state"><div class="ic">⏳</div><h3>Analyzing…</h3><p>Fetching the live page, checking AI-crawler access, structured data, and content structure.</p></div>`;
+  try{
+    const res = await fetch(`${API_BASE}/ai-seo-analyze?url=${encodeURIComponent(q)}`);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const d = Array.isArray(data) ? data[0] : data;
+    if(!d){ throw new Error('empty response'); }
+    if(d.error){
+      resultsEl.innerHTML = `<div class="empty-state"><div class="ic">⚠️</div><h3>Couldn't analyze that site</h3><p>${escapeHtml(d.error)}</p></div>`;
+      return;
+    }
+    const scores = d.scores || {};
+    const sig = d.signals || {};
+    const recs = d.recommendations || [];
+    const scoreRow = [
+      {lbl:'Overall', val:scores.overall},
+      {lbl:'Technical', val:scores.technical},
+      {lbl:'Structured Data', val:scores.structuredData},
+      {lbl:'Content', val:scores.content},
+      {lbl:'Authority', val:scores.authority},
+    ];
+    const sigRows = [
+      ['HTTPS', sig.isHttps],
+      ['Canonical tag', sig.hasCanonical],
+      ['Viewport meta', sig.hasViewportMeta],
+      ['llms.txt found', sig.hasLlmsTxt],
+      ['AI crawlers blocked', sig.blockedAiBots && sig.blockedAiBots.length ? sig.blockedAiBots.join(', ') : false],
+      ['FAQ schema', sig.hasFAQSchema],
+      ['Article schema', sig.hasArticleSchema],
+      ['Organization schema', sig.hasOrganizationSchema],
+      ['Author byline', sig.hasAuthorByline],
+      ['Date-modified shown', sig.hasDateModified],
+      ['Word count', sig.wordCount],
+      ['Social profiles linked', sig.socialProfilesLinked && sig.socialProfilesLinked.length ? sig.socialProfilesLinked.join(', ') : false],
+    ];
+    resultsEl.innerHTML = `
+      <div style="margin-bottom:14px;">
+        <span class="cat-pill">${escapeHtml(d.category||'Unknown category')}</span>
+        <span class="src-pill" style="color:var(--text-dim);background:var(--bg-elev-2);">${escapeHtml(d.domain||'')}</span>
+      </div>
+      ${d.summary ? `<p style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;">${escapeHtml(d.summary)}</p>` : ''}
+      <div class="seo-score-grid">
+        ${scoreRow.map(s=>`<div class="seo-score-card"><div class="ssc-label">${s.lbl}</div><div class="ssc-val ${scoreClass(s.val||0)}">${s.val ?? '—'}</div></div>`).join('')}
+      </div>
+      ${recs.length ? `<div class="seo-rec-list">${recs.map(r=>`
+        <div class="seo-rec-card">
+          <span class="src-pill pri-${escapeHtml((r.priority||'medium').toLowerCase())}">${escapeHtml((r.priority||'medium').toUpperCase())}</span>
+          <div><div class="src-title">${escapeHtml(r.title||'')}</div><div class="src-detail">${escapeHtml(r.detail||'')}</div></div>
+        </div>`).join('')}</div>` : ''}
+      <div class="insight-box" style="margin-bottom:14px;">
+        <div class="lbl">Measured signals (real, from the live page)</div>
+        <div class="seo-signals-grid">
+          ${sigRows.map(([label,val])=>`<div class="sig-row"><span>${escapeHtml(label)}</span><span class="${val ? 'sig-ok' : 'sig-no'}">${typeof val==='string' ? escapeHtml(val) : (val ? '✓' : '—')}</span></div>`).join('')}
+        </div>
+      </div>
+      ${d.note ? `<div class="kw-note">ℹ️ ${escapeHtml(d.note)}</div>` : ''}
+    `;
+  }catch(e){
+    console.error(e);
+    resultsEl.innerHTML = `<div class="empty-state"><div class="ic">⚠️</div><h3>Couldn't analyze that site</h3><p>Try again in a moment, or try a different URL.</p></div>`;
+  }
+}
+
 /* ---------------- ideas ---------------- */
 function ideaCardHtml(i){
   const trend = trends.find(t=>t.name===i.basedOnTrend);
@@ -1011,6 +1111,12 @@ const kwInput = document.getElementById('kwInput');
 if(kwBtn){
   kwBtn.addEventListener('click', runKeywordResearch);
   kwInput.addEventListener('keydown', e=>{ if(e.key==='Enter') runKeywordResearch(); });
+}
+const seoBtn = document.getElementById('seoSearchBtn');
+const seoInput = document.getElementById('seoInput');
+if(seoBtn){
+  seoBtn.addEventListener('click', runSeoAnalysis);
+  seoInput.addEventListener('keydown', e=>{ if(e.key==='Enter') runSeoAnalysis(); });
 }
 
 loadData();
