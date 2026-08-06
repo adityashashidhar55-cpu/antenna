@@ -3127,10 +3127,28 @@ function buildStartupFilterControls(){
   renderStartupCategorySelect(categories);
 }
 
+// Product Hunt's Atom feed content arrives HTML-entity-encoded (e.g. "&lt;p&gt;...&lt;/p&gt;")
+// and sometimes double-encoded. Decode entities and strip any remaining tags before
+// displaying, so raw markup never leaks into the card as visible text.
+function cleanFeedText(str){
+  if(!str) return '';
+  let s = String(str);
+  for(let i=0;i<2;i++){
+    const ta = document.createElement('textarea');
+    ta.innerHTML = s;
+    const decoded = ta.value;
+    if(decoded === s) break;
+    s = decoded;
+  }
+  const div = document.createElement('div');
+  div.innerHTML = s;
+  return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
+}
+
 function startupCardHTML(s){
   const name = escapeHtml(s.name || 'Untitled');
-  const tagline = escapeHtml(s.tagline || '');
-  const blurb = escapeHtml(s.blurb || '');
+  const tagline = escapeHtml(cleanFeedText(s.tagline || ''));
+  const blurb = escapeHtml(cleanFeedText(s.blurb || ''));
   const category = escapeHtml((s.category || 'Uncategorized').trim());
   const source = escapeHtml(s.source || 'Product Hunt');
   const url = escapeHtml(safeStartupUrl(s.launchUrl));
