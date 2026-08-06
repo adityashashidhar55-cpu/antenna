@@ -50,3 +50,4 @@ This repo is served directly by **GitHub Pages** (Settings → Pages → deploy 
 ## `build/`
 
 Internal build artifacts (the multi-agent build script, raw agent outputs, verification scripts/screenshots). Not part of the deployed site — excluded via `.gitignore`.
+
