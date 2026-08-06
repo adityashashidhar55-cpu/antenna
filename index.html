@@ -352,6 +352,966 @@ select.filter-select{
 }
 .sidebar-scrim{display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:39;}
 .sidebar-scrim.open{display:block;}
+
+/* ===== discovery subsystem ===== */
+/* ================= Discovery Dashboard & Filtering Engine (disc-) ================= */
+
+/* secondary/tertiary filter-bar rows */
+#discBar2, #discBar3{ margin-top:-6px; }
+
+.disc-tf-group{
+  display:flex; align-items:center; gap:8px;
+  background:var(--bg-elev-2); padding:4px 9px 4px 11px; border-radius:10px; border:1px solid var(--border-soft);
+  cursor:help;
+}
+.disc-tf-label{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-faint); }
+#timeframeFilter .chip{ padding:5px 9px; font-size:11.5px; }
+
+.disc-info{
+  display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%;
+  background:var(--bg-card); color:var(--text-faint); font-size:10px; font-weight:700; cursor:help; flex-shrink:0;
+  border:1px solid var(--border-soft);
+}
+.disc-info:hover, .disc-info:focus{ color:var(--accent); border-color:var(--accent-dim); outline:none; }
+
+.disc-adv-label{
+  font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-faint);
+  margin-right:2px; align-self:center;
+}
+
+/* growth-status chip active-state coloring, consistent with existing .chip.active.breakout pattern */
+#growthStatusFilter .chip.active[data-gs="exploding"]{ color:var(--breakout); }
+#growthStatusFilter .chip.active[data-gs="peaked"]{ color:var(--text-dim); }
+#growthStatusFilter .chip.active[data-gs="regular"]{ color:var(--steady); }
+
+/* category select — visual upgrade only, still native <select>, still populated dynamically */
+.disc-cat-wrap{ position:relative; display:inline-flex; align-items:center; }
+.disc-cat-wrap select.filter-select{ padding-left:26px; }
+.disc-cat-wrap::before{
+  content:"🏷"; position:absolute; left:9px; font-size:11px; pointer-events:none; opacity:.75;
+}
+.disc-cat-count{ font-size:10px; color:var(--text-faint); font-weight:600; white-space:nowrap; margin-left:-4px; }
+
+/* signal pills row on trend-card */
+.disc-pill-row{ display:flex; flex-wrap:wrap; gap:5px; }
+.disc-pill{
+  font-size:10px; font-weight:700; padding:2.5px 7px; border-radius:20px; letter-spacing:.2px;
+  background:var(--bg-elev-2); color:var(--text-dim); border:1px solid var(--border-soft); cursor:help;
+  white-space:nowrap;
+}
+.disc-gs-exploding{ color:var(--breakout); background:var(--breakout-bg); border-color:transparent; }
+.disc-gs-peaked{ color:var(--text-faint); background:var(--bg-elev-2); border-color:transparent; }
+.disc-gs-regular{ color:var(--steady); background:var(--steady-bg); border-color:transparent; }
+
+.disc-speed-exponential{ color:var(--accent); background:var(--accent-glow); border-color:transparent; }
+.disc-speed-constant{ color:var(--steady); background:var(--steady-bg); border-color:transparent; }
+.disc-speed-stationary{ color:var(--text-faint); border-color:transparent; }
+
+.disc-vol-high{ color:var(--breakout); background:var(--breakout-bg); border-color:transparent; }
+.disc-vol-medium{ color:var(--rising); background:var(--rising-bg); border-color:transparent; }
+.disc-vol-low{ color:var(--accent); background:var(--accent-glow); border-color:transparent; }
+
+/* seasonality + sentiment are the least-rigorous, always shown with a ~ prefix (added in JS) and muted tone */
+.disc-season-high, .disc-season-medium, .disc-season-low{ color:var(--text-dim); }
+.disc-sent-positive{ color:var(--accent); }
+.disc-sent-negative{ color:var(--breakout); }
+.disc-sent-neutral{ color:var(--text-dim); }
+
+/* sparkline transparency caption */
+.tc-spark-note{
+  font-size:9.5px; color:var(--text-faint); text-align:right; margin-top:-6px; cursor:help;
+}
+
+@media (max-width:980px){
+  .disc-tf-group{ flex-wrap:wrap; row-gap:6px; }
+  #discBar3{ row-gap:8px; }
+}
+
+/* ===== deepdive subsystem ===== */
+/* ================= Trend Deep-Dive (tdd-) ================= */
+
+/* Widen the existing modal into a full deep-dive report */
+.modal.tdd-modal{ max-width:960px; }
+
+.tdd-grid{
+  display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start;
+}
+.tdd-main{ display:flex; flex-direction:column; gap:18px; min-width:0; }
+.tdd-sidebar{ display:flex; flex-direction:column; gap:10px; }
+
+.tdd-section-lbl{
+  font-size:10.5px; text-transform:uppercase; color:var(--accent);
+  font-weight:700; letter-spacing:.5px; margin-bottom:10px;
+}
+
+/* ---- 12-Month AI Forecast badge/gauge ---- */
+.tdd-forecast-row{ display:flex; flex-wrap:wrap; gap:10px; }
+.tdd-forecast{
+  display:flex; align-items:center; gap:12px; background:var(--bg-card);
+  border:1px solid var(--border-soft); border-radius:var(--radius-sm);
+  padding:13px 16px; width:100%;
+}
+.tdd-forecast-icon{
+  width:36px; height:36px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800;
+}
+.tdd-forecast-icon.growing{ background:var(--accent-glow); color:var(--accent); }
+.tdd-forecast-icon.stationary{ background:var(--steady-bg); color:var(--steady); }
+.tdd-forecast-icon.declining{ background:var(--breakout-bg); color:var(--breakout); }
+.tdd-forecast-body{ min-width:0; }
+.tdd-forecast-title{ font-size:13.5px; font-weight:800; color:var(--text); letter-spacing:-.1px; }
+.tdd-forecast-sub{ font-size:10.5px; color:var(--text-faint); margin-top:3px; line-height:1.5; }
+
+/* ---- Key Indicators Matrix ---- */
+.tdd-indicators{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.tdd-ind-card{
+  background:var(--bg-card); border:1px solid var(--border-soft);
+  border-radius:var(--radius-sm); padding:12px 13px;
+}
+.tdd-ind-card .tdd-ind-lbl{
+  font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--text-faint);
+  font-weight:700; margin-bottom:7px; display:flex; align-items:center; gap:4px;
+}
+.tdd-ind-card .tdd-ind-val{ font-size:19px; font-weight:800; color:var(--text); letter-spacing:-.3px; }
+
+/* ---- Channel breakdown chart ---- */
+.tdd-channel-wrap canvas{ max-height:210px; }
+
+/* ---- Editorial "why it's trending" ---- */
+.tdd-editorial .blurb{ font-size:13.5px; color:var(--text-dim); line-height:1.65; }
+.tdd-byline{ font-size:11px; color:var(--text-faint); margin-top:8px; font-style:italic; }
+
+/* ---- Related trends sidebar ---- */
+.tdd-related-list{ display:flex; flex-direction:column; gap:8px; }
+.tdd-related-card{
+  background:var(--bg-card); border:1px solid var(--border-soft); border-radius:var(--radius-sm);
+  padding:10px 12px; cursor:pointer; transition:border-color .15s, transform .15s;
+}
+.tdd-related-card:hover{ border-color:var(--border); transform:translateY(-1px); }
+.tdd-related-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.tdd-related-name{ font-size:12.5px; font-weight:700; color:var(--text); }
+.tdd-related-meta{ font-size:10.5px; color:var(--text-faint); margin-top:5px; display:flex; gap:5px; align-items:center; }
+.tdd-related-empty{ font-size:12px; color:var(--text-faint); }
+
+@media (max-width:820px){
+  .tdd-grid{ grid-template-columns:1fr; }
+  .tdd-indicators{ grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:480px){
+  .tdd-indicators{ grid-template-columns:1fr 1fr; }
+}
+
+/* ===== products subsystem ===== */
+.prod-disclosure {
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.prod-disclosure strong { color: var(--text); }
+
+.prod-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.prod-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.prod-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.prod-card:hover { transform: translateY(-2px); border-color: var(--accent-dim); }
+
+.prod-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.prod-card-title { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.prod-card-cat { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .04em; margin-top: 2px; }
+
+.prod-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  text-transform: capitalize;
+  flex-shrink: 0;
+}
+.prod-badge.high { color: var(--breakout); background: var(--breakout-bg); }
+.prod-badge.medium { color: var(--rising); background: var(--rising-bg); }
+.prod-badge.low { color: var(--steady); background: var(--steady-bg); }
+
+.prod-blurb {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.prod-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-soft);
+}
+.prod-metric { display: flex; flex-direction: column; gap: 3px; }
+.prod-metric-label {
+  font-size: 10px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.prod-metric-value { font-size: 14px; font-weight: 700; color: var(--text); }
+
+.prod-ai-tag {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border-radius: 4px;
+  padding: 1px 5px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  cursor: help;
+}
+
+.prod-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+.prod-country-tag { font-size: 11px; color: var(--text-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prod-view-link { font-size: 12px; color: var(--accent); font-weight: 600; text-decoration: none; flex-shrink: 0; }
+.prod-view-link:hover { text-decoration: underline; }
+
+.prod-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 13px;
+  grid-column: 1 / -1;
+}
+
+.prod-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(5,7,12,.7);
+  backdrop-filter: blur(3px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.prod-modal-overlay.active { display: flex; }
+.prod-modal {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  max-width: 520px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+.prod-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+}
+.prod-modal-close:hover { color: var(--text); }
+.prod-modal h2 { font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: 4px; padding-right: 24px; }
+.prod-modal-cat { font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 14px; }
+.prod-modal-blurb { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; margin-bottom: 18px; }
+.prod-modal-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.prod-modal-metric { background: var(--bg-elev-2); border: 1px solid var(--border-soft); border-radius: var(--radius-sm); padding: 12px; }
+.prod-modal-metric-label {
+  font-size: 10.5px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.prod-modal-metric-value { font-size: 16px; font-weight: 700; color: var(--text); }
+.prod-modal-note {
+  font-size: 11px;
+  color: var(--text-faint);
+  font-style: italic;
+  border-top: 1px solid var(--border-soft);
+  padding-top: 12px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.prod-modal-source { font-size: 12.5px; color: var(--accent); text-decoration: none; font-weight: 600; }
+.prod-modal-source:hover { text-decoration: underline; }
+
+.prod-demand-chips .chip.active.high { color: var(--breakout); }
+.prod-demand-chips .chip.active.medium { color: var(--rising); }
+.prod-demand-chips .chip.active.low { color: var(--steady); }
+/* --- watchlist star (added during integration) --- */
+.prod-card-top-actions{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+
+/* ===== startups subsystem ===== */
+/* ---- Startups Directory (.startup- prefixed) ---- */
+.startup-caption{
+  font-size:12.5px;
+  line-height:1.5;
+  color:var(--text-dim);
+  font-style:italic;
+  background:var(--bg-elev);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-sm);
+  padding:10px 14px;
+  margin-bottom:16px;
+}
+.startup-caption strong{
+  color:var(--text-dim);
+  font-style:normal;
+  font-weight:600;
+  margin-right:4px;
+}
+
+.startup-toolbar{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:16px;
+}
+.startup-toolbar .chip-group{ flex:1 1 auto; }
+.startup-toolbar .result-count{ margin-left:auto; white-space:nowrap; }
+
+.startup-export-btn{
+  font:inherit;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--text-dim);
+  background:var(--bg-elev-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:6px 12px;
+  cursor:pointer;
+  transition:border-color .15s ease, color .15s ease;
+  white-space:nowrap;
+}
+.startup-export-btn:hover{
+  color:var(--text);
+  border-color:var(--accent-dim);
+}
+
+.startup-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:14px;
+}
+
+.startup-empty{
+  grid-column:1 / -1;
+  text-align:center;
+  padding:40px 20px;
+  color:var(--text-faint);
+  font-size:13px;
+  border:1px dashed var(--border);
+  border-radius:var(--radius);
+}
+
+.startup-card{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:16px;
+  text-decoration:none;
+}
+
+.startup-card-head{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.startup-avatar{
+  flex:0 0 auto;
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:15px;
+  color:var(--accent);
+  background:var(--accent-glow);
+  border:1px solid var(--border-soft);
+}
+
+.startup-head-text{ flex:1 1 auto; min-width:0; }
+
+.startup-name{
+  font-size:15px;
+  font-weight:600;
+  color:var(--text);
+  line-height:1.3;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.startup-tagline{
+  font-size:12.5px;
+  color:var(--text-dim);
+  font-weight:500;
+  line-height:1.4;
+  margin-top:1px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.startup-country{
+  flex:0 0 auto;
+  font-size:12px;
+  color:var(--text-faint);
+  padding-top:2px;
+}
+
+.startup-badges{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.startup-category-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.2px;
+  color:var(--steady);
+  background:var(--steady-bg);
+  border-radius:999px;
+  padding:3px 9px;
+  cursor:help;
+}
+.startup-ai-mark{
+  font-size:9.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--text-faint);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:1px 5px;
+  background:var(--bg-elev-2);
+}
+
+.startup-blurb{
+  font-size:12.5px;
+  line-height:1.55;
+  color:var(--text-dim);
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  flex:1 1 auto;
+}
+
+.startup-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding-top:10px;
+  border-top:1px solid var(--border-soft);
+}
+
+.startup-source{
+  font-size:11px;
+  font-weight:600;
+  color:var(--text-faint);
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.startup-source::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--accent);
+  display:inline-block;
+}
+
+.startup-link{
+  font-size:12px;
+  font-weight:600;
+  color:var(--accent);
+  text-decoration:none;
+  white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  transition:opacity .15s ease;
+}
+.startup-link:hover{ opacity:.75; text-decoration:underline; }
+/* --- watchlist star + link-wrap restructure (added during integration) --- */
+.startup-card{position:relative;}
+.startup-link-wrap{display:flex; flex-direction:column; gap:10px; text-decoration:none; color:inherit;}
+.startup-star-btn{position:absolute; top:14px; right:14px; z-index:2;}
+
+/* ===== metatrends subsystem ===== */
+.meta-intro { margin: 0 0 20px; }
+.meta-tagline { color: var(--text-dim); font-size: 13px; font-style: italic; max-width: 780px; line-height: 1.55; }
+
+.meta-filterbar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+
+.meta-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+.meta-cluster-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 10px; transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.meta-cluster-card:hover { transform: translateY(-2px); border-color: var(--accent-dim); box-shadow: var(--shadow); }
+
+.meta-cluster-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+.meta-auto-badge { font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: 999px; padding: 3px 8px; cursor: help; white-space: nowrap; }
+
+.meta-cluster-category { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .03em; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.meta-cluster-name { margin: 0; font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.3; }
+
+.meta-cluster-metrics { display: flex; align-items: center; gap: 24px; padding: 10px 0; border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); }
+
+.meta-metric { display: flex; flex-direction: column; gap: 3px; }
+.meta-metric-value { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
+.meta-metric-label { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .03em; }
+
+.meta-cluster-breakdown { display: flex; gap: 6px; flex-wrap: wrap; }
+.meta-tier-chip { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px; }
+.meta-tier-chip.breakout { background: var(--breakout-bg); color: var(--breakout); }
+.meta-tier-chip.rising { background: var(--rising-bg); color: var(--rising); }
+.meta-tier-chip.steady { background: var(--steady-bg); color: var(--steady); }
+
+.meta-cluster-members-label { font-size: 11px; color: var(--text-faint); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; margin-top: 4px; }
+
+.meta-cluster-members { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.meta-trend-link { background: var(--bg-elev-2); border: 1px solid var(--border); color: var(--text-dim); font-size: 12px; font-family: inherit; padding: 4px 9px; border-radius: var(--radius-sm); cursor: pointer; transition: all .12s ease; }
+.meta-trend-link:hover { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-glow); }
+
+.meta-empty { padding: 40px 20px; text-align: center; color: var(--text-dim); font-size: 13px; background: var(--bg-elev); border: 1px dashed var(--border); border-radius: var(--radius); }
+
+/* ===== workspace subsystem ===== */
+/* ===== Watchlist / Projects Kanban / Alerts / Export — prefixed .ws- ===== */
+
+.ws-subtitle{
+  color:var(--text-dim);
+  font-size:13px;
+  margin:0 0 16px;
+}
+
+/* Toolbar */
+.ws-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.ws-toolbar-left{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.ws-toolbar-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.ws-kind-filter{ margin:0; }
+
+/* Export menu */
+.ws-export-menu-wrap{ position:relative; }
+.ws-export-menu{
+  display:none;
+  position:absolute;
+  top:calc(100% + 6px);
+  right:0;
+  min-width:160px;
+  background:var(--bg-elev-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  z-index:40;
+}
+.ws-export-menu.ws-export-menu-open{ display:block; }
+.ws-export-option{
+  padding:9px 14px;
+  font-size:13px;
+  color:var(--text);
+  cursor:pointer;
+  transition:background .12s ease;
+}
+.ws-export-option:hover{ background:var(--bg-card); color:var(--accent); }
+
+/* Alerts bar */
+.ws-alerts-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:16px;
+  padding:10px 12px;
+  background:var(--rising-bg);
+  border:1px solid rgba(255,182,72,.35);
+  border-radius:var(--radius-sm);
+}
+.ws-alert-chip{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12.5px;
+  color:var(--text);
+  background:var(--bg-elev);
+  border:1px solid var(--border-soft);
+  border-radius:999px;
+  padding:4px 10px;
+}
+.ws-alert-chip-dot{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--rising);
+  flex-shrink:0;
+}
+.ws-alert-chip-tag{
+  color:var(--text-faint);
+  font-style:italic;
+  font-size:11px;
+  margin-left:2px;
+}
+
+/* Board */
+.ws-board{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+  overflow-x:auto;
+  padding-bottom:10px;
+}
+.ws-column{
+  flex:0 0 288px;
+  display:flex;
+  flex-direction:column;
+  background:var(--bg-elev);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  max-height:calc(100vh - 280px);
+  min-height:160px;
+}
+.ws-column-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:12px 12px 10px;
+  border-bottom:1px solid var(--border-soft);
+}
+.ws-column-title{
+  font-weight:600;
+  font-size:13.5px;
+  color:var(--text);
+  flex:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.ws-column-count{
+  font-size:11.5px;
+  color:var(--text-faint);
+  background:var(--bg-card);
+  border:1px solid var(--border-soft);
+  border-radius:999px;
+  padding:1px 8px;
+}
+.ws-column-rename, .ws-column-delete{
+  background:none;
+  border:none;
+  color:var(--text-faint);
+  cursor:pointer;
+  font-size:13px;
+  line-height:1;
+  padding:2px 4px;
+  border-radius:6px;
+  transition:color .12s ease, background .12s ease;
+}
+.ws-column-rename:hover{ color:var(--accent); background:var(--bg-card); }
+.ws-column-delete:hover{ color:var(--breakout); background:var(--bg-card); }
+
+.ws-column-body{
+  flex:1;
+  overflow-y:auto;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  transition:background .12s ease;
+}
+.ws-column-body.ws-dragover{
+  background:var(--accent-glow);
+}
+.ws-column-empty{
+  border:1px dashed var(--border);
+  border-radius:var(--radius-sm);
+  padding:16px 10px;
+  text-align:center;
+  font-size:12px;
+  color:var(--text-faint);
+}
+
+/* Item card */
+.ws-item-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-sm);
+  padding:10px 11px;
+  cursor:grab;
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.ws-item-card:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow);
+  border-color:var(--border);
+}
+.ws-item-card.ws-dragging{ opacity:.4; }
+
+.ws-item-top{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:6px;
+}
+.ws-item-kind{
+  font-size:10px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  border:1px solid var(--border-soft);
+  border-radius:5px;
+  padding:1px 5px;
+}
+.ws-item-top .badge{ font-size:10.5px; }
+.ws-item-remove{
+  margin-left:auto;
+  background:none;
+  border:none;
+  color:var(--text-faint);
+  font-size:16px;
+  line-height:1;
+  cursor:pointer;
+  padding:0 2px;
+}
+.ws-item-remove:hover{ color:var(--breakout); }
+
+.ws-item-title{
+  font-weight:600;
+  font-size:13.5px;
+  color:var(--text);
+  margin-bottom:2px;
+  line-height:1.3;
+}
+.ws-item-meta{
+  font-size:11.5px;
+  color:var(--text-dim);
+  margin-bottom:6px;
+}
+.ws-item-spark{
+  display:block;
+  width:100%;
+  height:34px;
+  margin-bottom:6px;
+}
+.ws-move-select{
+  width:100%;
+  background:var(--bg-elev-2);
+  border:1px solid var(--border-soft);
+  color:var(--text-dim);
+  border-radius:7px;
+  font-size:11.5px;
+  padding:4px 6px;
+  margin-bottom:6px;
+}
+
+.ws-item-alert-row{ display:flex; }
+.ws-alert-toggle{
+  font-size:11px;
+  color:var(--text-faint);
+  background:var(--bg-elev-2);
+  border:1px solid var(--border-soft);
+  border-radius:999px;
+  padding:3px 10px;
+  cursor:pointer;
+  transition:color .12s ease, border-color .12s ease;
+}
+.ws-alert-toggle:hover{ color:var(--accent); border-color:var(--accent-dim); }
+.ws-alert-toggle.ws-alert-toggle-active{
+  color:var(--rising);
+  border-color:rgba(255,182,72,.4);
+  background:var(--rising-bg);
+}
+
+.ws-alert-panel{
+  display:none;
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px dashed var(--border-soft);
+}
+.ws-alert-panel.ws-alert-panel-open{ display:block; }
+.ws-alert-label{
+  display:block;
+  font-size:11px;
+  color:var(--text-dim);
+  margin-bottom:7px;
+}
+.ws-alert-input{
+  width:100%;
+  margin-top:3px;
+  background:var(--bg-elev-2);
+  border:1px solid var(--border-soft);
+  color:var(--text);
+  border-radius:7px;
+  padding:5px 7px;
+  font-size:12px;
+}
+.ws-alert-hint{
+  font-size:10.5px;
+  font-style:italic;
+  color:var(--text-faint);
+  margin:0 0 8px;
+  line-height:1.4;
+}
+.ws-alert-panel .ws-alert-save{
+  width:100%;
+  font-size:12px;
+  padding:6px 0;
+}
+
+/* Empty watchlist state */
+.ws-empty{
+  text-align:center;
+  color:var(--text-dim);
+  font-size:13.5px;
+  padding:48px 20px;
+  border:1px dashed var(--border);
+  border-radius:var(--radius);
+  background:var(--bg-elev);
+}
+
+/* New project modal */
+.ws-modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(4,6,10,.6);
+  backdrop-filter:blur(2px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+}
+.ws-modal{
+  width:320px;
+  background:var(--bg-elev-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+.ws-modal h3{
+  margin:0 0 12px;
+  font-size:15px;
+  color:var(--text);
+}
+.ws-modal-input{
+  width:100%;
+  background:var(--bg-card);
+  border:1px solid var(--border-soft);
+  color:var(--text);
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:13px;
+  margin-bottom:14px;
+}
+.ws-modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
+
+/* Toasts */
+.ws-toast-container{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  z-index:200;
+}
+.ws-toast{
+  background:var(--bg-elev-2);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-left:3px solid var(--accent);
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:12.5px;
+  box-shadow:var(--shadow);
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .25s ease, transform .25s ease;
+  max-width:280px;
+}
+.ws-toast.ws-toast-alert{ border-left-color:var(--rising); }
+.ws-toast.ws-toast-show{ opacity:1; transform:translateY(0); }
+
+@media (max-width: 720px){
+  .ws-column{ flex-basis:240px; }
+}
 </style>
 </head>
 <body>
@@ -370,6 +1330,9 @@ select.filter-select{
       <div class="nav-item" data-view="ideas"><span class="ic">💡</span> Startup Ideas <span class="count" id="navCountIdeas">–</span></div>
       <div class="nav-item" data-view="watchlist"><span class="ic">★</span> Watchlist <span class="count" id="navCountWatch">0</span></div>
       <div class="nav-item" data-view="painpoints"><span class="ic">🩹</span> Pain Points <span class="count" id="navCountPains">–</span></div>
+      <div class="nav-item" data-view="products"><span class="ic">🛍️</span> Products</div>
+      <div class="nav-item" data-view="startups"><span class="ic">🚀</span> Startups</div>
+      <div class="nav-item" data-view="meta"><span class="ic">🧭</span> Meta Trends</div>
       <div class="nav-item" data-view="tools"><span class="ic">🛠</span> Tools</div>
       <div class="nav-label">Markets</div>
       <div class="nav-item" data-quick-country="IN"><span class="ic">🇮🇳</span> India</div>
@@ -416,7 +1379,7 @@ select.filter-select{
 
       <!-- TRENDS -->
       <section class="view" id="view-trends">
-        <div class="filter-bar">
+        <div class="filter-bar" id="discBar1">
           <div class="chip-group" id="growthFilter">
             <div class="chip active" data-growth="all">All</div>
             <div class="chip breakout" data-growth="breakout">🔥 Breakout</div>
@@ -429,7 +1392,10 @@ select.filter-select{
             <option value="FR">🇫🇷 France</option>
             <option value="BOTH">🌐 Both</option>
           </select>
-          <select class="filter-select" id="categoryFilter"><option value="all">All categories</option></select>
+          <div class="disc-cat-wrap">
+            <select class="filter-select" id="categoryFilter"><option value="all">All categories</option></select>
+          </div>
+          <span class="disc-cat-count" id="discCatCount"></span>
           <select class="filter-select" id="sourceTypeFilter">
             <option value="all">All sources</option>
             <option value="research">🔬 Research-backed</option>
@@ -442,6 +1408,56 @@ select.filter-select{
           </select>
           <div class="result-count" id="trendResultCount"></div>
         </div>
+
+        <div class="filter-bar" id="discBar2">
+          <div class="disc-tf-group" title="Antenna tracks 8 snapshots per trend covering its full observed history — not daily data. These toggles re-window which of those 8 points are shown; shorter windows zoom into the most recent snapshots, they don't reveal new granularity we don't have.">
+            <span class="disc-tf-label">Window</span>
+            <div class="chip-group" id="timeframeFilter">
+              <div class="chip" data-tf="1M">1M</div>
+              <div class="chip" data-tf="3M">3M</div>
+              <div class="chip" data-tf="6M">6M</div>
+              <div class="chip" data-tf="1Y">1Y</div>
+              <div class="chip" data-tf="2Y">2Y</div>
+              <div class="chip active" data-tf="5Y">5Y</div>
+            </div>
+            <span class="disc-info" tabindex="0" title="Resolution is limited by tracked history: each trend stores 8 real snapshots total. Timeframe toggles resample/relabel that same 8-point series — they never fabricate extra data points.">ⓘ</span>
+          </div>
+          <div class="chip-group" id="growthStatusFilter" title="Computed from real growth flag + real series data, not a stored label.">
+            <div class="chip active" data-gs="all">All status</div>
+            <div class="chip" data-gs="exploding">🚀 Exploding</div>
+            <div class="chip" data-gs="regular">● Regular</div>
+            <div class="chip" data-gs="peaked">📉 Peaked</div>
+          </div>
+        </div>
+
+        <div class="filter-bar" id="discBar3">
+          <span class="disc-adv-label">Signals</span>
+          <div class="chip-group" id="speedFilter" title="Derived from the shape of the real tracked series (accelerating vs. linear vs. flat).">
+            <div class="chip active" data-speed="all">Speed: All</div>
+            <div class="chip" data-speed="exponential">Exponential</div>
+            <div class="chip" data-speed="constant">Constant</div>
+            <div class="chip" data-speed="stationary">Stationary</div>
+          </div>
+          <div class="chip-group" id="volatilityFilter" title="Derived from the standard deviation of point-to-point change in the real tracked series.">
+            <div class="chip active" data-vol="all">Volatility: All</div>
+            <div class="chip" data-vol="high">High</div>
+            <div class="chip" data-vol="medium">Medium</div>
+            <div class="chip" data-vol="low">Low</div>
+          </div>
+          <div class="chip-group" id="seasonalityFilter" title="~ Estimated: a coarse category-based heuristic, not measured seasonal search data.">
+            <div class="chip active" data-season="all">Seasonality: All</div>
+            <div class="chip" data-season="high">~High</div>
+            <div class="chip" data-season="medium">~Medium</div>
+            <div class="chip" data-season="low">~Low</div>
+          </div>
+          <div class="chip-group" id="sentimentFilter" title="~ Estimated: a small keyword lexicon run against the AI-written blurb, not measured audience sentiment.">
+            <div class="chip active" data-sent="all">Sentiment: All</div>
+            <div class="chip" data-sent="positive">~Positive</div>
+            <div class="chip" data-sent="neutral">~Neutral</div>
+            <div class="chip" data-sent="negative">~Negative</div>
+          </div>
+        </div>
+
         <div class="trend-grid" id="trendGrid"></div>
       </section>
 
@@ -458,9 +1474,52 @@ select.filter-select{
         <div class="idea-grid" id="ideaGrid"></div>
       </section>
 
-      <!-- WATCHLIST -->
+      <!-- WATCHLIST / WORKSPACE -->
       <section class="view" id="view-watchlist">
-        <div class="trend-grid" id="watchGrid"></div>
+        <p class="ws-subtitle">Organize watchlisted trends, products and startups into projects, set alert thresholds, and export whatever you're looking at.</p>
+
+        <div class="ws-toolbar">
+          <div class="ws-toolbar-left">
+            <button class="btn primary" id="wsNewProjectBtn" type="button">+ New Project</button>
+            <div class="chip-group ws-kind-filter">
+              <div class="chip active" data-ws-kind="all">All</div>
+              <div class="chip" data-ws-kind="trend">Trends</div>
+              <div class="chip" data-ws-kind="product">Products</div>
+              <div class="chip" data-ws-kind="startup">Startups</div>
+            </div>
+            <span class="result-count" id="wsResultCount"></span>
+          </div>
+          <div class="ws-toolbar-right">
+            <div class="ws-export-menu-wrap">
+              <button class="btn" id="wsExportBtn" type="button">Export &#9662;</button>
+              <div class="ws-export-menu" id="wsExportMenu">
+                <div class="ws-export-option" data-format="csv">Export CSV</div>
+                <div class="ws-export-option" data-format="json">Export JSON</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ws-alerts-bar" id="wsAlertsBar" style="display:none"></div>
+
+        <div class="ws-board" id="wsBoard"></div>
+
+        <div class="ws-empty" id="wsEmptyState" style="display:none">
+          Your watchlist is empty. Star trends, products, or startups elsewhere in Antenna to see them here.
+        </div>
+
+        <div class="ws-modal-overlay" id="wsModalOverlay" style="display:none">
+          <div class="ws-modal">
+            <h3>New Project</h3>
+            <input type="text" class="ws-modal-input" id="wsProjectNameInput" placeholder="Project name" maxlength="60" autocomplete="off" />
+            <div class="ws-modal-actions">
+              <button class="btn" id="wsModalCancel" type="button">Cancel</button>
+              <button class="btn primary" id="wsModalCreate" type="button">Create</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ws-toast-container" id="wsToastContainer"></div>
       </section>
 
       <!-- PAIN POINTS -->
@@ -469,6 +1528,81 @@ select.filter-select{
           <span class="result-count" id="painResultCount"></span>
         </div>
         <div class="pain-grid" id="painGrid"></div>
+      </section>
+
+      <!-- PRODUCTS -->
+      <section class="view" id="view-products">
+        <div class="prod-disclosure">
+          <strong>Heads up:</strong> Price ranges, notable brands, and demand signal below are <strong>AI-estimated</strong> approximations generated from general product/category pattern-matching — not measured sales, POS, or marketplace data. Treat every number here as a directional estimate, not a verified figure.
+        </div>
+
+        <div class="filter-bar prod-filter-bar">
+          <div class="chip-group prod-demand-chips">
+            <div class="chip active" data-demand="all">All Demand</div>
+            <div class="chip high" data-demand="high">High</div>
+            <div class="chip medium" data-demand="medium">Medium</div>
+            <div class="chip low" data-demand="low">Low</div>
+          </div>
+          <select class="filter-select" id="prodCategoryFilter">
+            <option value="all">All Categories</option>
+          </select>
+          <select class="filter-select" id="prodCountryFilter">
+            <option value="all">All Countries</option>
+            <option value="IN">India</option>
+            <option value="FR">France</option>
+            <option value="BOTH">India &amp; France</option>
+          </select>
+          <div class="result-count" id="prodResultCount"></div>
+        </div>
+
+        <div class="prod-grid" id="prodGrid"></div>
+      </section>
+
+      <div class="prod-modal-overlay" id="prodModalOverlay">
+        <div class="prod-modal" id="prodModal"></div>
+      </div>
+
+      <!-- STARTUPS -->
+      <section class="view" id="view-startups">
+        <div class="startup-caption">
+          <strong>Real, freshly-launched products from Product Hunt.</strong>
+          Funding &amp; headcount data isn't available without a paid data source, so we don't show invented numbers here — every card links straight to the real launch.
+        </div>
+
+        <div class="startup-toolbar">
+          <div class="chip-group" id="startupCategoryChips">
+            <div class="chip active" data-startup-category="all">All</div>
+          </div>
+          <select class="filter-select" id="startupCategorySelect">
+            <option value="all">More categories…</option>
+          </select>
+          <button type="button" class="startup-export-btn" id="startupExportBtn" title="Export the currently filtered list as CSV">Export CSV</button>
+          <div class="result-count" id="startupResultCount"></div>
+        </div>
+
+        <div class="startup-grid" id="startupGrid">
+          <div class="startup-empty">Loading fresh launches…</div>
+        </div>
+      </section>
+
+      <!-- META TRENDS -->
+      <section class="view" id="view-meta">
+        <div class="meta-intro">
+          <p class="meta-tagline">These macro-clusters are computed automatically, in your browser, from the trends Antenna already tracks — trends are grouped by category, then clustered by keywords shared across 3+ trend names/descriptions in that category. This is a live aggregation, not a hand-curated editorial list.</p>
+        </div>
+        <div class="filter-bar meta-filterbar">
+          <select class="filter-select" id="metaCategoryFilter">
+            <option value="all">All categories</option>
+          </select>
+          <div class="chip-group" id="metaSizeChips">
+            <div class="chip active" data-minsize="3">3+ trends</div>
+            <div class="chip" data-minsize="4">4+ trends</div>
+            <div class="chip" data-minsize="5">5+ trends</div>
+          </div>
+          <span class="result-count" id="metaResultCount"></span>
+        </div>
+        <div class="meta-grid" id="metaGrid"></div>
+        <div class="meta-empty" id="metaEmpty" style="display:none">No macro-clusters found with the current filters yet.</div>
       </section>
 
       <!-- TOOLS / SEO -->
@@ -515,7 +1649,7 @@ select.filter-select{
 
 <!-- Trend detail modal -->
 <div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
+  <div class="modal tdd-modal">
     <div class="modal-head">
       <div>
         <h2 id="modalName">—</h2>
@@ -524,11 +1658,39 @@ select.filter-select{
       <button class="modal-close" id="modalClose">✕</button>
     </div>
     <div class="modal-body">
-      <p class="blurb" id="modalBlurb"></p>
-      <div class="modal-chart-wrap"><canvas id="modalChart"></canvas></div>
-      <div id="modalChannels"></div>
-      <div id="modalInsights"></div>
-      <div id="modalRelated"></div>
+      <div class="tdd-grid">
+        <div class="tdd-main">
+
+          <!-- 12-Month AI Forecast gauge/badge -->
+          <div class="tdd-forecast-row" id="modalForecast"></div>
+
+          <!-- Historical signal chart (real 8-point series) -->
+          <div class="modal-chart-wrap">
+            <div class="tdd-section-lbl">Historical trend signal</div>
+            <canvas id="modalChart"></canvas>
+            <div class="ai-note" id="modalChartNote"></div>
+          </div>
+
+          <!-- Key Indicators Matrix (Speed / Volatility / Seasonality / Sentiment) -->
+          <div id="modalIndicators"></div>
+
+          <!-- Channel breakdown (social-sourced only) -->
+          <div id="modalChannels"></div>
+
+          <!-- Editorial "why it's trending" -->
+          <div class="tdd-editorial">
+            <div class="tdd-section-lbl">Why it's trending</div>
+            <p class="blurb" id="modalBlurb"></p>
+            <div class="tdd-byline" id="modalByline"></div>
+          </div>
+
+          <!-- SEO / content insights (existing feature, untouched) -->
+          <div id="modalInsights"></div>
+        </div>
+
+        <aside class="tdd-sidebar" id="modalRelated"></aside>
+      </div>
+
       <div class="modal-actions">
         <button class="btn" id="modalWatchBtn">☆ Add to watchlist</button>
         <a class="btn primary" id="modalSourceBtn" href="#" target="_blank" rel="noopener">↗ View source</a>
@@ -636,7 +1798,7 @@ function renderAll(){
   safeRender('topBreakout', renderTopBreakout);
   safeRender('trendGrid', renderTrendGrid);
   safeRender('ideaGrid', renderIdeaGrid);
-  safeRender('watchlist', renderWatchlist);
+  safeRender('watchlist', ()=>{ if(typeof wsRenderBoard==='function') wsRenderBoard(); if(typeof wsCheckAlerts==='function') wsCheckAlerts(true); });
   safeRender('painPoints', renderPainPoints);
 }
 
@@ -708,7 +1870,7 @@ function sparkline(canvas, series, color){
 function growthColor(g){ return g==='breakout'?'#ff6b5e':g==='rising'?'#ffb648':'#5ea1ff'; }
 
 function trendCardHtml(t, scope){
-  const saved = watchlist.includes(t.id);
+  const saved = wlHas(t.id, 'trend');
   return `
   <div class="trend-card" data-id="${t.id}">
     <div class="tc-top">
@@ -785,23 +1947,29 @@ function bindCardEvents(scope){
   });
 }
 
-function toggleWatch(id){
-  const i = watchlist.indexOf(id);
-  if(i>-1){ watchlist.splice(i,1); toast('Removed from watchlist'); }
-  else { watchlist.push(id); toast('Added to watchlist'); }
+// Tolerant of both the legacy bare-id watchlist shape and the newer {id,kind} object
+// shape used by the Workspace subsystem (see wsNormalizeWatchlist), so this keeps
+// working correctly whether or not that migration has run yet on this page load.
+function wlHas(id, kind){
+  kind = kind || 'trend';
+  return watchlist.some(e => (e && typeof e === 'object')
+    ? (String(e.id) === String(id) && (e.kind || 'trend') === kind)
+    : (String(e) === String(id) && kind === 'trend'));
+}
+
+function toggleWatch(id, kind){
+  kind = kind || 'trend';
+  const idx = watchlist.findIndex(e => (e && typeof e === 'object')
+    ? (String(e.id) === String(id) && (e.kind || 'trend') === kind)
+    : (String(e) === String(id) && kind === 'trend'));
+  if(idx>-1){ watchlist.splice(idx,1); toast('Removed from watchlist'); }
+  else { watchlist.push({id, kind}); toast('Added to watchlist'); }
   localStorage.setItem('antenna_watchlist', JSON.stringify(watchlist));
   renderNavCounts();
   renderTrendGrid();
   renderTopBreakout();
-  renderWatchlist();
-}
-
-function renderWatchlist(){
-  const list = trends.filter(t=>watchlist.includes(t.id));
-  const el = document.getElementById('watchGrid');
-  el.innerHTML = list.length ? list.map(t=>trendCardHtml(t,'watch')).join('') : `<div class="empty-state" style="grid-column:1/-1;"><div class="ic">★</div><h3>Your watchlist is empty</h3><p>Star any trend from the feed to track it here. Saved locally in your browser.</p></div>`;
-  bindCardEvents(el);
-  mountSparklines('watch', list);
+  if(typeof wsRenderBoard === 'function') wsRenderBoard();
+  if(typeof wsCheckAlerts === 'function') wsCheckAlerts(true);
 }
 
 /* ---------------- pain points ---------------- */
@@ -1010,7 +2178,7 @@ function openModal(id){
     <span class="cat-pill">${escapeHtml(t.category||'')}</span>
     <span class="src-pill src-${t.sourceType||'research'}">${t.sourceType==='social' ? '📡 Social-backed' : '🔬 Research-backed'}</span>`;
   document.getElementById('modalBlurb').textContent = t.blurb || '';
-  const saved = watchlist.includes(t.id);
+  const saved = wlHas(t.id, 'trend');
   const wb = document.getElementById('modalWatchBtn');
   wb.textContent = saved ? '★ Saved to watchlist' : '☆ Add to watchlist';
   const srcBtn = document.getElementById('modalSourceBtn');
@@ -1097,7 +2265,7 @@ function renderModalRelated(t){
 function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); destroyChart('modal'); modalTrendId=null; }
 document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('modalOverlay').addEventListener('click', e=>{ if(e.target.id==='modalOverlay') closeModal(); });
-document.getElementById('modalWatchBtn').addEventListener('click', ()=>{ if(modalTrendId!=null){ toggleWatch(modalTrendId); const saved=watchlist.includes(modalTrendId); document.getElementById('modalWatchBtn').textContent = saved?'★ Saved to watchlist':'☆ Add to watchlist'; } });
+document.getElementById('modalWatchBtn').addEventListener('click', ()=>{ if(modalTrendId!=null){ toggleWatch(modalTrendId,'trend'); const saved=wlHas(modalTrendId,'trend'); document.getElementById('modalWatchBtn').textContent = saved?'★ Saved to watchlist':'☆ Add to watchlist'; } });
 
 /* ---------------- nav & filters wiring ---------------- */
 document.querySelectorAll('.nav-item[data-view]').forEach(item=>{
@@ -1107,7 +2275,7 @@ document.querySelectorAll('.nav-item[data-view]').forEach(item=>{
     const view = item.dataset.view;
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById('view-'+view).classList.add('active');
-    const titles = { overview:['Overview','Everything tracked, at a glance'], trends:['Trends','Live feed across India & France'], ideas:['Startup Ideas','AI-generated, grounded in real trend data'], watchlist:['Watchlist','Trends you\'re personally tracking'], painpoints:['Pain Points','Real user pains & feature requests mined from app reviews'], tools:['Tools','Free-data keyword research — a Semrush-class alternative'] };
+    const titles = { overview:['Overview','Everything tracked, at a glance'], trends:['Trends','Live feed across India & France'], ideas:['Startup Ideas','AI-generated, grounded in real trend data'], watchlist:['Workspace','Projects, watchlist, alerts & export'], painpoints:['Pain Points','Real user pains & feature requests mined from app reviews'], products:['Trending Products','AI-estimated DTC & consumer product trends across India & France'], startups:['Trending Startups','Real, freshly-launched products sourced live from Product Hunt'], meta:['Meta Trends','Automatically clustered macro-trends — real tracked trends grouped by category and shared keywords, computed client-side'], tools:['Tools','Free-data keyword research — a Semrush-class alternative'] };
     document.getElementById('viewTitle').innerHTML = `${titles[view][0]}<span class="sub">${titles[view][1]}</span>`;
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('scrim').classList.remove('open');
@@ -1178,7 +2346,1748 @@ if(seoLibFilterEl){
   seoLibFilterEl.addEventListener('input', renderSeoLibrary);
 }
 
+
+/* ===== discovery subsystem ===== */
+/* ================= Discovery Dashboard & Filtering Engine (disc-) =================
+   IMPORTANT: append this block AFTER all existing script code (right before the
+   closing script tag, after the existing event-listener block). It intentionally
+   redeclares a few existing function names (applyTrendFilters, trendCardHtml,
+   mountSparklines, populateCategoryFilter) — in plain global-scope JS the later
+   `function foo(){...}` declaration wins, so this cleanly overrides/extends the
+   originals without needing a build step. It does NOT redeclare any existing
+   variables (trends, ideas, painPoints, watchlist, state, API_BASE, escapeHtml,
+   sparkline) — state is extended in place via Object.assign.
+*/
+
+/* ---- extend existing global state with new filter axes (no redeclare) ---- */
+Object.assign(state, {
+  timeframe: '5Y',
+  growthStatus: 'all',
+  speed: 'all',
+  volatility: 'all',
+  seasonality: 'all',
+  sentiment: 'all'
+});
+
+/* ---- label maps ---- */
+const DISC_GS_LABEL = { exploding:'🚀 Exploding', regular:'● Regular', peaked:'📉 Peaked' };
+const DISC_SPEED_LABEL = { exponential:'⚡ Exponential', constant:'– Constant', stationary:'▮ Stationary' };
+const DISC_VOL_LABEL = { high:'High volatility', medium:'Med volatility', low:'Low volatility' };
+const DISC_SEASON_LABEL = { high:'Seasonal: High', medium:'Seasonal: Med', low:'Seasonal: Low' };
+const DISC_SENT_LABEL = { positive:'Positive', neutral:'Neutral', negative:'Negative' };
+
+/* ---- timeframe -> how many of the 8 real tracked points to show (tail slice) ----
+   We only ever store 8 real snapshots per trend. These counts do NOT claim daily/
+   weekly granularity — they just re-window the same real points, honestly labeled
+   in the UI ("Showing N of 8 tracked snapshots"). */
+const DISC_TF_POINT_COUNT = { '1M':2, '3M':3, '6M':4, '1Y':5, '2Y':7, '5Y':8 };
+function discWindowSeries(series, tf){
+  if(!series || !series.length) return [];
+  const n = Math.min(DISC_TF_POINT_COUNT[tf] || series.length, series.length);
+  return n >= series.length ? series.slice() : series.slice(series.length - n);
+}
+
+/* ---- defensive series parser: handles the documented shape (plain array of
+   8 numbers) as well as a stringified/JSON-encoded series, without assuming
+   any specific pre-existing global helper (none is documented for this). ---- */
+function discParseSeries(s){
+  if(Array.isArray(s)) return s.map(Number).filter(n => !isNaN(n));
+  if(typeof s === 'string'){
+    try{
+      const parsed = JSON.parse(s);
+      if(Array.isArray(parsed)) return parsed.map(Number).filter(n => !isNaN(n));
+    }catch(e){ /* fall through to CSV-style parse */ }
+    return s.split(',').map(v => Number(v.trim())).filter(n => !isNaN(n));
+  }
+  return [];
+}
+
+/* ---- Growth Status: pure function of real growth + real series ----
+   Exploding = growth==="breakout"
+   Peaked    = last point has genuinely declined >15% from the series' own recorded max
+   Regular   = everything else */
+function discGrowthStatus(t, series){
+  series = series || discParseSeries(t.series);
+  if(t.growth === 'breakout') return 'exploding';
+  if(series.length){
+    const max = Math.max(...series);
+    const last = series[series.length - 1];
+    if(max > 0 && (max - last) / max > 0.15) return 'peaked';
+  }
+  return 'regular';
+}
+
+/* ---- Speed: shape of the real series curve (accelerating vs linear vs flat) ---- */
+function discSpeed(series){
+  if(!series || series.length < 3) return 'constant';
+  const deltas = [];
+  for(let i = 1; i < series.length; i++) deltas.push(series[i] - series[i-1]);
+  const avgAbsDelta = deltas.reduce((s,d)=>s+Math.abs(d), 0) / deltas.length;
+  const range = Math.max(...series) - Math.min(...series);
+  if(range < 8 || avgAbsDelta < 1.5) return 'stationary';
+  const mid = Math.floor(deltas.length / 2) || 1;
+  const firstAvg = deltas.slice(0, mid).reduce((s,d)=>s+d, 0) / mid;
+  const secondAvg = deltas.slice(mid).reduce((s,d)=>s+d, 0) / Math.max(deltas.length - mid, 1);
+  if(secondAvg > 0 && secondAvg > firstAvg * 1.4) return 'exponential';
+  return 'constant';
+}
+
+/* ---- Volatility: std-dev of deltas in the real series (0-100 scale) ---- */
+function discVolatility(series){
+  if(!series || series.length < 3) return 'low';
+  const deltas = [];
+  for(let i = 1; i < series.length; i++) deltas.push(series[i] - series[i-1]);
+  const mean = deltas.reduce((s,d)=>s+d, 0) / deltas.length;
+  const variance = deltas.reduce((s,d)=>s + Math.pow(d - mean, 2), 0) / deltas.length;
+  const std = Math.sqrt(variance);
+  if(std >= 14) return 'high';
+  if(std >= 6) return 'medium';
+  return 'low';
+}
+
+/* ---- Seasonality: coarse category-based heuristic — ESTIMATED, not measured ---- */
+const DISC_SEASONAL_HIGH_KW = ['fashion','apparel','gift','festival','holiday','travel','tourism','event','wedding','decor','food','beverage','fitness','sport','wellness','beauty','back to school','toy'];
+const DISC_SEASONAL_MED_KW = ['home','garden','outdoor','automotive','electronics','finance','health','education','pet'];
+function discSeasonality(category){
+  const c = (category || '').toLowerCase();
+  if(DISC_SEASONAL_HIGH_KW.some(k => c.includes(k))) return 'high';
+  if(DISC_SEASONAL_MED_KW.some(k => c.includes(k))) return 'medium';
+  return 'low';
+}
+
+/* ---- Sentiment: small keyword lexicon against the real AI-written blurb — ESTIMATED ---- */
+const DISC_SENT_POS_KW = ['surge','soar','boom','breakthrough','love','win','opportunity','growth','thriving','popular','excit','innovat','success','strong','accelerat','momentum','demand','game-chang','loved'];
+const DISC_SENT_NEG_KW = ['declin','concern','risk','struggl','backlash','criticiz','fear','slowdown','saturat','crackdown','ban ','banned','lawsuit','controvers','fatigue','crash','collapse','warn','complaint','frustrat'];
+function discSentiment(blurb){
+  const b = (blurb || '').toLowerCase();
+  let score = 0;
+  DISC_SENT_POS_KW.forEach(k => { if(b.includes(k)) score++; });
+  DISC_SENT_NEG_KW.forEach(k => { if(b.includes(k)) score--; });
+  if(score > 0) return 'positive';
+  if(score < 0) return 'negative';
+  return 'neutral';
+}
+
+/* ---- override: category filter population + live category count ---- */
+function populateCategoryFilter(){
+  const cats = [...new Set(trends.map(t => t.category).filter(Boolean))].sort();
+  const sel = document.getElementById('categoryFilter');
+  sel.innerHTML = '<option value="all">All categories</option>' + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  const countEl = document.getElementById('discCatCount');
+  if(countEl) countEl.textContent = cats.length ? `${cats.length} categories` : '';
+}
+
+/* ---- override: trend filtering, adds the four new filter axes ---- */
+function applyTrendFilters(){
+  let list = [...trends];
+  if(state.growth !== 'all') list = list.filter(t => t.growth === state.growth);
+  if(state.country !== 'all') list = list.filter(t => t.country === state.country);
+  if(state.category !== 'all') list = list.filter(t => t.category === state.category);
+  if(state.sourceType !== 'all') list = list.filter(t => (t.sourceType || 'research') === state.sourceType);
+  if(state.growthStatus && state.growthStatus !== 'all') list = list.filter(t => discGrowthStatus(t) === state.growthStatus);
+  if(state.speed && state.speed !== 'all') list = list.filter(t => discSpeed(discParseSeries(t.series)) === state.speed);
+  if(state.volatility && state.volatility !== 'all') list = list.filter(t => discVolatility(discParseSeries(t.series)) === state.volatility);
+  if(state.seasonality && state.seasonality !== 'all') list = list.filter(t => discSeasonality(t.category) === state.seasonality);
+  if(state.sentiment && state.sentiment !== 'all') list = list.filter(t => discSentiment(t.blurb) === state.sentiment);
+  if(state.search){
+    const q = state.search.toLowerCase();
+    list = list.filter(t => (t.name || '').toLowerCase().includes(q) || (t.category || '').toLowerCase().includes(q) || (t.blurb || '').toLowerCase().includes(q));
+  }
+  const order = { breakout:0, rising:1, steady:2 };
+  if(state.sort === 'growth') list.sort((a,b) => (order[a.growth] ?? 9) - (order[b.growth] ?? 9));
+  else if(state.sort === 'name') list.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+  else if(state.sort === 'recent') list.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  return list;
+}
+
+/* ---- override: trend-card markup, adds signal pills + honest timeframe caption ---- */
+function trendCardHtml(t, scope){
+  const saved = wlHas(t.id, 'trend');
+  const series = discParseSeries(t.series);
+  const gs = discGrowthStatus(t, series);
+  const speed = discSpeed(series);
+  const vol = discVolatility(series);
+  const season = discSeasonality(t.category);
+  const sent = discSentiment(t.blurb);
+  const tf = state.timeframe || '5Y';
+  const shownCount = discWindowSeries(series, tf).length;
+  return `
+  <div class="trend-card" data-id="${t.id}">
+    <div class="tc-top">
+      <div>
+        <div class="tc-name">${escapeHtml(t.name)}</div>
+        <div class="tc-meta">
+          <span class="flag">${COUNTRY_FLAG[t.country]||'🌐'}</span>
+          <span class="badge ${t.growth}">${GROWTH_ICON[t.growth]||''} ${escapeHtml(t.growth||'')}</span>
+          <span class="cat-pill">${escapeHtml(t.category||'')}</span>
+          <span class="src-pill src-${t.sourceType||'research'}">${t.sourceType==='social' ? '📡 Social' : '🔬 Research'}</span>
+        </div>
+      </div>
+      <button class="star-btn ${saved?'saved':''}" data-star="${t.id}" title="Toggle watchlist">${saved?'★':'☆'}</button>
+    </div>
+    <div class="tc-blurb">${escapeHtml(t.blurb||'')}</div>
+    <div class="disc-pill-row">
+      <span class="disc-pill disc-gs-${gs}" title="Growth status — derived from observed trend signal (breakout flag, or decline from the series' own recorded peak).">${DISC_GS_LABEL[gs]}</span>
+      <span class="disc-pill disc-speed-${speed}" title="Speed — derived from observed trend signal (shape of the tracked growth curve: accelerating, linear, or flat).">${DISC_SPEED_LABEL[speed]}</span>
+      <span class="disc-pill disc-vol-${vol}" title="Volatility — derived from observed trend signal (standard deviation of point-to-point change in the tracked series).">${DISC_VOL_LABEL[vol]}</span>
+      <span class="disc-pill disc-season-${season}" title="~ Estimated: a coarse category-based heuristic, not measured seasonal search data.">~${DISC_SEASON_LABEL[season]}</span>
+      <span class="disc-pill disc-sent-${sent}" title="~ Estimated: a small keyword lexicon run against the AI-written blurb, not measured audience sentiment.">~${DISC_SENT_LABEL[sent]}</span>
+    </div>
+    <div class="tc-spark"><canvas id="spark-${scope}-${t.id}"></canvas></div>
+    <div class="tc-spark-note" title="Antenna stores 8 real snapshots per trend covering its full tracked history — the ${tf} window re-slices those same points, it does not add daily/weekly granularity we don't have.">Showing ${shownCount} of ${series.length} tracked snapshots · ${tf} window</div>
+    <div class="tc-foot"><span class="src">${escapeHtml(t.source||'')}</span><span>${fmtDate(t.updatedAt)}</span></div>
+  </div>`;
+}
+
+/* ---- override: sparkline mounting, resamples to the active timeframe window ---- */
+function mountSparklines(scopeId, list){
+  if(typeof Chart === 'undefined') return;
+  list.forEach(t => {
+    const el = document.getElementById(`spark-${scopeId}-${t.id}`);
+    if(!el) return;
+    const key = scopeId + '-spark-' + t.id;
+    try{
+      destroyChart(key);
+      const full = discParseSeries(t.series);
+      const windowed = discWindowSeries(full, state.timeframe || '5Y');
+      charts[key] = sparkline(el, windowed, growthColor(t.growth));
+    }catch(e){ console.error('sparkline failed for', t.id, e); }
+  });
+}
+
+/* ---- new chip-group filter wiring (same interaction pattern as #growthFilter) ---- */
+function discBindChipGroup(groupId, dataAttr, stateKey, onChange){
+  const el = document.getElementById(groupId);
+  if(!el) return;
+  el.addEventListener('click', e => {
+    const chip = e.target.closest('.chip');
+    if(!chip) return;
+    el.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    state[stateKey] = chip.dataset[dataAttr];
+    (onChange || renderTrendGrid)();
+  });
+}
+discBindChipGroup('timeframeFilter', 'tf', 'timeframe');
+discBindChipGroup('growthStatusFilter', 'gs', 'growthStatus');
+discBindChipGroup('speedFilter', 'speed', 'speed');
+discBindChipGroup('volatilityFilter', 'vol', 'volatility');
+discBindChipGroup('seasonalityFilter', 'season', 'seasonality');
+discBindChipGroup('sentimentFilter', 'sent', 'sentiment');
+
+/* Re-render once now in case data already loaded before this block executed
+   (harmless no-op if trends is still empty — loadData()'s renderAll() will
+   call renderTrendGrid() again once real data arrives). */
+if(typeof trends !== 'undefined' && trends.length) renderTrendGrid();
+
+/* ===== deepdive subsystem ===== */
+/* ================= Trend Deep-Dive (tdd-) ================= */
+/*
+  INTEGRATION NOTE: openModal(), renderModalChannels() and renderModalRelated()
+  are REDEFINED here (they already exist in the base file's modal section) —
+  place this block AFTER the existing modal script so these definitions win.
+  modalTrendId, charts, destroyChart, parseSeries, growthColor, escapeHtml,
+  COUNTRY_FLAG, GROWTH_ICON, trendChannels, trends, watchlist are all reused
+  from the existing global scope, not redeclared.
+*/
+
+/* Safely call a global metric function (e.g. computeSpeed) without
+   reimplementing it — returns null if the function isn't loaded yet so this
+   subsystem never crashes if it's spliced in before the discovery subsystem. */
+function tddSafeMetric(fnName, t){
+  try{
+    if(typeof window[fnName] === 'function'){
+      const v = window[fnName](t);
+      return (v===undefined || v===null || v==='') ? null : v;
+    }
+  }catch(e){ console.error(fnName + ' failed', e); }
+  return null;
+}
+function tddFmtMetric(v){
+  if(v===null) return '—';
+  if(typeof v === 'number') return Number.isInteger(v) ? String(v) : v.toFixed(1);
+  return escapeHtml(String(v));
+}
+
+/* Deterministic 12-month forecast: ordinary least-squares slope of the
+   recent portion of the REAL stored series (not random, no external data). */
+function computeForecast(t){
+  const series = parseSeries(t.series);
+  if(!series || series.length < 2){
+    return { label:'Insufficient data', cls:'stationary', icon:'●', slope:0, insufficient:true };
+  }
+  const n = Math.min(4, series.length); // "recent" slope, per spec
+  const recent = series.slice(-n);
+  const xs = recent.map((_,i)=>i);
+  const xMean = xs.reduce((a,b)=>a+b,0)/n;
+  const yMean = recent.reduce((a,b)=>a+b,0)/n;
+  let num=0, den=0;
+  for(let i=0;i<n;i++){ num += (xs[i]-xMean)*(recent[i]-yMean); den += (xs[i]-xMean)*(xs[i]-xMean); }
+  const slope = den ? num/den : 0;
+  const range = Math.max(...series) - Math.min(...series) || 1;
+  const normSlope = slope / range; // slope relative to the trend's own observed range
+  let label, cls, icon;
+  if(normSlope > 0.05){ label='Growing'; cls='growing'; icon='↗'; }
+  else if(normSlope < -0.05){ label='Declining'; cls='declining'; icon='↘'; }
+  else { label='Stationary'; cls='stationary'; icon='→'; }
+  return { label, cls, icon, slope, normSlope, insufficient:false };
+}
+
+function renderTddForecast(t){
+  const box = document.getElementById('modalForecast');
+  if(!box) return;
+  const f = computeForecast(t);
+  const sub = f.insufficient
+    ? 'Not enough tracked history points yet to estimate a trajectory.'
+    : `Recent trajectory ${f.slope>=0?'+':''}${f.slope.toFixed(2)} pts/period, from the stored signal. AI-estimated projection, not a guarantee.`;
+  box.innerHTML = `
+    <div class="tdd-forecast">
+      <div class="tdd-forecast-icon ${f.cls}">${f.icon}</div>
+      <div class="tdd-forecast-body">
+        <div class="tdd-forecast-title">12-Month AI Forecast: ${escapeHtml(f.label)}</div>
+        <div class="tdd-forecast-sub">${escapeHtml(sub)}</div>
+      </div>
+    </div>`;
+}
+
+/* Key Indicators Matrix — calls the discovery subsystem's compute*
+   functions, does not reimplement them. */
+function renderTddIndicators(t){
+  const box = document.getElementById('modalIndicators');
+  if(!box) return;
+  const metrics = [
+    { fn:'computeSpeed',       lbl:'Speed',       ic:'⚡' },
+    { fn:'computeVolatility',  lbl:'Volatility',  ic:'📊' },
+    { fn:'computeSeasonality', lbl:'Seasonality', ic:'🔁' },
+    { fn:'computeSentiment',   lbl:'Sentiment',   ic:'💬' }
+  ];
+  box.innerHTML = `
+    <div class="tdd-section-lbl">Key indicators matrix</div>
+    <div class="tdd-indicators">
+      ${metrics.map(m=>{
+        const val = tddSafeMetric(m.fn, t);
+        return `<div class="tdd-ind-card">
+          <div class="tdd-ind-lbl">${m.ic} ${m.lbl}</div>
+          <div class="tdd-ind-val">${tddFmtMetric(val)}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="ai-note" style="margin-top:8px;">✦ Derived from the observed trend signal (the stored history series) — not external market data.</div>`;
+}
+
+/* Channel breakdown — REDEFINES the existing renderModalChannels() to add a
+   real Chart.js bar chart, sourced only from antenna_trend_channels rows,
+   coded defensively for any platform name present (HN, dev.to, Product
+   Hunt, Reddit, etc.) — never fabricates LinkedIn/TikTok/YouTube/etc figures. */
+function renderModalChannels(t){
+  const box = document.getElementById('modalChannels');
+  if(!box) return;
+  destroyChart('modalChannel');
+
+  if(t.sourceType === 'social'){
+    const rows = trendChannels.filter(c => c.trendId === t.id);
+    if(rows.length){
+      box.innerHTML = `
+        <div class="tdd-section-lbl">Channel breakdown (real platform signal)</div>
+        <div class="modal-chart-wrap tdd-channel-wrap"><canvas id="modalChannelChart"></canvas></div>
+        <div class="ai-note" id="modalChannelNote" style="margin-top:8px;">✦ Measured directly from real posts found at generation time — not a live/continuously-updated count. Only platforms with a real free public API are shown here.</div>`;
+      try{
+        if(typeof Chart !== 'undefined'){
+          const ctx = document.getElementById('modalChannelChart');
+          charts.modalChannel = new Chart(ctx, {
+            type:'bar',
+            data:{
+              labels: rows.map(r => r.platform || 'Unknown'),
+              datasets:[
+                { label:'Mentions', data: rows.map(r => r.mentionCount || 0), backgroundColor:'#5ea1ff', borderRadius:5, maxBarThickness:34 },
+                { label:'Engagement score', data: rows.map(r => r.engagementScore || 0), backgroundColor:'#22d3a8', borderRadius:5, maxBarThickness:34 }
+              ]
+            },
+            options:{
+              plugins:{ legend:{ position:'bottom', labels:{ color:'#9aa4b8', font:{size:10.5}, boxWidth:9, padding:10 } } },
+              scales:{
+                x:{ grid:{display:false}, ticks:{ color:'#5f6c85', font:{size:10.5} } },
+                y:{ grid:{color:'#1b202c'}, ticks:{ color:'#5f6c85', font:{size:10}, precision:0 }, beginAtZero:true }
+              },
+              responsive:true, maintainAspectRatio:false
+            }
+          });
+        }
+      }catch(e){ console.error('channel chart failed', e); }
+
+      const topPost = rows.find(r => r.sampleTitle);
+      if(topPost){
+        const note = document.createElement('div');
+        note.className = 'ai-note';
+        note.style.marginTop = '6px';
+        note.textContent = `Sample post on ${topPost.platform}: "${topPost.sampleTitle}" · engagement score ${topPost.engagementScore || 0}`;
+        box.appendChild(note);
+      }
+    } else {
+      box.innerHTML = `
+        <div class="tdd-section-lbl">Channel breakdown</div>
+        <p style="font-size:12px; color:var(--text-dim);">This trend is marked social-sourced, but no per-platform rows have been captured for it yet.</p>`;
+    }
+  } else {
+    box.innerHTML = `
+      <div class="tdd-section-lbl">Channel breakdown</div>
+      <div class="empty-state" style="padding:26px 16px;">
+        <div class="ic">📊</div>
+        <p>Channel-level engagement isn't available for research-sourced trends yet — this trend is grounded in aggregate market signal, not per-platform mention counts.</p>
+      </div>`;
+  }
+}
+
+/* Related trends sidebar — REDEFINES the existing renderModalRelated() to
+   show 4-6 real trends sharing the same category from the already-loaded
+   global `trends` array (simple client-side filter, nothing fabricated). */
+function renderModalRelated(t){
+  const box = document.getElementById('modalRelated');
+  if(!box) return;
+  const related = trends.filter(x => x.id !== t.id && x.category === t.category).slice(0, 6);
+  if(!related.length){
+    box.innerHTML = `<div class="tdd-section-lbl">Related trends</div><p class="tdd-related-empty">No other tracked trends share this category yet.</p>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="tdd-section-lbl">Related in ${escapeHtml(t.category || 'this category')}</div>
+    <div class="tdd-related-list">
+      ${related.map(r => `
+        <div class="tdd-related-card" data-related-id="${r.id}">
+          <div class="tdd-related-top">
+            <span class="tdd-related-name">${escapeHtml(r.name)}</span>
+            <span class="badge ${r.growth}" style="padding:1.5px 6px;">${GROWTH_ICON[r.growth] || ''} ${escapeHtml(r.growth || '')}</span>
+          </div>
+          <div class="tdd-related-meta"><span>${COUNTRY_FLAG[r.country] || ''}</span><span>${escapeHtml(r.country || '')}</span></div>
+        </div>`).join('')}
+    </div>`;
+  box.querySelectorAll('.tdd-related-card').forEach(card=>{
+    card.addEventListener('click', () => openModal(Number(card.dataset.relatedId)));
+  });
+}
+
+/* openModal() — REDEFINES the existing lightweight version into the full
+   deep-dive report. Keeps every existing id/behavior (watchlist button,
+   source link, SEO insights block) and adds forecast + indicators + the
+   richer channel/related/editorial sections above. */
+function openModal(id){
+  const t = trends.find(x => x.id === id);
+  if(!t) return;
+  modalTrendId = id;
+
+  document.getElementById('modalName').textContent = t.name;
+  document.getElementById('modalMeta').innerHTML = `
+    <span class="flag">${COUNTRY_FLAG[t.country] || ''}</span>
+    <span class="badge ${t.growth}">${GROWTH_ICON[t.growth] || ''} ${escapeHtml(t.growth || '')}</span>
+    <span class="cat-pill">${escapeHtml(t.category || '')}</span>
+    <span class="src-pill src-${t.sourceType || 'research'}">${t.sourceType === 'social' ? '📡 Social-backed' : '🔬 Research-backed'}</span>`;
+
+  document.getElementById('modalBlurb').textContent = t.blurb || 'No qualitative write-up captured for this trend yet.';
+  const bylineEl = document.getElementById('modalByline');
+  if(bylineEl) bylineEl.textContent = t.source ? `Source: ${t.source}` : '';
+
+  const saved = wlHas(t.id, 'trend');
+  const wb = document.getElementById('modalWatchBtn');
+  wb.textContent = saved ? '★ Saved to watchlist' : '☆ Add to watchlist';
+  const srcBtn = document.getElementById('modalSourceBtn');
+  if(t.sourceUrl){ srcBtn.href = t.sourceUrl; srcBtn.style.display = 'inline-flex'; } else { srcBtn.style.display = 'none'; }
+
+  const series = parseSeries(t.series);
+  try{
+    if(typeof Chart !== 'undefined'){
+      destroyChart('modal');
+      const ctx = document.getElementById('modalChart');
+      charts.modal = new Chart(ctx, {
+        type:'line',
+        data:{
+          labels: series.map((_, i) => `T-${series.length - i}`),
+          datasets:[{
+            label:'Signal index', data: series,
+            borderColor: growthColor(t.growth), backgroundColor: growthColor(t.growth) + '22',
+            fill:true, tension:.35, pointRadius:3, pointBackgroundColor: growthColor(t.growth)
+          }]
+        },
+        options:{
+          plugins:{
+            legend:{ display:false },
+            tooltip:{ callbacks:{ label:(ctx2) => ` Signal: ${ctx2.parsed.y}` } }
+          },
+          scales:{
+            x:{ grid:{display:false}, ticks:{ color:'#5f6c85', font:{size:10} } },
+            y:{ grid:{color:'#1b202c'}, ticks:{ color:'#5f6c85', font:{size:10} } }
+          },
+          responsive:true, maintainAspectRatio:false
+        }
+      });
+    }
+  }catch(e){ console.error('modal chart failed', e); }
+
+  const noteEl = document.getElementById('modalChartNote');
+  if(noteEl){
+    noteEl.textContent = `✦ ${series.length} tracked data points shown — chart resolution reflects how much history has been recorded for this trend so far and will get more granular over time.`;
+  }
+
+  renderTddForecast(t);
+  renderTddIndicators(t);
+  renderModalChannels(t);
+
+  const hasInsights = (t.seoKeywords && t.seoKeywords.length) || (t.contentAngles && t.contentAngles.length) || t.whyNow || t.forecastNote;
+  const insightsBox = document.getElementById('modalInsights');
+  if(hasInsights){
+    insightsBox.innerHTML = `
+      <div class="insight-grid">
+        ${t.seoKeywords && t.seoKeywords.length ? `<div class="insight-box"><div class="lbl">SEO keywords (AI-estimated)</div>${t.seoKeywords.map(k=>`<span class="kw-pill">${escapeHtml(k.keyword)} <span class="diff diff-${(k.difficulty||'medium').toLowerCase()}">${escapeHtml(k.difficulty||'')}</span></span>`).join('')}</div>` : ''}
+        ${t.contentAngles && t.contentAngles.length ? `<div class="insight-box"><div class="lbl">Content angles</div><ul style="padding-left:16px; font-size:12px; color:var(--text-dim); line-height:1.6;">${t.contentAngles.map(a=>`<li>${escapeHtml(a)}</li>`).join('')}</ul></div>` : ''}
+      </div>
+      ${t.whyNow ? `<div class="insight-box"><div class="lbl">Why now</div><p style="font-size:12px; color:var(--text-dim); line-height:1.6;">${escapeHtml(t.whyNow)}</p></div>` : ''}
+      ${t.forecastNote ? `<div class="insight-box"><div class="lbl">Forecast note</div><p style="font-size:12px; color:var(--text-dim); line-height:1.6;">${escapeHtml(t.forecastNote)}</p></div>` : ''}
+      <div class="ai-note">✦ SEO/content insights are AI-generated estimates, not measured search-volume data.</div>`;
+  } else {
+    insightsBox.innerHTML = '';
+  }
+
+  renderModalRelated(t);
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+/* ===== integration bridge: deepdive's Key Indicators Matrix expects
+   computeSpeed/computeVolatility/computeSeasonality/computeSentiment(trend) ===== */
+function computeSpeed(t){ const v = discSpeed(discParseSeries(t.series)); return DISC_SPEED_LABEL[v] || v; }
+function computeVolatility(t){ const v = discVolatility(discParseSeries(t.series)); return DISC_VOL_LABEL[v] || v; }
+function computeSeasonality(t){ const v = discSeasonality(t.category); return '~' + (DISC_SEASON_LABEL[v] || v); }
+function computeSentiment(t){ const v = discSentiment(t.blurb); return '~' + (DISC_SENT_LABEL[v] || v); }
+
+
+/* ===== products subsystem ===== */
+/* viewTitleEntry (insert into the `titles` object literal in the nav dispatcher):
+   products:['Trending Products','AI-estimated DTC & consumer product trends across India & France']
+*/
+let products = [];
+let prodState = { demand: 'all', category: 'all', country: 'all' };
+
+async function loadProducts() {
+  try {
+    const res = await fetch(`${API_BASE}/products`);
+    const data = await res.json();
+    products = Array.isArray(data) ? data : (data && Array.isArray(data.products) ? data.products : []);
+  } catch (err) {
+    console.error('Antenna: failed to load products', err);
+    products = [];
+  }
+  populateProductCategoryFilter();
+  renderProducts();
+}
+
+function populateProductCategoryFilter() {
+  const sel = document.getElementById('prodCategoryFilter');
+  if (!sel) return;
+  const current = sel.value;
+  const cats = Array.from(new Set(products.map(p => p.category).filter(Boolean))).sort();
+  sel.innerHTML = '<option value="all">All Categories</option>' +
+    cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  sel.value = cats.includes(current) ? current : 'all';
+}
+
+function filteredProducts() {
+  return products.filter(p => {
+    if (prodState.demand !== 'all' && (p.demandSignal || '').toLowerCase() !== prodState.demand) return false;
+    if (prodState.category !== 'all' && p.category !== prodState.category) return false;
+    if (prodState.country !== 'all' && p.country !== prodState.country && p.country !== 'BOTH') return false;
+    return true;
+  });
+}
+
+function renderProducts() {
+  const grid = document.getElementById('prodGrid');
+  const countEl = document.getElementById('prodResultCount');
+  if (!grid) return;
+
+  const list = filteredProducts();
+  if (countEl) countEl.textContent = `${list.length} product${list.length === 1 ? '' : 's'}`;
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="prod-empty">No products match these filters yet.</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(p => {
+    const demand = (p.demandSignal || 'medium').toLowerCase();
+    const brandsPreview = (p.notableBrands || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 2).join(', ');
+    return `
+    <div class="prod-card" data-id="${escapeHtml(String(p.id))}" data-kind="product">
+      <div class="prod-card-top">
+        <div>
+          <div class="prod-card-title">${escapeHtml(p.name || '')}</div>
+          <div class="prod-card-cat">${escapeHtml(p.category || '')}</div>
+        </div>
+        <div class="prod-card-top-actions">
+          <span class="prod-badge ${escapeHtml(demand)}">${escapeHtml(demand)} demand</span>
+          <button class="star-btn prod-star-btn ${wlHas(p.id,'product')?'saved':''}" data-ws-star-id="${escapeHtml(String(p.id))}" data-ws-star-kind="product" title="Toggle watchlist" onclick="event.stopPropagation();">${wlHas(p.id,'product')?'★':'☆'}</button>
+        </div>
+      </div>
+      <div class="prod-blurb">${escapeHtml(p.blurb || '')}</div>
+      <div class="prod-metrics">
+        <div class="prod-metric">
+          <div class="prod-metric-label">Price range <span class="prod-ai-tag" title="AI-estimated approximation, not a measured price feed">AI-est.</span></div>
+          <div class="prod-metric-value">${escapeHtml(p.priceRangeLabel || '—')}</div>
+        </div>
+        <div class="prod-metric">
+          <div class="prod-metric-label">Country</div>
+          <div class="prod-metric-value">${escapeHtml(p.country || '—')}</div>
+        </div>
+      </div>
+      <div class="prod-card-footer">
+        <span class="prod-country-tag" title="${escapeHtml(p.notableBrands || '')}">${escapeHtml(brandsPreview || '—')}</span>
+        <a href="#" class="prod-view-link" data-id="${escapeHtml(String(p.id))}">View &rarr;</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openProductModal(id) {
+  const p = products.find(x => String(x.id) === String(id));
+  if (!p) return;
+  const overlay = document.getElementById('prodModalOverlay');
+  const modal = document.getElementById('prodModal');
+  if (!overlay || !modal) return;
+
+  const demand = (p.demandSignal || 'medium').toLowerCase();
+  modal.innerHTML = `
+    <button class="prod-modal-close" id="prodModalCloseBtn" aria-label="Close">&times;</button>
+    <h2>${escapeHtml(p.name || '')}</h2>
+    <div class="prod-modal-cat">${escapeHtml(p.category || '')} &middot; ${escapeHtml(p.country || '')}</div>
+    <p class="prod-modal-blurb">${escapeHtml(p.blurb || '')}</p>
+    <div class="prod-modal-metrics">
+      <div class="prod-modal-metric">
+        <div class="prod-modal-metric-label">Price range <span class="prod-ai-tag" title="AI-estimated approximation">AI-est.</span></div>
+        <div class="prod-modal-metric-value">${escapeHtml(p.priceRangeLabel || '—')}</div>
+      </div>
+      <div class="prod-modal-metric">
+        <div class="prod-modal-metric-label">Demand signal <span class="prod-ai-tag" title="AI-estimated approximation">AI-est.</span></div>
+        <div class="prod-modal-metric-value" style="text-transform:capitalize">${escapeHtml(demand)}</div>
+      </div>
+      <div class="prod-modal-metric" style="grid-column:1 / -1">
+        <div class="prod-modal-metric-label">Notable brands <span class="prod-ai-tag" title="AI-estimated approximation">AI-est.</span></div>
+        <div class="prod-modal-metric-value" style="font-size:13.5px;font-weight:600">${escapeHtml(p.notableBrands || '—')}</div>
+      </div>
+    </div>
+    <p class="prod-modal-note">Price range, notable brands, and demand signal are AI-generated approximations based on general pattern-matching against public product/category knowledge — not measured sales, search-volume, or marketplace data. Use as a directional starting point, not a verified figure.</p>
+    ${p.sourceUrl ? `<a class="prod-modal-source" href="${escapeHtml(p.sourceUrl)}" target="_blank" rel="noopener">View source &rarr;</a>` : ''}
+  `;
+  overlay.classList.add('active');
+  const closeBtn = document.getElementById('prodModalCloseBtn');
+  if (closeBtn) closeBtn.addEventListener('click', closeProductModal);
+}
+
+function closeProductModal() {
+  const overlay = document.getElementById('prodModalOverlay');
+  if (overlay) overlay.classList.remove('active');
+}
+
+document.addEventListener('click', function (e) {
+  const link = e.target.closest('.prod-view-link');
+  if (link) {
+    e.preventDefault();
+    openProductModal(link.getAttribute('data-id'));
+    return;
+  }
+
+  const card = e.target.closest('.prod-card');
+  if (card && !e.target.closest('a')) {
+    openProductModal(card.getAttribute('data-id'));
+    return;
+  }
+
+  const demandChip = e.target.closest('.prod-demand-chips .chip');
+  if (demandChip) {
+    document.querySelectorAll('.prod-demand-chips .chip').forEach(c => c.classList.remove('active'));
+    demandChip.classList.add('active');
+    prodState.demand = demandChip.getAttribute('data-demand');
+    renderProducts();
+    return;
+  }
+
+  if (e.target.id === 'prodModalOverlay') {
+    closeProductModal();
+  }
+});
+
+document.addEventListener('change', function (e) {
+  if (e.target.id === 'prodCategoryFilter') {
+    prodState.category = e.target.value;
+    renderProducts();
+  }
+  if (e.target.id === 'prodCountryFilter') {
+    prodState.country = e.target.value;
+    renderProducts();
+  }
+});
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeProductModal();
+});
+
+loadProducts();
+
+/* ===== startups subsystem ===== */
+/* ---- Startups Directory (subsystem: startups) ---- */
+let startups = [];
+let startupState = { category: 'all' };
+let startupsLoaded = false;
+let startupsLoading = false;
+
+function startupInitials(name){
+  if(!name) return '?';
+  const parts = String(name).trim().split(/\s+/).filter(Boolean);
+  if(!parts.length) return '?';
+  const letters = parts.length === 1 ? parts[0].slice(0,2) : (parts[0][0] + parts[1][0]);
+  return letters.toUpperCase();
+}
+
+function startupCountryLabel(country){
+  switch(String(country||'').toUpperCase()){
+    case 'IN': return '🇮🇳 India';
+    case 'FR': return '🇫🇷 France';
+    case 'BOTH': return '🇮🇳🇫🇷 IN + FR';
+    default: return escapeHtml(country || '');
+  }
+}
+
+function safeStartupUrl(url){
+  try{
+    const u = new URL(url, window.location.href);
+    if(u.protocol === 'http:' || u.protocol === 'https:') return u.href;
+  }catch(e){}
+  return '#';
+}
+
+function getStartupCategories(){
+  const counts = {};
+  startups.forEach(s => {
+    const cat = (s.category || 'Uncategorized').trim();
+    counts[cat] = (counts[cat] || 0) + 1;
+  });
+  return Object.keys(counts).sort((a,b) => counts[b]-counts[a] || a.localeCompare(b));
+}
+
+function renderStartupCategoryChips(){
+  const chipWrap = document.getElementById('startupCategoryChips');
+  if(!chipWrap) return;
+  const categories = getStartupCategories();
+  const topChips = categories.slice(0, 6);
+
+  chipWrap.innerHTML = '<div class="chip' + (startupState.category === 'all' ? ' active' : '') + '" data-startup-category="all">All</div>' +
+    topChips.map(cat => (
+      '<div class="chip' + (startupState.category === cat ? ' active' : '') + '" data-startup-category="' + escapeHtml(cat) + '">' + escapeHtml(cat) + '</div>'
+    )).join('');
+
+  chipWrap.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      startupState.category = chip.getAttribute('data-startup-category');
+      buildStartupFilterControls();
+      renderStartupGrid();
+    });
+  });
+
+  return categories;
+}
+
+function renderStartupCategorySelect(categories){
+  const select = document.getElementById('startupCategorySelect');
+  if(!select) return;
+  const topChips = categories.slice(0, 6);
+  const overflow = categories.filter(c => !topChips.includes(c));
+
+  select.innerHTML = '<option value="all">More categories…</option>' +
+    overflow.map(cat => (
+      '<option value="' + escapeHtml(cat) + '"' + (startupState.category === cat ? ' selected' : '') + '>' + escapeHtml(cat) + '</option>'
+    )).join('');
+  if(!overflow.includes(startupState.category)) select.value = 'all';
+}
+
+// Bound once (outside the rebuild path) so re-running buildStartupFilterControls()
+// never stacks duplicate 'change' listeners on the persistent <select> element.
+function bindStartupSelectOnce(){
+  const select = document.getElementById('startupCategorySelect');
+  if(!select) return;
+  select.onchange = () => {
+    startupState.category = select.value;
+    buildStartupFilterControls();
+    renderStartupGrid();
+  };
+}
+
+function buildStartupFilterControls(){
+  const chipWrap = document.getElementById('startupCategoryChips');
+  const select = document.getElementById('startupCategorySelect');
+  if(!chipWrap || !select) return;
+
+  const categories = renderStartupCategoryChips();
+  renderStartupCategorySelect(categories);
+}
+
+function startupCardHTML(s){
+  const name = escapeHtml(s.name || 'Untitled');
+  const tagline = escapeHtml(s.tagline || '');
+  const blurb = escapeHtml(s.blurb || '');
+  const category = escapeHtml((s.category || 'Uncategorized').trim());
+  const source = escapeHtml(s.source || 'Product Hunt');
+  const url = escapeHtml(safeStartupUrl(s.launchUrl));
+  const idAttr = escapeHtml(String(s.id));
+  const saved = wlHas(s.id, 'startup');
+  return (
+    '<div class="trend-card startup-card" data-id="' + idAttr + '" data-kind="startup">' +
+      '<button class="star-btn startup-star-btn ' + (saved?'saved':'') + '" data-ws-star-id="' + idAttr + '" data-ws-star-kind="startup" title="Toggle watchlist">' + (saved?'★':'☆') + '</button>' +
+      '<a class="startup-link-wrap" href="' + url + '" target="_blank" rel="noopener noreferrer">' +
+        '<div class="startup-card-head">' +
+          '<div class="startup-avatar">' + escapeHtml(startupInitials(s.name)) + '</div>' +
+          '<div class="startup-head-text">' +
+            '<div class="startup-name" title="' + name + '">' + name + '</div>' +
+            '<div class="startup-tagline" title="' + tagline + '">' + tagline + '</div>' +
+          '</div>' +
+          '<div class="startup-country">' + startupCountryLabel(s.country) + '</div>' +
+        '</div>' +
+        '<div class="startup-badges">' +
+          '<span class="startup-category-tag" title="Category is an AI-estimated tag, not sourced from Product Hunt.">' + category + ' <span class="startup-ai-mark">AI-estimated</span></span>' +
+        '</div>' +
+        '<div class="startup-blurb">' + blurb + '</div>' +
+        '<div class="startup-footer">' +
+          '<span class="startup-source">' + source + '</span>' +
+          '<span class="startup-link">View launch →</span>' +
+        '</div>' +
+      '</a>' +
+    '</div>'
+  );
+}
+
+function renderStartupGrid(){
+  const grid = document.getElementById('startupGrid');
+  const count = document.getElementById('startupResultCount');
+  if(!grid) return;
+
+  const filtered = startupState.category === 'all'
+    ? startups
+    : startups.filter(s => (s.category || 'Uncategorized').trim() === startupState.category);
+
+  if(count) count.textContent = filtered.length + (filtered.length === 1 ? ' startup' : ' startups');
+
+  if(!filtered.length){
+    grid.innerHTML = '<div class="startup-empty">No startups match this filter yet.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(startupCardHTML).join('');
+}
+
+function startupsToCsv(rows){
+  const header = ['name','tagline','category','country','source','launchUrl'];
+  const escCsv = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const lines = [header.join(',')];
+  rows.forEach(s => {
+    lines.push(header.map(k => escCsv(s[k])).join(','));
+  });
+  return lines.join('\n');
+}
+
+function exportStartupsCsv(){
+  const filtered = startupState.category === 'all'
+    ? startups
+    : startups.filter(s => (s.category || 'Uncategorized').trim() === startupState.category);
+  const csv = startupsToCsv(filtered);
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'antenna-startups.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+async function loadStartups(){
+  if(startupsLoading || startupsLoaded) return;
+  startupsLoading = true;
+  const grid = document.getElementById('startupGrid');
+  if(grid) grid.innerHTML = '<div class="startup-empty">Loading fresh launches…</div>';
+  try{
+    const res = await fetch(API_BASE + '/startups');
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    startups = Array.isArray(data) ? data : (data.startups || []);
+    startupsLoaded = true;
+    buildStartupFilterControls();
+    renderStartupGrid();
+  }catch(err){
+    if(grid) grid.innerHTML = '<div class="startup-empty">Couldn’t load startups right now. Please try again shortly.</div>';
+    console.error('loadStartups failed', err);
+  }finally{
+    startupsLoading = false;
+  }
+}
+
+(function initStartupsView(){
+  const navBtn = document.querySelector('.nav-item[data-view="startups"]');
+  if(navBtn) navBtn.addEventListener('click', loadStartups);
+  const exportBtn = document.getElementById('startupExportBtn');
+  if(exportBtn) exportBtn.addEventListener('click', exportStartupsCsv);
+  bindStartupSelectOnce();
+  if(document.querySelector('#view-startups.active')) loadStartups();
+})();
+
+/* ===== metatrends subsystem ===== */
+/* ---- Meta Trends (Macro) Engine ---- */
+let metaState = { category: 'all', minSize: 3 };
+
+const META_STOPWORDS = new Set(['the','and','for','with','from','that','this','are','was','were','has','have','had','will','would','could','should','their','them','they','you','your','our','out','into','over','under','about','after','before','between','than','then','more','most','some','such','not','but','can','may','all','new','app','apps','using','use','used','via','how','why','what','when','where','which','who','its','it\'s','on','in','to','of','is','as','an','a','by','be','or','if','one','two','top','best','now','just','like','also','get','gets','getting','still','across','amid','amidst','around','among','into','onto','once','while','being','both','each','very','only','other','another','these','those','there','here','been','make','made','many','much','into']);
+
+const META_GROWTH_TIER = { steady: 1, rising: 2, breakout: 3 };
+const META_TIER_LABEL = { 1: 'steady', 2: 'rising', 3: 'breakout' };
+
+function metaRawTokens(str) {
+  return (str || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+}
+
+function metaTokenize(str) {
+  return metaRawTokens(str).filter(w => w.length >= 4 && !META_STOPWORDS.has(w));
+}
+
+function metaTrendBigrams(text) {
+  const raw = metaRawTokens(text);
+  const bigrams = [];
+  for (let i = 0; i < raw.length - 1; i++) {
+    const a = raw[i], b = raw[i + 1];
+    if (a.length >= 4 && b.length >= 4 && !META_STOPWORDS.has(a) && !META_STOPWORDS.has(b)) {
+      bigrams.push(a + ' ' + b);
+    }
+  }
+  return bigrams;
+}
+
+function metaFormatClusterName(key) {
+  return key.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+function metaComputeClusters() {
+  const byCategory = {};
+  (trends || []).forEach(t => {
+    const cat = t.category || 'Uncategorized';
+    (byCategory[cat] = byCategory[cat] || []).push(t);
+  });
+
+  const result = {};
+  Object.keys(byCategory).forEach(cat => {
+    const catTrends = byCategory[cat];
+    if (catTrends.length < 3) return; // only cluster categories with 3+ real trends
+
+    const termIndex = new Map();
+    const bigramIndex = new Map();
+
+    catTrends.forEach(t => {
+      const text = (t.name || '') + ' ' + (t.blurb || '');
+      const terms = new Set(metaTokenize(text));
+      terms.forEach(term => {
+        if (!termIndex.has(term)) termIndex.set(term, new Set());
+        termIndex.get(term).add(t.id);
+      });
+      const bigrams = new Set([...metaTrendBigrams(t.name || ''), ...metaTrendBigrams(t.blurb || '')]);
+      bigrams.forEach(bg => {
+        if (!bigramIndex.has(bg)) bigramIndex.set(bg, new Set());
+        bigramIndex.get(bg).add(t.id);
+      });
+    });
+
+    let candidates = [];
+    bigramIndex.forEach((ids, key) => { if (ids.size >= 3) candidates.push({ key, ids, type: 'bigram' }); });
+    termIndex.forEach((ids, key) => { if (ids.size >= 3) candidates.push({ key, ids, type: 'unigram' }); });
+
+    // Prefer more descriptive bigram clusters, then larger clusters
+    candidates.sort((a, b) => (b.type === 'bigram') - (a.type === 'bigram') || b.ids.size - a.ids.size);
+
+    // Dedupe clusters that resolve to the exact same set of member trends
+    const seenSets = [];
+    const deduped = [];
+    candidates.forEach(c => {
+      const key = [...c.ids].sort().join(',');
+      if (seenSets.includes(key)) return;
+      seenSets.push(key);
+      deduped.push(c);
+    });
+
+    const finalClusters = deduped.slice(0, 6).map(c => {
+      const memberTrends = catTrends.filter(t => c.ids.has(t.id));
+      return {
+        key: c.key,
+        name: metaFormatClusterName(c.key),
+        type: c.type,
+        category: cat,
+        members: memberTrends
+      };
+    });
+
+    if (finalClusters.length) result[cat] = finalClusters;
+  });
+
+  return result;
+}
+
+function metaAvgGrowth(memberTrends) {
+  const sum = memberTrends.reduce((s, t) => s + (META_GROWTH_TIER[t.growth] || 1), 0);
+  const avg = sum / memberTrends.length;
+  const rounded = Math.max(1, Math.min(3, Math.round(avg)));
+  const breakdown = { breakout: 0, rising: 0, steady: 0 };
+  memberTrends.forEach(t => { if (breakdown[t.growth] !== undefined) breakdown[t.growth]++; });
+  return { avg, label: META_TIER_LABEL[rounded], breakdown };
+}
+
+function metaPopulateCategoryFilter(clustersByCategory) {
+  const sel = document.getElementById('metaCategoryFilter');
+  if (!sel) return;
+  const cats = Object.keys(clustersByCategory).sort();
+  const current = sel.value || metaState.category || 'all';
+  sel.innerHTML = '<option value="all">All categories</option>' +
+    cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  sel.value = (current === 'all' || cats.includes(current)) ? current : 'all';
+}
+
+function metaCardHtml(cluster) {
+  const g = metaAvgGrowth(cluster.members);
+  const memberLinks = cluster.members
+    .map(t => `<button type="button" class="meta-trend-link" data-trend-id="${escapeHtml(String(t.id))}">${escapeHtml(t.name)}</button>`)
+    .join('');
+  const breakdownHtml = [
+    g.breakdown.breakout ? `<span class="meta-tier-chip breakout">${g.breakdown.breakout} breakout</span>` : '',
+    g.breakdown.rising ? `<span class="meta-tier-chip rising">${g.breakdown.rising} rising</span>` : '',
+    g.breakdown.steady ? `<span class="meta-tier-chip steady">${g.breakdown.steady} steady</span>` : ''
+  ].join('');
+
+  return `
+  <div class="meta-cluster-card">
+    <div class="meta-cluster-top">
+      <span class="meta-auto-badge" title="Computed automatically by clustering shared keywords across tracked trend names/descriptions within this category — not hand-curated">Auto-clustered</span>
+      <span class="meta-cluster-category">${escapeHtml(cluster.category)}</span>
+    </div>
+    <h3 class="meta-cluster-name">${escapeHtml(cluster.name)}</h3>
+    <div class="meta-cluster-metrics">
+      <div class="meta-metric">
+        <span class="meta-metric-value">${cluster.members.length}</span>
+        <span class="meta-metric-label">tracked trends</span>
+      </div>
+      <div class="meta-metric">
+        <span class="badge ${g.label}">${g.label}</span>
+        <span class="meta-metric-label" title="Derived from observed trend signal: the average of each member trend's real tracked growth tier (steady/rising/breakout), rounded to the nearest tier — not an external measurement.">avg. growth tier (derived) ⓘ</span>
+      </div>
+    </div>
+    <div class="meta-cluster-breakdown">${breakdownHtml}</div>
+    <div class="meta-cluster-members-label">Underlying tracked trends</div>
+    <div class="meta-cluster-members">${memberLinks}</div>
+  </div>`;
+}
+
+function metaRenderClusters() {
+  const grid = document.getElementById('metaGrid');
+  const emptyEl = document.getElementById('metaEmpty');
+  const countEl = document.getElementById('metaResultCount');
+  if (!grid || !emptyEl || !countEl) return;
+
+  if (!trends || !trends.length) {
+    grid.innerHTML = '';
+    emptyEl.style.display = 'block';
+    emptyEl.textContent = 'Trend data is still loading — check back in a moment.';
+    countEl.textContent = '';
+    return;
+  }
+
+  const clustersByCategory = metaComputeClusters();
+  metaPopulateCategoryFilter(clustersByCategory);
+
+  let cards = [];
+  Object.keys(clustersByCategory).forEach(cat => {
+    if (metaState.category !== 'all' && metaState.category !== cat) return;
+    clustersByCategory[cat].forEach(cluster => {
+      if (cluster.members.length < metaState.minSize) return;
+      cards.push(cluster);
+    });
+  });
+  cards.sort((a, b) => b.members.length - a.members.length);
+
+  if (!cards.length) {
+    grid.innerHTML = '';
+    emptyEl.style.display = 'block';
+    emptyEl.textContent = 'No macro-clusters found with the current filters — try lowering the minimum cluster size or picking a different category.';
+    countEl.textContent = '0 clusters';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  const totalMentions = cards.reduce((s, c) => s + c.members.length, 0);
+  countEl.textContent = `${cards.length} macro-cluster${cards.length === 1 ? '' : 's'} · ${totalMentions} trend mentions`;
+  grid.innerHTML = cards.map(metaCardHtml).join('');
+}
+
+function metaTryRender(retries) {
+  retries = retries === undefined ? 10 : retries;
+  if (trends && trends.length) { metaRenderClusters(); return; }
+  if (retries <= 0) { metaRenderClusters(); return; }
+  setTimeout(() => metaTryRender(retries - 1), 300);
+}
+
+function metaWireEvents() {
+  const sel = document.getElementById('metaCategoryFilter');
+  if (sel) {
+    sel.addEventListener('change', () => {
+      metaState.category = sel.value;
+      metaRenderClusters();
+    });
+  }
+
+  const chipWrap = document.getElementById('metaSizeChips');
+  if (chipWrap) {
+    chipWrap.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if (!chip || !chipWrap.contains(chip)) return;
+      chipWrap.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      metaState.minSize = parseInt(chip.getAttribute('data-minsize'), 10) || 3;
+      metaRenderClusters();
+    });
+  }
+
+  const grid = document.getElementById('metaGrid');
+  if (grid) {
+    grid.addEventListener('click', (e) => {
+      const link = e.target.closest('.meta-trend-link');
+      if (!link) return;
+      const idAttr = link.getAttribute('data-trend-id');
+      // Resolve back to the original (possibly non-string) id from the real trends
+      // array, since DOM attributes are always strings and openTrendDetail may rely
+      // on strict equality against the source data's id type.
+      const matchedTrend = (trends || []).find(t => String(t.id) === idAttr);
+      const idToOpen = matchedTrend ? matchedTrend.id : idAttr;
+      if (typeof openTrendDetail === 'function') {
+        openTrendDetail(idToOpen);
+      }
+    });
+  }
+
+  document.querySelectorAll('.nav-item[data-view="meta"]').forEach(el => {
+    el.addEventListener('click', () => { metaTryRender(); });
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', metaWireEvents);
+} else {
+  metaWireEvents();
+}
+
+/* ===== workspace subsystem ===== */
+/* ===== Watchlist / Projects Kanban / Alerts / Export — prefixed ws ===== */
+
+let wsKindFilter = 'all';
+
+/* ---- watchlist normalization: bare numeric/string legacy ids -> {id,kind:'trend'} ----
+   Runs at load AND is re-invoked defensively on every read path (wsGetFilteredWatchlist,
+   wsCheckAlerts) because other parts of the app (e.g. a "star" button elsewhere in
+   Antenna) may still push bare ids onto the shared `watchlist` array later in the same
+   session, after this one-time migration would otherwise have already run. Idempotent
+   and cheap, so re-running it is safe. */
+function wsNormalizeWatchlist(){
+  try{
+    var changed = false;
+    var normalized = (watchlist || []).map(function(entry){
+      if (typeof entry === 'number' || (typeof entry === 'string' && entry.trim() !== '' && !isNaN(entry))){
+        changed = true;
+        return { id: Number(entry), kind: 'trend' };
+      }
+      if (entry && typeof entry === 'object' && entry.id != null){
+        if (entry.kind == null){ changed = true; return Object.assign({ kind: 'trend' }, entry); }
+        return entry;
+      }
+      changed = true;
+      return null;
+    }).filter(Boolean);
+    if (changed || normalized.length !== (watchlist || []).length){
+      watchlist = normalized;
+      localStorage.setItem('antenna_watchlist', JSON.stringify(watchlist));
+    } else {
+      watchlist = normalized;
+    }
+  }catch(e){ /* leave watchlist as-is on parse failure */ }
+}
+wsNormalizeWatchlist();
+
+/* ---- storage helpers ---- */
+function wsLoadProjects(){
+  try{ return JSON.parse(localStorage.getItem('antenna_projects') || '[]'); }
+  catch(e){ return []; }
+}
+function wsSaveProjects(projects){
+  localStorage.setItem('antenna_projects', JSON.stringify(projects));
+}
+function wsKey(id, kind){ return (kind || 'trend') + ':' + id; }
+
+/* ---- resolving watchlisted items against whichever dataset holds them ----
+   Trends live in the existing global `trends` array. Products/startups are
+   assumed to live on window.products / window.startups if those subsystems
+   have loaded — resolution degrades gracefully (shows id-only) if not found. */
+function wsResolveItem(id, kind){
+  if (kind === 'product'){
+    var pSrc = window.products || window.trendingProducts || [];
+    return pSrc.find(function(p){ return String(p.id) === String(id); });
+  }
+  if (kind === 'startup'){
+    var sSrc = window.startups || window.startupList || [];
+    return sSrc.find(function(s){ return String(s.id) === String(id); });
+  }
+  return (trends || []).find(function(t){ return String(t.id) === String(id); });
+}
+function wsItemName(item){ return (item && (item.name || item.title || item.companyName)) || 'Untitled'; }
+function wsItemCategory(item){ return (item && (item.category || item.industry || item.vertical)) || ''; }
+function wsItemCountry(item){ return (item && (item.country || item.location)) || ''; }
+function wsItemGrowthLabel(item){
+  var g = item && (item.growth || item.status);
+  return (g === 'breakout' || g === 'rising' || g === 'steady') ? g : 'steady';
+}
+function wsItemSeries(item){ return (item && Array.isArray(item.series)) ? item.series : null; }
+function wsGrowthColor(label){
+  var v = getComputedStyle(document.documentElement).getPropertyValue('--' + label);
+  return (v && v.trim()) || getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+}
+
+/* ---- derived (real, non-fabricated) signals from the stored series ---- */
+function wsComputeGrowthSignal(series){
+  if (!series || series.length < 2) return null;
+  var mid = Math.floor(series.length / 2);
+  var avg = function(arr){ return arr.reduce(function(a,b){return a+b;},0) / arr.length; };
+  var a1 = avg(series.slice(0, mid)), a2 = avg(series.slice(mid));
+  if (a1 === 0) return a2 > 0 ? 100 : 0;
+  return ((a2 - a1) / a1) * 100;
+}
+function wsComputeVolatility(series){
+  if (!series || series.length < 2) return null;
+  var avg = series.reduce(function(a,b){return a+b;},0) / series.length;
+  var variance = series.reduce(function(a,b){return a + Math.pow(b - avg, 2);}, 0) / series.length;
+  return Math.sqrt(variance);
+}
+
+/* ---- watchlist filtering (kind chip) ---- */
+function wsGetFilteredWatchlist(){
+  wsNormalizeWatchlist();
+  if (wsKindFilter === 'all') return watchlist;
+  return watchlist.filter(function(e){ return e.kind === wsKindFilter; });
+}
+
+/* ---- board render ---- */
+function wsRenderBoard(){
+  var board = document.getElementById('wsBoard');
+  if (!board) return;
+  var projects = wsLoadProjects();
+  var wl = wsGetFilteredWatchlist();
+
+  var assignedKeys = {};
+  projects.forEach(function(p){ (p.itemIds || []).forEach(function(k){ assignedKeys[k] = true; }); });
+
+  var unsortedEntries = wl.filter(function(e){ return !assignedKeys[wsKey(e.id, e.kind)]; });
+
+  var html = wsRenderColumn({ id: 'unsorted', name: 'Unsorted' }, unsortedEntries, false, projects);
+  projects.forEach(function(p){
+    var entries = (p.itemIds || []).map(function(k){
+      return wl.find(function(e){ return wsKey(e.id, e.kind) === k; });
+    }).filter(Boolean);
+    html += wsRenderColumn(p, entries, true, projects);
+  });
+  board.innerHTML = html;
+
+  board.querySelectorAll('.ws-item-card').forEach(function(card){
+    var id = card.getAttribute('data-id');
+    var kind = card.getAttribute('data-kind');
+    var item = wsResolveItem(id, kind);
+    var canvas = card.querySelector('.ws-item-spark');
+    var series = wsItemSeries(item);
+    if (canvas && series){
+      try{ sparkline(canvas, series, wsGrowthColor(wsItemGrowthLabel(item))); }catch(e){}
+    }
+  });
+
+  wsAttachDnD();
+
+  var emptyState = document.getElementById('wsEmptyState');
+  if (emptyState) emptyState.style.display = watchlist.length ? 'none' : 'block';
+  var count = document.getElementById('wsResultCount');
+  if (count) count.textContent = wl.length + ' item' + (wl.length === 1 ? '' : 's') + (wsKindFilter !== 'all' ? ' (' + wsKindFilter + 's)' : '');
+}
+
+function wsRenderColumn(project, entries, deletable, allProjects){
+  var itemsHtml = entries.map(function(e){ return wsRenderItemCard(e, allProjects); }).join('') ||
+    '<div class="ws-column-empty">Drag items here, or use "Move to" on a card</div>';
+  var headerActions = deletable
+    ? '<button class="ws-column-rename" type="button" title="Rename project">&#9998;</button><button class="ws-column-delete" type="button" title="Delete project">&times;</button>'
+    : '';
+  return (
+    '<div class="ws-column" data-project-id="' + escapeHtml(project.id) + '">' +
+      '<div class="ws-column-header">' +
+        '<span class="ws-column-title">' + escapeHtml(project.name) + '</span>' +
+        '<span class="ws-column-count">' + entries.length + '</span>' +
+        headerActions +
+      '</div>' +
+      '<div class="ws-column-body" data-dropzone="' + escapeHtml(project.id) + '">' + itemsHtml + '</div>' +
+    '</div>'
+  );
+}
+
+function wsRenderItemCard(entry, allProjects){
+  var key = wsKey(entry.id, entry.kind);
+  var item = wsResolveItem(entry.id, entry.kind) || {};
+  var name = wsItemName(item);
+  var growthLabel = wsItemGrowthLabel(item);
+  var country = wsItemCountry(item);
+  var category = wsItemCategory(item);
+  var series = wsItemSeries(item);
+  var hasThreshold = entry.alertGrowthThreshold != null || entry.alertVolatilityThreshold != null;
+  var kindTag = entry.kind.charAt(0).toUpperCase() + entry.kind.slice(1);
+
+  var currentProjectId = 'unsorted';
+  (allProjects || []).forEach(function(p){
+    if ((p.itemIds || []).indexOf(key) !== -1) currentProjectId = p.id;
+  });
+  var moveOptions = '<option value="unsorted"' + (currentProjectId === 'unsorted' ? ' selected' : '') + '>Unsorted</option>';
+  (allProjects || []).forEach(function(p){
+    moveOptions += '<option value="' + escapeHtml(p.id) + '"' + (currentProjectId === p.id ? ' selected' : '') + '>' + escapeHtml(p.name) + '</option>';
+  });
+
+  return (
+    '<div class="ws-item-card" draggable="true" data-key="' + escapeHtml(key) + '" data-id="' + escapeHtml(String(entry.id)) + '" data-kind="' + escapeHtml(entry.kind) + '">' +
+      '<div class="ws-item-top">' +
+        '<span class="ws-item-kind">' + escapeHtml(kindTag) + '</span>' +
+        '<span class="badge ' + escapeHtml(growthLabel) + '">' + escapeHtml(growthLabel) + '</span>' +
+        '<button class="ws-item-remove" type="button" title="Remove from watchlist">&times;</button>' +
+      '</div>' +
+      '<div class="ws-item-title">' + escapeHtml(name) + '</div>' +
+      '<div class="ws-item-meta">' + escapeHtml([country, category].filter(Boolean).join(' · ')) + '</div>' +
+      (series ? '<canvas class="ws-item-spark" width="160" height="34"></canvas>' : '') +
+      '<select class="ws-move-select" data-key="' + escapeHtml(key) + '">' + moveOptions + '</select>' +
+      '<div class="ws-item-alert-row">' +
+        '<button class="ws-alert-toggle' + (hasThreshold ? ' ws-alert-toggle-active' : '') + '" type="button">' + (hasThreshold ? 'Alert set' : 'Set alert') + '</button>' +
+      '</div>' +
+      '<div class="ws-alert-panel" data-key="' + escapeHtml(key) + '">' +
+        '<label class="ws-alert-label">Growth-spike threshold (%)' +
+          '<input type="number" class="ws-alert-input" data-field="alertGrowthThreshold" min="0" step="1" value="' + (entry.alertGrowthThreshold != null ? entry.alertGrowthThreshold : '') + '" />' +
+        '</label>' +
+        '<label class="ws-alert-label">Volatility-shift threshold' +
+          '<input type="number" class="ws-alert-input" data-field="alertVolatilityThreshold" min="0" step="1" value="' + (entry.alertVolatilityThreshold != null ? entry.alertVolatilityThreshold : '') + '" />' +
+        '</label>' +
+        '<p class="ws-alert-hint">Derived from observed trend signal, not external market data.' + (!series ? ' No trend curve available for this item yet.' : '') + '</p>' +
+        '<button class="btn primary ws-alert-save" type="button">Save</button>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+/* ---- drag & drop ---- */
+function wsAttachDnD(){
+  document.querySelectorAll('.ws-item-card').forEach(function(card){
+    card.addEventListener('dragstart', function(e){
+      e.dataTransfer.setData('text/plain', card.getAttribute('data-key'));
+      card.classList.add('ws-dragging');
+    });
+    card.addEventListener('dragend', function(){ card.classList.remove('ws-dragging'); });
+  });
+  document.querySelectorAll('.ws-column-body').forEach(function(zone){
+    zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.classList.add('ws-dragover'); });
+    zone.addEventListener('dragleave', function(){ zone.classList.remove('ws-dragover'); });
+    zone.addEventListener('drop', function(e){
+      e.preventDefault();
+      zone.classList.remove('ws-dragover');
+      var key = e.dataTransfer.getData('text/plain');
+      var projectId = zone.getAttribute('data-dropzone');
+      if (key) wsMoveItemToProject(key, projectId);
+    });
+  });
+}
+
+function wsMoveItemToProject(key, projectId){
+  var projects = wsLoadProjects();
+  projects.forEach(function(p){ p.itemIds = (p.itemIds || []).filter(function(k){ return k !== key; }); });
+  if (projectId !== 'unsorted'){
+    var target = projects.find(function(p){ return p.id === projectId; });
+    if (target && target.itemIds.indexOf(key) === -1) target.itemIds.push(key);
+  }
+  wsSaveProjects(projects);
+  wsRenderBoard();
+}
+
+/* ---- projects CRUD ---- */
+function wsOpenNewProjectModal(){
+  var overlay = document.getElementById('wsModalOverlay');
+  var input = document.getElementById('wsProjectNameInput');
+  if (!overlay) return;
+  if (input) input.value = '';
+  overlay.style.display = 'flex';
+  if (input) setTimeout(function(){ input.focus(); }, 0);
+}
+function wsSubmitNewProject(){
+  var input = document.getElementById('wsProjectNameInput');
+  var name = input && input.value.trim();
+  if (!name) return;
+  var projects = wsLoadProjects();
+  projects.push({ id: 'proj_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, itemIds: [] });
+  wsSaveProjects(projects);
+  var overlay = document.getElementById('wsModalOverlay');
+  if (overlay) overlay.style.display = 'none';
+  wsRenderBoard();
+}
+function wsRenameProject(projectId, newName){
+  var projects = wsLoadProjects();
+  var p = projects.find(function(pr){ return pr.id === projectId; });
+  if (p){ p.name = newName; wsSaveProjects(projects); wsRenderBoard(); }
+}
+function wsDeleteProject(projectId){
+  var projects = wsLoadProjects().filter(function(p){ return p.id !== projectId; });
+  wsSaveProjects(projects);
+  wsRenderBoard();
+}
+
+/* ---- watchlist item removal ---- */
+function wsRemoveFromWatchlist(key){
+  watchlist = watchlist.filter(function(e){ return wsKey(e.id, e.kind) !== key; });
+  localStorage.setItem('antenna_watchlist', JSON.stringify(watchlist));
+  var projects = wsLoadProjects();
+  projects.forEach(function(p){ p.itemIds = (p.itemIds || []).filter(function(k){ return k !== key; }); });
+  wsSaveProjects(projects);
+  wsRenderBoard();
+  wsCheckAlerts(true);
+}
+
+/* ---- alert thresholds ---- */
+function wsSaveAlertThresholds(key, gVal, vVal){
+  var entry = watchlist.find(function(e){ return wsKey(e.id, e.kind) === key; });
+  if (!entry) return;
+  entry.alertGrowthThreshold = gVal !== '' && gVal != null ? Number(gVal) : null;
+  entry.alertVolatilityThreshold = vVal !== '' && vVal != null ? Number(vVal) : null;
+  localStorage.setItem('antenna_watchlist', JSON.stringify(watchlist));
+  var crossed = wsCheckAlerts(true);
+  var hit = crossed.find(function(c){ return wsKey(c.entry.id, c.entry.kind) === key; });
+  if (hit){
+    wsShowToast(wsItemName(hit.item) + ' already crosses your new threshold', 'alert');
+  } else {
+    wsShowToast('Alert thresholds saved', 'info');
+  }
+  wsRenderBoard();
+}
+
+function wsCheckAlerts(silent){
+  wsNormalizeWatchlist();
+  var crossed = [];
+  watchlist.forEach(function(entry){
+    if (!entry || (entry.alertGrowthThreshold == null && entry.alertVolatilityThreshold == null)) return;
+    var item = wsResolveItem(entry.id, entry.kind);
+    if (!item) return;
+    var series = wsItemSeries(item);
+    if (!series) return;
+    var growthSignal = wsComputeGrowthSignal(series);
+    var volatility = wsComputeVolatility(series);
+    if (entry.alertGrowthThreshold != null && growthSignal != null && Math.abs(growthSignal) >= Number(entry.alertGrowthThreshold)){
+      crossed.push({ entry: entry, item: item, type: 'growth', value: growthSignal });
+    }
+    if (entry.alertVolatilityThreshold != null && volatility != null && volatility >= Number(entry.alertVolatilityThreshold)){
+      crossed.push({ entry: entry, item: item, type: 'volatility', value: volatility });
+    }
+  });
+  wsRenderAlerts(crossed, !!silent);
+  return crossed;
+}
+
+function wsRenderAlerts(crossed, silent){
+  var bar = document.getElementById('wsAlertsBar');
+  if (bar){
+    if (!crossed.length){
+      bar.innerHTML = '';
+      bar.style.display = 'none';
+    } else {
+      bar.style.display = 'flex';
+      bar.innerHTML = crossed.map(function(c){
+        var label = c.type === 'growth' ? 'Growth signal' : 'Volatility';
+        var valStr = c.value.toFixed(1) + (c.type === 'growth' ? '%' : '');
+        return '<div class="ws-alert-chip"><span class="ws-alert-chip-dot"></span>' +
+          escapeHtml(wsItemName(c.item)) + ' — ' + escapeHtml(label) + ' ' + escapeHtml(valStr) +
+          '<span class="ws-alert-chip-tag">derived from observed trend signal</span></div>';
+      }).join('');
+    }
+  }
+  if (!silent && crossed.length && !window.__wsAlertsToasted){
+    window.__wsAlertsToasted = true;
+    crossed.slice(0, 3).forEach(function(c){
+      wsShowToast(wsItemName(c.item) + ': ' + (c.type === 'growth' ? 'growth-spike' : 'volatility-shift') + ' threshold crossed', 'alert');
+    });
+  }
+}
+
+/* ---- toasts ---- */
+function wsShowToast(message, type){
+  var container = document.getElementById('wsToastContainer');
+  if (!container) return;
+  var el = document.createElement('div');
+  el.className = 'ws-toast ws-toast-' + (type || 'info');
+  el.innerHTML = escapeHtml(message);
+  container.appendChild(el);
+  requestAnimationFrame(function(){ el.classList.add('ws-toast-show'); });
+  setTimeout(function(){
+    el.classList.remove('ws-toast-show');
+    setTimeout(function(){ el.remove(); }, 300);
+  }, 6000);
+}
+
+/* ---- export (CSV / JSON) of the CURRENTLY VISIBLE/FILTERED active view ---- */
+function wsFlattenRow(kind, id, item, watchlistEntry){
+  var series = wsItemSeries(item);
+  var growthSignal = series ? wsComputeGrowthSignal(series) : null;
+  var volatility = series ? wsComputeVolatility(series) : null;
+  return {
+    id: id,
+    kind: kind,
+    name: wsItemName(item),
+    country: wsItemCountry(item),
+    category: wsItemCategory(item),
+    growthLabel: wsItemGrowthLabel(item),
+    growthSignalPct_derivedFromSeries: growthSignal != null ? Number(growthSignal.toFixed(1)) : '',
+    volatilityScore_derivedFromSeries: volatility != null ? Number(volatility.toFixed(1)) : '',
+    source: (item && item.source) || '',
+    sourceUrl: (item && item.sourceUrl) || '',
+    sourceType: (item && item.sourceType) || '',
+    watchlisted: !!watchlistEntry,
+    alertGrowthThreshold: watchlistEntry && watchlistEntry.alertGrowthThreshold != null ? watchlistEntry.alertGrowthThreshold : '',
+    alertVolatilityThreshold: watchlistEntry && watchlistEntry.alertVolatilityThreshold != null ? watchlistEntry.alertVolatilityThreshold : ''
+  };
+}
+
+function wsGetActiveExportSet(){
+  var activeView = document.querySelector('.view.active');
+  if (!activeView) return { viewLabel: 'data', rows: [] };
+
+  if (activeView.id === 'view-watchlist'){
+    var wl = wsGetFilteredWatchlist();
+    var rows = wl.map(function(entry){
+      var item = wsResolveItem(entry.id, entry.kind) || {};
+      return wsFlattenRow(entry.kind, entry.id, item, entry);
+    });
+    return { viewLabel: 'watchlist', rows: rows };
+  }
+
+  var kindGuess = 'trend';
+  if (activeView.id.indexOf('product') !== -1) kindGuess = 'product';
+  if (activeView.id.indexOf('startup') !== -1) kindGuess = 'startup';
+
+  var cardEls = activeView.querySelectorAll('[data-id]');
+  var seen = {};
+  var rows = [];
+  cardEls.forEach(function(el){
+    var id = el.getAttribute('data-id');
+    var kind = el.getAttribute('data-kind') || kindGuess;
+    var k = kind + ':' + id;
+    if (seen[k]) return;
+    seen[k] = true;
+    var item = wsResolveItem(id, kind);
+    if (item){
+      var entry = watchlist.find(function(e){ return wsKey(e.id, e.kind) === k; });
+      rows.push(wsFlattenRow(kind, id, item, entry));
+    }
+  });
+
+  if (rows.length === 0 && activeView.id === 'view-trends' && Array.isArray(trends)){
+    var filtered = trends.filter(function(t){
+      if (state.country !== 'all' && t.country !== 'BOTH' && t.country !== state.country) return false;
+      if (state.category !== 'all' && t.category !== state.category) return false;
+      if (state.growth !== 'all' && t.growth !== state.growth) return false;
+      return true;
+    });
+    rows = filtered.map(function(t){
+      var entry = watchlist.find(function(e){ return wsKey(e.id, e.kind) === wsKey(t.id, 'trend'); });
+      return wsFlattenRow('trend', t.id, t, entry);
+    });
+  }
+
+  return { viewLabel: kindGuess + 's', rows: rows };
+}
+
+function wsRowsToCSV(rows){
+  if (!rows.length) return '';
+  var cols = Object.keys(rows[0]);
+  var esc = function(v){
+    if (v == null) return '';
+    var s = String(v);
+    if (/[",\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  };
+  var lines = [cols.join(',')];
+  rows.forEach(function(r){ lines.push(cols.map(function(c){ return esc(r[c]); }).join(',')); });
+  return lines.join('\n');
+}
+
+function wsDownloadFile(filename, content, mime){
+  var blob = new Blob([content], { type: mime });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+
+function wsExportActiveView(format){
+  var data = wsGetActiveExportSet();
+  var dateStr = new Date().toISOString().slice(0, 10);
+  var filenameBase = 'antenna-' + data.viewLabel + '-' + dateStr;
+  if (!data.rows.length){
+    wsShowToast('Nothing to export in the current view.', 'info');
+    return;
+  }
+  if (format === 'csv'){
+    wsDownloadFile(filenameBase + '.csv', wsRowsToCSV(data.rows), 'text/csv');
+  } else {
+    wsDownloadFile(filenameBase + '.json', JSON.stringify(data.rows, null, 2), 'application/json');
+  }
+}
+
+/* ---- event delegation ---- */
+document.addEventListener('click', function(e){
+  var chip = e.target.closest('.ws-kind-filter .chip');
+  if (chip){
+    document.querySelectorAll('.ws-kind-filter .chip').forEach(function(c){ c.classList.remove('active'); });
+    chip.classList.add('active');
+    wsKindFilter = chip.getAttribute('data-ws-kind');
+    wsRenderBoard();
+    return;
+  }
+
+  var exportBtn = e.target.closest('#wsExportBtn');
+  var exportMenu = document.getElementById('wsExportMenu');
+  if (exportBtn){
+    if (exportMenu) exportMenu.classList.toggle('ws-export-menu-open');
+    e.stopPropagation();
+    return;
+  }
+  var exportOpt = e.target.closest('.ws-export-option');
+  if (exportOpt){
+    wsExportActiveView(exportOpt.getAttribute('data-format'));
+    if (exportMenu) exportMenu.classList.remove('ws-export-menu-open');
+    return;
+  }
+  if (exportMenu && exportMenu.classList.contains('ws-export-menu-open') && !e.target.closest('.ws-export-menu-wrap')){
+    exportMenu.classList.remove('ws-export-menu-open');
+  }
+
+  var alertBtn = e.target.closest('.ws-alert-toggle');
+  if (alertBtn){
+    var card = alertBtn.closest('.ws-item-card');
+    var panel = card && card.querySelector('.ws-alert-panel');
+    if (panel) panel.classList.toggle('ws-alert-panel-open');
+    return;
+  }
+  var saveBtn = e.target.closest('.ws-alert-save');
+  if (saveBtn){
+    var panel2 = saveBtn.closest('.ws-alert-panel');
+    var key = panel2.getAttribute('data-key');
+    var gInput = panel2.querySelector('[data-field="alertGrowthThreshold"]');
+    var vInput = panel2.querySelector('[data-field="alertVolatilityThreshold"]');
+    wsSaveAlertThresholds(key, gInput ? gInput.value : '', vInput ? vInput.value : '');
+    return;
+  }
+  var removeBtn = e.target.closest('.ws-item-remove');
+  if (removeBtn){
+    var card2 = removeBtn.closest('.ws-item-card');
+    wsRemoveFromWatchlist(card2.getAttribute('data-key'));
+    return;
+  }
+
+  var delProj = e.target.closest('.ws-column-delete');
+  if (delProj){
+    var col = delProj.closest('.ws-column');
+    var pid = col.getAttribute('data-project-id');
+    if (confirm('Delete this project? Items will move back to Unsorted.')) wsDeleteProject(pid);
+    return;
+  }
+  var renameBtn = e.target.closest('.ws-column-rename');
+  if (renameBtn){
+    var col2 = renameBtn.closest('.ws-column');
+    var pid2 = col2.getAttribute('data-project-id');
+    var titleEl = col2.querySelector('.ws-column-title');
+    var newName = prompt('Rename project', titleEl ? titleEl.textContent : '');
+    if (newName && newName.trim()) wsRenameProject(pid2, newName.trim());
+    return;
+  }
+
+  if (e.target.id === 'wsNewProjectBtn'){ wsOpenNewProjectModal(); return; }
+  if (e.target.id === 'wsModalCancel' || e.target.id === 'wsModalOverlay'){
+    var overlay = document.getElementById('wsModalOverlay');
+    if (overlay) overlay.style.display = 'none';
+    return;
+  }
+  if (e.target.id === 'wsModalCreate'){ wsSubmitNewProject(); return; }
+});
+
+document.addEventListener('change', function(e){
+  var sel = e.target.closest('.ws-move-select');
+  if (sel){ wsMoveItemToProject(sel.getAttribute('data-key'), sel.value); }
+});
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'wsProjectNameInput'){
+    wsSubmitNewProject();
+  }
+  if (e.key === 'Escape'){
+    var overlay = document.getElementById('wsModalOverlay');
+    if (overlay && overlay.style.display === 'flex') overlay.style.display = 'none';
+  }
+});
+
+/* Re-render the board whenever the user navigates to the Watchlist view
+   (existing nav dispatcher just toggles .active classes; we hook the click). */
+document.addEventListener('click', function(e){
+  var nav = e.target.closest('.nav-item[data-view="watchlist"]');
+  if (nav) setTimeout(function(){ wsRenderBoard(); wsCheckAlerts(); }, 0);
+});
+
+/* ---- init: render immediately with whatever data is available, then
+   re-check once trends/products/startups finish their async fetch ---- */
+function wsInit(){
+  wsRenderBoard();
+  wsCheckAlerts();
+}
+if (document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', wsInit);
+} else {
+  wsInit();
+}
+(function wsWaitForData(){
+  var attempts = 0;
+  var iv = setInterval(function(){
+    attempts++;
+    var hasData = Array.isArray(trends) && trends.length;
+    if (hasData || attempts > 20){
+      clearInterval(iv);
+      wsRenderBoard();
+      wsCheckAlerts();
+    }
+  }, 500);
+})();
+
+/* ===== integration bridge: watchlist star buttons on Products/Startups cards ===== */
+document.addEventListener('click', function(e){
+  var starBtn = e.target.closest('.prod-star-btn, .startup-star-btn');
+  if(!starBtn) return;
+  e.stopPropagation();
+  e.preventDefault();
+  var id = starBtn.getAttribute('data-ws-star-id');
+  var kind = starBtn.getAttribute('data-ws-star-kind');
+  toggleWatch(id, kind);
+  if(kind === 'product' && typeof renderProducts === 'function') renderProducts();
+  if(kind === 'startup' && typeof renderStartupGrid === 'function') renderStartupGrid();
+});
+
 loadData();
+if(typeof loadProducts === 'function') loadProducts();
+if(typeof loadStartups === 'function') loadStartups();
 </script>
 </body>
 </html>
