@@ -202,11 +202,87 @@ table.compare-table{width:100%; border-collapse:collapse;}
 }
 .mkt-footer-bottom a{color:var(--accent);}
 
+/* ---------- Hero radiant background graphic (decorative only) ---------- */
+.hero-bg-svg{position:absolute; top:-20px; left:50%; transform:translateX(-50%); width:min(1200px,150%); height:auto; z-index:0; pointer-events:none;}
+.hero-inner{position:relative; z-index:1;}
+
+/* ---------- Trend "texture" chips — abstract generated gradients, purely decorative visual identity per category, not simulated screenshots ---------- */
+.trend-texture{
+  width:42px; height:42px; border-radius:11px; flex-shrink:0; position:relative; overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08), 0 6px 16px -6px rgba(0,0,0,.5);
+}
+.trend-texture::after{content:''; position:absolute; inset:0; background:linear-gradient(155deg,rgba(255,255,255,.16),transparent 55%);}
+.tx-devtools{background:conic-gradient(from 210deg at 30% 30%, #22d3a8, #2fb8ff, #22d3a8);}
+.tx-saas{background:conic-gradient(from 140deg at 60% 40%, #a78bfa, #ff7ad9, #a78bfa);}
+.tx-ecom{background:conic-gradient(from 90deg at 40% 60%, #ffb648, #ff6b5e, #ffb648);}
+.tx-media{background:conic-gradient(from 300deg at 50% 30%, #ff6b9d, #ff6b5e, #ff6b9d);}
+.tx-fintech{background:conic-gradient(from 60deg at 35% 45%, #22d3a8, #5ea1ff, #22d3a8);}
+.tx-infra{background:conic-gradient(from 200deg at 55% 55%, #5ea1ff, #7c8fff, #5ea1ff);}
+
+/* ---------- Upgraded chart-forward trend card (Exploding-Topics-style big spark + gradient fill) ---------- */
+.tc-top-row{display:flex; align-items:flex-start; gap:12px;}
+.tc-spark-lg{height:78px; overflow:hidden; position:relative; margin-top:2px;}
+.tc-spark-lg svg{width:100%; height:100%; display:block; overflow:visible;}
+.tc-peak-dot{filter:drop-shadow(0 0 6px currentColor);}
+
+/* ---------- Source badges (how-it-works) ---------- */
+.source-badges{display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:28px;}
+.source-badge{
+  display:flex; align-items:center; gap:8px; background:var(--bg-card); border:1px solid var(--border-soft);
+  padding:8px 14px 8px 10px; border-radius:20px; font-size:12px; font-weight:700; color:var(--text-dim);
+}
+.source-badge .mark{width:22px; height:22px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#0a0d14; flex-shrink:0;}
+.source-badge.hn .mark{background:#ff6600;}
+.source-badge.devto .mark{background:#0a0a0a; color:#fff; border:1px solid #2a2a2a;}
+.source-badge.ph .mark{background:#da552f; color:#fff;}
+.source-badge.reddit .mark{background:#ff4500; color:#fff;}
+
+/* ---------- Product preview browser-frame mockup ---------- */
+.browser-frame{
+  background:var(--bg-card); border:1px solid var(--border-soft); border-radius:16px; overflow:hidden;
+  box-shadow:0 30px 70px -25px rgba(0,0,0,.65); max-width:920px; margin:0 auto;
+}
+.browser-frame-bar{display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--bg-elev-2); border-bottom:1px solid var(--border-soft);}
+.browser-frame-dot{width:10px; height:10px; border-radius:50%; background:#3a4256;}
+.browser-frame-dot:nth-child(1){background:#ff6b5e;}
+.browser-frame-dot:nth-child(2){background:#ffb648;}
+.browser-frame-dot:nth-child(3){background:#22d3a8;}
+.browser-frame-url{
+  margin-left:12px; background:var(--bg-card); border:1px solid var(--border-soft); border-radius:7px;
+  padding:5px 12px; font-size:11px; color:var(--text-faint); flex:1; max-width:280px;
+}
+.browser-frame-body{padding:22px; display:grid; grid-template-columns:170px 1fr; gap:18px;}
+.bf-nav{display:flex; flex-direction:column; gap:4px;}
+.bf-nav-item{font-size:11.5px; font-weight:600; color:var(--text-faint); padding:7px 10px; border-radius:7px; display:flex; align-items:center; gap:8px;}
+.bf-nav-item.active{background:var(--accent-glow); color:var(--accent);}
+.bf-main{display:flex; flex-direction:column; gap:12px;}
+.bf-kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+.bf-kpi{background:var(--bg-elev-2); border:1px solid var(--border-soft); border-radius:10px; padding:10px 12px;}
+.bf-kpi .n{font-size:18px; font-weight:800;}
+.bf-kpi .l{font-size:10px; color:var(--text-faint); font-weight:600; margin-top:2px;}
+.bf-mini-cards{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.bf-mini-card{background:var(--bg-elev-2); border:1px solid var(--border-soft); border-radius:10px; padding:11px 12px; display:flex; flex-direction:column; gap:6px;}
+.bf-mini-card .t{font-size:11.5px; font-weight:700;}
+.bf-mini-card svg{width:100%; height:26px; display:block;}
+.preview-caption{text-align:center; font-size:11.5px; color:var(--text-faint); margin-top:18px; line-height:1.6;}
+
+/* ---------- CTA band radiance ---------- */
+.cta-band{position:relative; overflow:hidden;}
+.cta-band::before{
+  content:''; position:absolute; top:-140px; left:50%; transform:translateX(-50%);
+  width:640px; height:320px; border-radius:50%;
+  background:radial-gradient(circle, rgba(34,211,168,.16), transparent 70%);
+  pointer-events:none;
+}
+.cta-band > *{position:relative; z-index:1;}
+
 /* ---------- Responsive ---------- */
 @media (max-width:900px){
   .how-grid{grid-template-columns:repeat(2,1fr);}
   .sandbox-grid{grid-template-columns:repeat(2,1fr);}
   .mkt-footer-top{flex-direction:column;}
+  .browser-frame-body{grid-template-columns:1fr;}
+  .bf-nav{display:none;}
 }
 @media (max-width:720px){
   .mkt-links, .mkt-nav-cta .btn.secondary{display:none;}
@@ -214,6 +290,8 @@ table.compare-table{width:100%; border-collapse:collapse;}
   .hero h1{font-size:32px;}
   .compare-table{font-size:11.5px;}
   .compare-table th, .compare-table td{padding:10px 12px;}
+  .bf-kpis, .bf-mini-cards{grid-template-columns:1fr;}
+  .source-badges{gap:8px;}
 }
 @media (max-width:560px){
   .how-grid{grid-template-columns:1fr;}
@@ -249,6 +327,58 @@ table.compare-table{width:100%; border-collapse:collapse;}
 
   <!-- ================= HERO ================= -->
   <section class="hero">
+    <svg class="hero-bg-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="fanGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--accent)"/>
+          <stop offset="100%" stop-color="var(--steady)"/>
+        </linearGradient>
+      </defs>
+      <line x1="500" y1="0" x2="48.9" y2="160.9" stroke="url(#fanGrad)" stroke-width="1" opacity="0.05"/>
+      <line x1="500" y1="0" x2="47.5" y2="208.5" stroke="url(#fanGrad)" stroke-width="1" opacity="0.06"/>
+      <line x1="500" y1="0" x2="51.4" y2="257.6" stroke="url(#fanGrad)" stroke-width="1" opacity="0.06"/>
+      <line x1="500" y1="0" x2="109.5" y2="273.5" stroke="url(#fanGrad)" stroke-width="1" opacity="0.07"/>
+      <line x1="500" y1="0" x2="121.2" y2="319.8" stroke="url(#fanGrad)" stroke-width="1" opacity="0.08"/>
+      <line x1="500" y1="0" x2="138.3" y2="366.1" stroke="url(#fanGrad)" stroke-width="1" opacity="0.09"/>
+      <line x1="500" y1="0" x2="198.7" y2="366.1" stroke="url(#fanGrad)" stroke-width="1" opacity="0.09"/>
+      <line x1="500" y1="0" x2="222.6" y2="407.6" stroke="url(#fanGrad)" stroke-width="1" opacity="0.10"/>
+      <line x1="500" y1="0" x2="251.7" y2="447.8" stroke="url(#fanGrad)" stroke-width="1" opacity="0.11"/>
+      <line x1="500" y1="0" x2="309.9" y2="431.9" stroke="url(#fanGrad)" stroke-width="1" opacity="0.12"/>
+      <line x1="500" y1="0" x2="344.3" y2="465.6" stroke="url(#fanGrad)" stroke-width="1" opacity="0.12"/>
+      <line x1="500" y1="0" x2="383.4" y2="496.6" stroke="url(#fanGrad)" stroke-width="1" opacity="0.13"/>
+      <line x1="500" y1="0" x2="435.0" y2="466.1" stroke="url(#fanGrad)" stroke-width="1" opacity="0.14"/>
+      <line x1="500" y1="0" x2="477.4" y2="489.5" stroke="url(#fanGrad)" stroke-width="1" opacity="0.15"/>
+      <line x1="500" y1="0" x2="523.5" y2="509.1" stroke="url(#fanGrad)" stroke-width="1" opacity="0.15"/>
+      <line x1="500" y1="0" x2="565.0" y2="466.1" stroke="url(#fanGrad)" stroke-width="1" opacity="0.14"/>
+      <line x1="500" y1="0" x2="612.2" y2="477.5" stroke="url(#fanGrad)" stroke-width="1" opacity="0.13"/>
+      <line x1="500" y1="0" x2="662.0" y2="484.2" stroke="url(#fanGrad)" stroke-width="1" opacity="0.12"/>
+      <line x1="500" y1="0" x2="690.1" y2="431.9" stroke="url(#fanGrad)" stroke-width="1" opacity="0.12"/>
+      <line x1="500" y1="0" x2="738.7" y2="430.5" stroke="url(#fanGrad)" stroke-width="1" opacity="0.11"/>
+      <line x1="500" y1="0" x2="788.5" y2="423.9" stroke="url(#fanGrad)" stroke-width="1" opacity="0.10"/>
+      <line x1="500" y1="0" x2="801.3" y2="366.1" stroke="url(#fanGrad)" stroke-width="1" opacity="0.09"/>
+      <line x1="500" y1="0" x2="847.8" y2="352.0" stroke="url(#fanGrad)" stroke-width="1" opacity="0.09"/>
+      <line x1="500" y1="0" x2="894.0" y2="332.6" stroke="url(#fanGrad)" stroke-width="1" opacity="0.08"/>
+      <line x1="500" y1="0" x2="890.5" y2="273.5" stroke="url(#fanGrad)" stroke-width="1" opacity="0.07"/>
+      <line x1="500" y1="0" x2="931.4" y2="247.7" stroke="url(#fanGrad)" stroke-width="1" opacity="0.06"/>
+      <line x1="500" y1="0" x2="970.6" y2="216.9" stroke="url(#fanGrad)" stroke-width="1" opacity="0.06"/>
+      <line x1="500" y1="0" x2="951.1" y2="160.9" stroke="url(#fanGrad)" stroke-width="1" opacity="0.05"/>
+      <circle cx="623" cy="41" r="1.8" fill="var(--accent)" opacity="0.21"/>
+      <circle cx="708" cy="328" r="2.8" fill="var(--accent)" opacity="0.17"/>
+      <circle cx="431" cy="43" r="1.7" fill="var(--accent)" opacity="0.28"/>
+      <circle cx="83" cy="117" r="2.4" fill="var(--accent)" opacity="0.29"/>
+      <circle cx="254" cy="289" r="2.7" fill="var(--accent)" opacity="0.15"/>
+      <circle cx="769" cy="337" r="1.9" fill="var(--accent)" opacity="0.19"/>
+      <circle cx="902" cy="178" r="1.5" fill="var(--accent)" opacity="0.17"/>
+      <circle cx="806" cy="296" r="2.7" fill="var(--accent)" opacity="0.33"/>
+      <circle cx="532" cy="458" r="2.0" fill="var(--accent)" opacity="0.29"/>
+      <circle cx="790" cy="302" r="2.8" fill="var(--accent)" opacity="0.29"/>
+      <circle cx="680" cy="50" r="1.8" fill="var(--accent)" opacity="0.22"/>
+      <circle cx="130" cy="132" r="1.6" fill="var(--accent)" opacity="0.22"/>
+      <circle cx="619" cy="191" r="2.0" fill="var(--accent)" opacity="0.20"/>
+      <circle cx="295" cy="442" r="2.4" fill="var(--accent)" opacity="0.30"/>
+      <circle cx="211" cy="351" r="1.7" fill="var(--accent)" opacity="0.24"/>
+      <circle cx="931" cy="312" r="2.3" fill="var(--accent)" opacity="0.32"/>
+    </svg>
     <div class="wrap hero-inner">
       <div class="hero-badge"><span class="dot"></span> Live trend intelligence · India &amp; France</div>
       <h1>See what's breaking out <span class="accent-text">before it's obvious.</span></h1>
@@ -266,20 +396,29 @@ table.compare-table{width:100%; border-collapse:collapse;}
       <!-- Sample trend card mockup — mirrors the real .trend-card component -->
       <div class="hero-cardshow">
         <div class="trend-card featured">
-          <div class="tc-top">
-            <div>
-              <div class="tc-name">🇮🇳 AI Coding Agents for Regional Languages</div>
-              <div class="tc-meta">
-                <span class="badge breakout">Exploding</span>
-                <span class="cat-pill">Developer Tools</span>
+          <div class="tc-top-row">
+            <div class="trend-texture tx-devtools" aria-hidden="true"></div>
+            <div class="tc-top" style="flex:1;">
+              <div>
+                <div class="tc-name">🇮🇳 AI Coding Agents for Regional Languages</div>
+                <div class="tc-meta">
+                  <span class="badge breakout">Exploding</span>
+                  <span class="cat-pill">Developer Tools</span>
+                </div>
               </div>
+              <span class="score-pill">87</span>
             </div>
-            <span class="score-pill">87</span>
           </div>
           <div class="tc-blurb">Sustained multi-source mentions across dev.to and Hacker News threads discussing regional-language coding assistants, with early Product Hunt launches corroborating the signal.</div>
-          <div class="tc-spark">
-            <svg viewBox="0 0 320 60" preserveAspectRatio="none">
-              <polyline points="0,50 40,47 80,44 120,38 160,32 200,22 240,16 280,8 320,4" fill="none" style="stroke:var(--breakout)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="tc-spark-lg">
+            <svg viewBox="0 0 320 100" preserveAspectRatio="none">
+              <defs><linearGradient id="heroSpark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--breakout)" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="var(--breakout)" stop-opacity="0"/>
+              </linearGradient></defs>
+              <polygon points="0,100 0,88 40,84 80,78 120,66 160,52 200,36 240,22 280,10 320,4 320,100" fill="url(#heroSpark)"/>
+              <polyline points="0,88 40,84 80,78 120,66 160,52 200,36 240,22 280,10 320,4" fill="none" style="stroke:var(--breakout)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="tc-peak-dot" cx="320" cy="4" r="4" fill="var(--breakout)"/>
             </svg>
           </div>
           <div class="tc-foot"><span class="src">Sources: Hacker News · dev.to · Product Hunt</span><span>Updated recently</span></div>
@@ -318,6 +457,65 @@ table.compare-table{width:100%; border-collapse:collapse;}
           <p>A foresight chatbot answers questions grounded in the same stored trend and source data shown on the dashboard — with AI-derived notes always labeled as such.</p>
         </div>
       </div>
+      <div class="source-badges">
+        <span class="source-badge hn"><span class="mark">Y</span> Hacker News</span>
+        <span class="source-badge devto"><span class="mark">D</span> dev.to</span>
+        <span class="source-badge ph"><span class="mark">P</span> Product Hunt</span>
+        <span class="source-badge reddit"><span class="mark">R</span> Reddit</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRODUCT PREVIEW (browser-frame mockup) ================= -->
+  <section class="section" id="product-preview">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-eyebrow">Inside the dashboard</div>
+        <h2>One workspace for signal, scoring &amp; foresight</h2>
+        <p>An illustrative preview of the dashboard's layout — not live data. Launch the dashboard for the real, continuously updating feed.</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-frame-bar">
+          <span class="browser-frame-dot"></span><span class="browser-frame-dot"></span><span class="browser-frame-dot"></span>
+          <span class="browser-frame-url">🔒 app.antenna — /trends</span>
+        </div>
+        <div class="browser-frame-body">
+          <div class="bf-nav">
+            <div class="bf-nav-item active"><span>◧</span> Overview</div>
+            <div class="bf-nav-item"><span>📈</span> Trends</div>
+            <div class="bf-nav-item"><span>🎯</span> Trend Radar</div>
+            <div class="bf-nav-item"><span>💡</span> Startup Ideas</div>
+            <div class="bf-nav-item"><span>★</span> Watchlist</div>
+            <div class="bf-nav-item"><span>🚀</span> Startups</div>
+          </div>
+          <div class="bf-main">
+            <div class="bf-kpis">
+              <div class="bf-kpi"><div class="n" style="color:var(--breakout)">18</div><div class="l">Exploding</div></div>
+              <div class="bf-kpi"><div class="n" style="color:var(--rising)">34</div><div class="l">Rising</div></div>
+              <div class="bf-kpi"><div class="n" style="color:var(--steady)">52</div><div class="l">Regular</div></div>
+            </div>
+            <div class="bf-mini-cards">
+              <div class="bf-mini-card">
+                <div class="t">🇮🇳 Regional-Language Coding Agents</div>
+                <svg viewBox="0 0 320 100" preserveAspectRatio="none"><polyline points="0,88 40,84 80,78 120,66 160,52 200,36 240,22 280,10 320,4" fill="none" style="stroke:var(--breakout)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="bf-mini-card">
+                <div class="t">🇫🇷 On-Device LLM Inference</div>
+                <svg viewBox="0 0 320 100" preserveAspectRatio="none"><polyline points="0,80 40,76 80,64 120,58 160,46 200,42 240,30 280,26 320,15" fill="none" style="stroke:var(--rising)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="bf-mini-card">
+                <div class="t">🇮🇳 Developer Observability</div>
+                <svg viewBox="0 0 320 100" preserveAspectRatio="none"><polyline points="0,48 40,52 80,44 120,50 160,42 200,48 240,40 280,46 320,42" fill="none" style="stroke:var(--steady)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="bf-mini-card">
+                <div class="t">🇫🇷 Vertical SaaS Checkout</div>
+                <svg viewBox="0 0 320 100" preserveAspectRatio="none"><polyline points="0,66 40,42 80,24 120,14 160,18 200,22 240,26 280,24 320,28" fill="none" style="stroke:var(--text-faint)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-caption">Sidebar, KPIs and card layout mirror the real dashboard — the numbers and curves above are illustrative, not a live feed.</div>
     </div>
   </section>
 
@@ -326,10 +524,10 @@ table.compare-table{width:100%; border-collapse:collapse;}
     <div class="wrap">
       <p>Built for strategists, researchers &amp; product teams tracking real signal across India &amp; France.</p>
       <div class="trust-sources">
-        <span>Hacker News</span>
-        <span>dev.to</span>
-        <span>Product Hunt</span>
-        <span>Reddit</span>
+        <span>4 real public sources tracked</span>
+        <span>0–100 score, fully traceable</span>
+        <span>2 markets: India &amp; France</span>
+        <span>No purchased panel data</span>
       </div>
     </div>
   </section>
@@ -345,102 +543,156 @@ table.compare-table{width:100%; border-collapse:collapse;}
       <div class="sandbox-grid">
 
         <div class="trend-card">
-          <div class="tc-top">
-            <div>
-              <div class="tc-name">🇫🇷 Vertical SaaS for Independent Retail</div>
-              <div class="tc-meta"><span class="badge rising">Rising</span><span class="cat-pill">SaaS</span></div>
+          <div class="tc-top-row">
+            <div class="trend-texture tx-saas" aria-hidden="true"></div>
+            <div class="tc-top" style="flex:1;">
+              <div>
+                <div class="tc-name">🇫🇷 Vertical SaaS for Independent Retail</div>
+                <div class="tc-meta"><span class="badge rising">Rising</span><span class="cat-pill">SaaS</span></div>
+              </div>
+              <span class="score-pill">64</span>
             </div>
-            <span class="score-pill">64</span>
           </div>
           <div class="tc-blurb">Steady growth in Product Hunt launches and Reddit discussion threads targeting small French retailers moving off spreadsheets.</div>
-          <div class="tc-spark">
-            <svg viewBox="0 0 320 60" preserveAspectRatio="none">
-              <polyline points="0,44 40,42 80,40 120,34 160,32 200,26 240,22 280,18 320,14" fill="none" style="stroke:var(--rising)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="tc-spark-lg">
+            <svg viewBox="0 0 320 100" preserveAspectRatio="none">
+              <defs><linearGradient id="s1Spark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--rising)" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="var(--rising)" stop-opacity="0"/>
+              </linearGradient></defs>
+              <polygon points="0,100 0,78 40,74 80,68 120,58 160,52 200,40 240,32 280,22 320,14 320,100" fill="url(#s1Spark)"/>
+              <polyline points="0,78 40,74 80,68 120,58 160,52 200,40 240,32 280,22 320,14" fill="none" style="stroke:var(--rising)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="tc-peak-dot" cx="320" cy="14" r="4" fill="var(--rising)"/>
             </svg>
           </div>
           <div class="tc-foot"><span class="src">Reddit · Product Hunt</span><span>Preview</span></div>
         </div>
 
         <div class="trend-card">
-          <div class="tc-top">
-            <div>
-              <div class="tc-name">🇮🇳 Creator Commerce Checkout Tools</div>
-              <div class="tc-meta"><span class="badge steady">Regular</span><span class="cat-pill">E-Commerce</span></div>
+          <div class="tc-top-row">
+            <div class="trend-texture tx-ecom" aria-hidden="true"></div>
+            <div class="tc-top" style="flex:1;">
+              <div>
+                <div class="tc-name">🇮🇳 Creator Commerce Checkout Tools</div>
+                <div class="tc-meta"><span class="badge steady">Regular</span><span class="cat-pill">E-Commerce</span></div>
+              </div>
+              <span class="score-pill">51</span>
             </div>
-            <span class="score-pill">51</span>
           </div>
           <div class="tc-blurb">Consistent, non-spiky mention volume across dev.to and Hacker News — an established niche rather than a fresh breakout.</div>
-          <div class="tc-spark">
-            <svg viewBox="0 0 320 60" preserveAspectRatio="none">
-              <polyline points="0,30 40,32 80,28 120,31 160,27 200,30 240,26 280,29 320,27" fill="none" style="stroke:var(--steady)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="tc-spark-lg">
+            <svg viewBox="0 0 320 100" preserveAspectRatio="none">
+              <defs><linearGradient id="s2Spark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--steady)" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="var(--steady)" stop-opacity="0"/>
+              </linearGradient></defs>
+              <polygon points="0,100 0,52 40,55 80,48 120,53 160,46 200,50 240,44 280,48 320,44 320,100" fill="url(#s2Spark)"/>
+              <polyline points="0,52 40,55 80,48 120,53 160,46 200,50 240,44 280,48 320,44" fill="none" style="stroke:var(--steady)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="tc-peak-dot" cx="320" cy="44" r="4" fill="var(--steady)"/>
             </svg>
           </div>
           <div class="tc-foot"><span class="src">dev.to · Hacker News</span><span>Preview</span></div>
         </div>
 
         <div class="trend-card">
-          <div class="tc-top">
-            <div>
-              <div class="tc-name">🇫🇷 On-Device LLM Inference Libraries</div>
-              <div class="tc-meta"><span class="badge breakout">Exploding</span><span class="cat-pill">Dev Tools</span></div>
+          <div class="tc-top-row">
+            <div class="trend-texture tx-devtools" aria-hidden="true"></div>
+            <div class="tc-top" style="flex:1;">
+              <div>
+                <div class="tc-name">🇫🇷 On-Device LLM Inference Libraries</div>
+                <div class="tc-meta"><span class="badge breakout">Exploding</span><span class="cat-pill">Dev Tools</span></div>
+              </div>
+              <span class="score-pill">79</span>
             </div>
-            <span class="score-pill">79</span>
           </div>
           <div class="tc-blurb">Sharp week-over-week increase in Hacker News front-page appearances and dev.to tutorial posts.</div>
-          <div class="tc-spark">
-            <svg viewBox="0 0 320 60" preserveAspectRatio="none">
-              <polyline points="0,52 40,48 80,46 120,36 160,30 200,20 240,12 280,10 320,3" fill="none" style="stroke:var(--breakout)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="tc-spark-lg">
+            <svg viewBox="0 0 320 100" preserveAspectRatio="none">
+              <defs><linearGradient id="s3Spark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--breakout)" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="var(--breakout)" stop-opacity="0"/>
+              </linearGradient></defs>
+              <polygon points="0,100 0,90 40,82 80,76 120,58 160,48 200,30 240,16 280,12 320,3 320,100" fill="url(#s3Spark)"/>
+              <polyline points="0,90 40,82 80,76 120,58 160,48 200,30 240,16 280,12 320,3" fill="none" style="stroke:var(--breakout)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="tc-peak-dot" cx="320" cy="3" r="4" fill="var(--breakout)"/>
             </svg>
           </div>
           <div class="tc-foot"><span class="src">Hacker News · dev.to</span><span>Preview</span></div>
         </div>
 
         <div class="trend-card">
-          <div class="tc-top">
-            <div>
-              <div class="tc-name">🇮🇳 Vernacular Short-Form Content Apps</div>
-              <div class="tc-meta"><span class="badge peaked">Peaked</span><span class="cat-pill">Media</span></div>
+          <div class="tc-top-row">
+            <div class="trend-texture tx-media" aria-hidden="true"></div>
+            <div class="tc-top" style="flex:1;">
+              <div>
+                <div class="tc-name">🇮🇳 Vernacular Short-Form Content Apps</div>
+                <div class="tc-meta"><span class="badge peaked">Peaked</span><span class="cat-pill">Media</span></div>
+              </div>
+              <span class="score-pill">38</span>
             </div>
-            <span class="score-pill">38</span>
           </div>
           <div class="tc-blurb">Mention volume climbed earlier and has since flattened — a useful signal for teams deciding whether it's still worth prioritizing.</div>
-          <div class="tc-spark">
-            <svg viewBox="0 0 320 60" preserveAspectRatio="none">
-              <polyline points="0,40 40,26 80,16 120,10 160,12 200,14 240,16 280,15 320,17" fill="none" style="stroke:var(--text-faint)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="tc-spark-lg">
+            <svg viewBox="0 0 320 100" preserveAspectRatio="none">
+              <defs><linearGradient id="s4Spark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--text-faint)" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="var(--text-faint)" stop-opacity="0"/>
+              </linearGradient></defs>
+              <polygon points="0,100 0,66 40,42 80,24 120,14 160,18 200,22 240,26 280,24 320,28 320,100" fill="url(#s4Spark)"/>
+              <polyline points="0,66 40,42 80,24 120,14 160,18 200,22 240,26 280,24 320,28" fill="none" style="stroke:var(--text-faint)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="tc-peak-dot" cx="320" cy="28" r="4" fill="var(--text-faint)"/>
             </svg>
           </div>
           <div class="tc-foot"><span class="src">Reddit · dev.to</span><span>Preview</span></div>
         </div>
 
         <div class="trend-card">
-          <div class="tc-top">
-            <div>
-              <div class="tc-name">🇫🇷 B2B Fintech Payment Rails</div>
-              <div class="tc-meta"><span class="badge rising">Rising</span><span class="cat-pill">Fintech</span></div>
+          <div class="tc-top-row">
+            <div class="trend-texture tx-fintech" aria-hidden="true"></div>
+            <div class="tc-top" style="flex:1;">
+              <div>
+                <div class="tc-name">🇫🇷 B2B Fintech Payment Rails</div>
+                <div class="tc-meta"><span class="badge rising">Rising</span><span class="cat-pill">Fintech</span></div>
+              </div>
+              <span class="score-pill">58</span>
             </div>
-            <span class="score-pill">58</span>
           </div>
           <div class="tc-blurb">Cross-source corroboration between Reddit fintech communities and Product Hunt launches over recent weeks.</div>
-          <div class="tc-spark">
-            <svg viewBox="0 0 320 60" preserveAspectRatio="none">
-              <polyline points="0,46 40,44 80,38 120,36 160,30 200,28 240,22 280,20 320,15" fill="none" style="stroke:var(--rising)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="tc-spark-lg">
+            <svg viewBox="0 0 320 100" preserveAspectRatio="none">
+              <defs><linearGradient id="s5Spark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--rising)" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="var(--rising)" stop-opacity="0"/>
+              </linearGradient></defs>
+              <polygon points="0,100 0,80 40,76 80,64 120,58 160,46 200,42 240,30 280,26 320,15 320,100" fill="url(#s5Spark)"/>
+              <polyline points="0,80 40,76 80,64 120,58 160,46 200,42 240,30 280,26 320,15" fill="none" style="stroke:var(--rising)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="tc-peak-dot" cx="320" cy="15" r="4" fill="var(--rising)"/>
             </svg>
           </div>
           <div class="tc-foot"><span class="src">Reddit · Product Hunt</span><span>Preview</span></div>
         </div>
 
         <div class="trend-card">
-          <div class="tc-top">
-            <div>
-              <div class="tc-name">🇮🇳 Developer-First Observability Tools</div>
-              <div class="tc-meta"><span class="badge steady">Regular</span><span class="cat-pill">Infra</span></div>
+          <div class="tc-top-row">
+            <div class="trend-texture tx-infra" aria-hidden="true"></div>
+            <div class="tc-top" style="flex:1;">
+              <div>
+                <div class="tc-name">🇮🇳 Developer-First Observability Tools</div>
+                <div class="tc-meta"><span class="badge steady">Regular</span><span class="cat-pill">Infra</span></div>
+              </div>
+              <span class="score-pill">47</span>
             </div>
-            <span class="score-pill">47</span>
           </div>
           <div class="tc-blurb">A mature, low-volatility category with a steady baseline of Hacker News and dev.to activity.</div>
-          <div class="tc-spark">
-            <svg viewBox="0 0 320 60" preserveAspectRatio="none">
-              <polyline points="0,28 40,30 80,26 120,29 160,25 200,28 240,24 280,27 320,25" fill="none" style="stroke:var(--steady)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="tc-spark-lg">
+            <svg viewBox="0 0 320 100" preserveAspectRatio="none">
+              <defs><linearGradient id="s6Spark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--steady)" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="var(--steady)" stop-opacity="0"/>
+              </linearGradient></defs>
+              <polygon points="0,100 0,48 40,52 80,44 120,50 160,42 200,48 240,40 280,46 320,42 320,100" fill="url(#s6Spark)"/>
+              <polyline points="0,48 40,52 80,44 120,50 160,42 200,48 240,40 280,46 320,42" fill="none" style="stroke:var(--steady)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="tc-peak-dot" cx="320" cy="42" r="4" fill="var(--steady)"/>
             </svg>
           </div>
           <div class="tc-foot"><span class="src">Hacker News · dev.to</span><span>Preview</span></div>
