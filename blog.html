@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Antenna | Trend Intelligence &amp; Strategic Foresight</title>
+<meta name="description" content="Practical, no-fluff writing on spotting trends early, reading signal quality, and building a real tech scouting practice — from the team behind Antenna.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
+<style>
+:root{
+  --bg:#0a0d14; --bg-elev:#10141d; --bg-elev-2:#161b26; --bg-card:#12161f;
+  --border:#232938; --border-soft:#1b202c;
+  --text:#eef1f7; --text-dim:#9aa4b8; --text-faint:#5f6c85;
+  --accent:#22d3a8; --accent-dim:#15806a; --accent-glow:rgba(34,211,168,.18);
+  --breakout:#ff6b5e; --breakout-bg:rgba(255,107,94,.13);
+  --rising:#ffb648; --rising-bg:rgba(255,182,72,.13);
+  --steady:#5ea1ff; --steady-bg:rgba(94,161,255,.13);
+  --radius:14px; --radius-sm:9px;
+  --shadow: 0 10px 40px -12px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(34,211,168,.09), transparent 60%),
+    radial-gradient(900px 500px at -5% 0%, rgba(94,161,255,.07), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  min-height:100vh;
+  font-size:14px;
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#242a38; border-radius:8px; border:2px solid var(--bg);}
+::-webkit-scrollbar-thumb:hover{background:#2f3648;}
+a{color:inherit; text-decoration:none;}
+
+/* ---------- Site header ---------- */
+.site-header{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:20px; padding:16px 32px;
+  background:rgba(10,13,20,.82); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-soft);
+}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand-mark{
+  width:34px; height:34px; border-radius:9px;
+  background:linear-gradient(135deg,var(--accent),#0ea5e9);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; box-shadow:0 4px 18px -4px var(--accent-glow);
+  flex-shrink:0;
+}
+.brand-text{display:flex; flex-direction:column; line-height:1.15;}
+.brand-text b{font-size:16px; letter-spacing:.2px;}
+.brand-text span{font-size:11px; color:var(--text-faint); font-weight:500;}
+
+.site-nav{display:flex; align-items:center; gap:6px;}
+.site-nav a{
+  padding:8px 14px; border-radius:9px; font-size:13.5px; font-weight:500;
+  color:var(--text-dim); transition:background .15s, color .15s;
+}
+.site-nav a:hover{background:var(--bg-elev-2); color:var(--text);}
+.site-nav a.current{background:var(--accent-glow); color:var(--accent);}
+
+.header-actions{display:flex; align-items:center; gap:10px;}
+.btn{
+  display:inline-flex; align-items:center; gap:7px; padding:8.5px 16px; border-radius:9px;
+  font-size:13px; font-weight:600; cursor:pointer; border:1px solid var(--border);
+  background:var(--bg-elev-2); color:var(--text); transition:all .15s; white-space:nowrap;
+}
+.btn:hover{background:var(--bg-card); border-color:#2c3448;}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:#0a0d14;}
+.btn.primary:hover{background:#3fe0b8;}
+
+.nav-toggle{display:none; background:var(--bg-elev-2); border:1px solid var(--border); border-radius:9px; width:36px; height:36px; align-items:center; justify-content:center; color:var(--text); font-size:16px; cursor:pointer;}
+
+/* ---------- Hero ---------- */
+.blog-hero{
+  max-width:820px; margin:0 auto; padding:64px 28px 36px; text-align:center;
+}
+.blog-hero .eyebrow{
+  display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:700;
+  letter-spacing:.6px; text-transform:uppercase; color:var(--accent);
+  background:var(--accent-glow); border:1px solid rgba(34,211,168,.25);
+  padding:6px 14px; border-radius:20px; margin-bottom:18px;
+}
+.blog-hero h1{
+  font-size:38px; font-weight:800; letter-spacing:-.6px; line-height:1.15; margin-bottom:14px;
+}
+.blog-hero p{font-size:15.5px; color:var(--text-dim); line-height:1.65; max-width:620px; margin:0 auto;}
+
+/* ---------- Article list ---------- */
+.blog-wrap{max-width:820px; margin:0 auto; padding:12px 28px 90px; display:flex; flex-direction:column; gap:16px;}
+
+.post{
+  background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.post-head{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  padding:22px 24px; cursor:pointer; user-select:none;
+}
+.post-head:hover{background:var(--bg-elev-2);}
+.post-meta{display:flex; align-items:center; gap:10px; margin-bottom:9px; flex-wrap:wrap;}
+.tag{
+  font-size:10.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
+  padding:3px 9px; border-radius:20px;
+}
+.tag.foresight{color:var(--steady); background:var(--steady-bg);}
+.tag.signals{color:var(--rising); background:var(--rising-bg);}
+.tag.scouting{color:var(--accent); background:var(--accent-glow);}
+.tag.strategy{color:var(--breakout); background:var(--breakout-bg);}
+.read-time{font-size:11.5px; color:var(--text-faint);}
+.post-head h2{font-size:18.5px; font-weight:700; letter-spacing:-.2px; line-height:1.35;}
+.post-dek{font-size:13px; color:var(--text-dim); margin-top:6px; line-height:1.55;}
+.chevron{
+  flex-shrink:0; width:30px; height:30px; border-radius:8px; background:var(--bg-elev-2);
+  border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+  color:var(--text-dim); font-size:13px; transition:transform .2s ease, background .15s;
+  margin-top:2px;
+}
+.post.open .chevron{transform:rotate(180deg); color:var(--accent); border-color:rgba(34,211,168,.3);}
+
+.post-body{
+  max-height:0; overflow:hidden; transition:max-height .35s ease;
+}
+.post.open .post-body{max-height:2400px;}
+.post-body-inner{
+  padding:0 24px 26px; border-top:1px solid var(--border-soft);
+}
+.post-body-inner p{font-size:14px; color:var(--text-dim); line-height:1.75; margin-top:16px;}
+.post-body-inner p:first-child{margin-top:20px;}
+.post-body-inner strong{color:var(--text); font-weight:600;}
+.post-body-inner h3{font-size:14.5px; font-weight:700; color:var(--text); margin-top:22px; margin-bottom:6px;}
+.post-body-inner ul{margin-top:14px; padding-left:20px; display:flex; flex-direction:column; gap:8px;}
+.post-body-inner li{font-size:13.5px; color:var(--text-dim); line-height:1.6;}
+.post-body-inner li::marker{color:var(--accent);}
+
+/* status badge legend reuse example within article body */
+.badge-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;}
+.badge{font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; letter-spacing:.2px;}
+.badge.breakout{color:var(--breakout); background:var(--breakout-bg);}
+.badge.rising{color:var(--rising); background:var(--rising-bg);}
+.badge.steady{color:var(--steady); background:var(--steady-bg);}
+.badge.peaked{color:var(--text-faint); background:var(--bg-elev-2); border:1px solid var(--border);}
+
+.post-foot{
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  margin-top:22px; padding-top:16px; border-top:1px solid var(--border-soft);
+}
+.post-foot .byline{font-size:12px; color:var(--text-faint);}
+
+/* ---------- CTA band ---------- */
+.cta-band{
+  max-width:820px; margin:8px auto 0; padding:34px 28px; text-align:center;
+  background:var(--bg-elev); border:1px solid var(--border-soft); border-radius:var(--radius);
+}
+.cta-band h2{font-size:20px; font-weight:700; margin-bottom:8px; letter-spacing:-.2px;}
+.cta-band p{font-size:13.5px; color:var(--text-dim); margin-bottom:18px;}
+.cta-band .btn-row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+
+/* ---------- Footer ---------- */
+.site-footer{
+  border-top:1px solid var(--border-soft); background:var(--bg-elev);
+  padding:36px 32px 28px; margin-top:40px;
+}
+.footer-inner{
+  max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:16px;
+}
+.footer-links{display:flex; gap:18px; flex-wrap:wrap;}
+.footer-links a{font-size:12.5px; color:var(--text-dim);}
+.footer-links a:hover{color:var(--text);}
+.footer-copy{font-size:11.5px; color:var(--text-faint);}
+
+@media (max-width:820px){
+  .site-nav{display:none;}
+  .nav-toggle{display:flex;}
+  .blog-hero h1{font-size:29px;}
+  .post-head{padding:18px 18px;}
+  .post-body-inner{padding:0 18px 22px;}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="brand" style="display:flex; align-items:center; gap:10px;">
+    <div class="brand-mark">📡</div>
+    <div class="brand-text"><b>Antenna</b><span>Trend Intelligence</span></div>
+  </a>
+  <nav class="site-nav">
+    <a href="index.html">Home</a>
+    <a href="blog.html" class="current">Blog</a>
+    <a href="use-cases.html">Use Cases</a>
+    <a href="reports.html">Reports</a>
+    <a href="pricing.html">Pricing</a>
+  </nav>
+  <div class="header-actions">
+    <a href="app.html" class="btn primary">Launch Dashboard</a>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main>
+  <section class="blog-hero">
+    <span class="eyebrow">📡 Antenna Blog</span>
+    <h1>Field notes on catching trends before everyone else does</h1>
+    <p>Practical writing on trend signals, foresight, and tech scouting — the thinking behind how we built Antenna, shared in the open.</p>
+  </section>
+
+  <div class="blog-wrap">
+
+    <article class="post open" id="spot-exploding-trend">
+      <div class="post-head" onclick="this.closest('.post').classList.toggle('open')">
+        <div>
+          <div class="post-meta">
+            <span class="tag signals">Signals</span>
+            <span class="read-time">6 min read</span>
+          </div>
+          <h2>How to spot an exploding trend before it peaks</h2>
+          <p class="post-dek">The window between "worth watching" and "everyone's already there" is shorter than it looks. Here's what to actually look at.</p>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="post-body">
+        <div class="post-body-inner">
+          <p>Most people notice a trend when it's already loud — it's showing up in their feed, their inbox, three different newsletters in the same week. By that point the trend isn't early anymore; it's mainstream, and mainstream is where margins get thin and differentiation gets hard. The actual opportunity window is earlier and quieter, and it has a specific shape you can learn to recognize.</p>
+          <p>The first thing to watch isn't volume, it's <strong>acceleration</strong>. A topic that goes from near-zero mentions to a modest, steadily climbing line is more interesting than one that's already at a high, flat plateau. Flat-but-high usually means the trend has already been discovered and priced in by everyone paying attention. A rising slope, even a small one, means the discovery is still happening — and you get to be part of that discovery instead of reacting to it.</p>
+          <p>Second, look at <strong>where</strong> the early activity is concentrated. Trends that eventually go mainstream often start in a narrow, specific community — a subreddit, a niche newsletter, a small cluster of practitioners — before spreading outward. If a topic is only appearing in one very broad, general-interest channel, that's weaker evidence than the same volume appearing across several unrelated, specific niches. Cross-community emergence is a much stronger early signal than raw mention count in any single place.</p>
+          <p>Third, separate <strong>novelty from repetition</strong>. An exploding trend usually generates new angles as it grows — new use cases, new objections, new sub-debates branching off the core idea. A trend that's just the same three talking points getting reposted is often closer to its ceiling than its beginning, even if the numbers still look like they're climbing.</p>
+          <div class="badge-row">
+            <span class="badge breakout">Exploding</span>
+            <span class="badge rising">Rising</span>
+            <span class="badge steady">Regular</span>
+            <span class="badge peaked">Peaked</span>
+          </div>
+          <p>In practice, this means treating the shape of the curve, not the height of it, as your primary signal. A small but consistently accelerating trend deserves more attention than a large one that just spiked once. The goal isn't to catch every trend early — that's impossible and not even useful. The goal is to build a habit of checking acceleration and breadth before volume, so that when something real is forming, you're already looking in the right direction.</p>
+          <div class="post-foot">
+            <span class="byline">Antenna Team</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="post" id="foresight-vs-reactive">
+      <div class="post-head" onclick="this.closest('.post').classList.toggle('open')">
+        <div>
+          <div class="post-meta">
+            <span class="tag foresight">Foresight</span>
+            <span class="read-time">5 min read</span>
+          </div>
+          <h2>Strategic foresight vs. reactive trend-chasing</h2>
+          <p class="post-dek">Two teams can watch the same signals and end up with completely different outcomes, depending on what they're actually optimizing for.</p>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="post-body">
+        <div class="post-body-inner">
+          <p>Trend-chasing and strategic foresight look similar from the outside — both involve watching signals, both result in action — but they run on opposite logic. Trend-chasing asks "what's hot right now, and how fast can we respond?" Foresight asks "what direction is this space moving in, and where will it be useful to already be standing when it arrives?" The first is a sprint that resets every week. The second compounds.</p>
+          <p>The tell-tale sign of reactive trend-chasing is that it produces a lot of activity with very little accumulated advantage. A team ships a feature or a campaign tied to whatever spiked last week, gets a short-lived bump, and then has to find the next spike to chase. Nothing about last week's response makes next week's response easier. It's motion without direction — busy, but not compounding.</p>
+          <p>Foresight-driven teams instead treat each signal as a data point about a longer arc, not an isolated event to react to. They ask what a given trend implies about a shift in behavior, expectation, or infrastructure that's likely to keep unfolding — and then they position for that arc rather than for the single data point. This is slower to show results but it builds something: an accumulated understanding of a space that makes the next decision easier than the last one, instead of equally hard.</p>
+          <h3>A useful way to tell them apart in your own process</h3>
+          <ul>
+            <li>Reactive: "This is trending, what do we do about it this week?"</li>
+            <li>Foresight: "This is trending — what does it tell us about where this category is heading over the next few quarters?"</li>
+            <li>Reactive treats every signal as equally urgent. Foresight sorts signals by what they reveal about direction, not just intensity.</li>
+            <li>Reactive optimizes for not missing out. Foresight optimizes for being positioned early and cheaply, before being positioned requires expensive urgency.</li>
+          </ul>
+          <p>The practical implication isn't to ignore fast-moving signals — speed still matters, especially for genuinely time-boxed opportunities. It's to build a habit of asking the second-order question before acting on the first-order one: not just "is this trending," but "if this keeps developing the way it's developing, what should be true about our roadmap, our positioning, or our product a year from now?" Teams that consistently ask that question end up making fewer, better-timed moves instead of many small, forgettable ones.</p>
+          <div class="post-foot">
+            <span class="byline">Antenna Team</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="post" id="volatility-seasonality">
+      <div class="post-head" onclick="this.closest('.post').classList.toggle('open')">
+        <div>
+          <div class="post-meta">
+            <span class="tag signals">Signals</span>
+            <span class="read-time">6 min read</span>
+          </div>
+          <h2>Reading volatility and seasonality signals correctly</h2>
+          <p class="post-dek">Not every spike is a trend, and not every dip is a decline. Learning to tell the difference is mostly about time horizon.</p>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="post-body">
+        <div class="post-body-inner">
+          <p>One of the most common mistakes in reading trend data is treating a single sharp move — up or down — as meaningful on its own. A topic can spike for a day because of one viral post, one news event, or one influential account, and then settle right back to where it was. If you react to that spike as if it were a structural shift, you'll spend effort chasing noise. The fix isn't to ignore spikes; it's to hold them against a longer baseline before deciding what they mean.</p>
+          <p>Volatility, in this context, is simply how much a signal jumps around relative to its own recent history. A high-volatility topic can look exciting week to week but tell you very little about where it's actually headed, because the swings are as likely to be noise as signal. A lower-volatility topic that's steadily climbing, even slowly, is often more trustworthy precisely because the trend is visible above the noise floor.</p>
+          <p>Seasonality is a related but distinct trap. Plenty of topics rise and fall on a predictable calendar — end-of-year planning cycles, back-to-school periods, industry conference seasons, holiday shopping windows. If you don't account for this, you can easily mistake a recurring seasonal bump for a new emerging trend, or worse, mistake the normal seasonal dip for the trend dying out. The way to catch this is to compare a signal against the same period in prior cycles, not just against last week or last month.</p>
+          <h3>A simple mental checklist before acting on a signal</h3>
+          <ul>
+            <li>Has this moved this way before at a similar time, in a recognizable seasonal pattern?</li>
+            <li>Is the current move large relative to this topic's normal volatility, or is it within its usual range?</li>
+            <li>Does the move hold up over multiple time windows (days, weeks, a full cycle), or does it disappear once you zoom out?</li>
+          </ul>
+          <p>None of this means slowing down for its own sake. It means building the reflex to ask "compared to what, and over what time frame" before treating any single data point as a verdict. Trends that matter tend to survive that scrutiny; noise usually doesn't.</p>
+          <div class="post-foot">
+            <span class="byline">Antenna Team</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="post" id="multi-channel-signal">
+      <div class="post-head" onclick="this.closest('.post').classList.toggle('open')">
+        <div>
+          <div class="post-meta">
+            <span class="tag strategy">Strategy</span>
+            <span class="read-time">5 min read</span>
+          </div>
+          <h2>Why multi-channel signal beats single-platform monitoring</h2>
+          <p class="post-dek">Watching one platform tells you what that platform's audience and algorithm favor. It doesn't tell you what's actually happening.</p>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="post-body">
+        <div class="post-body-inner">
+          <p>It's tempting to pick one platform — one social network, one forum, one news source — and treat it as a proxy for "what's trending" in general. It's simpler to monitor, and it feels comprehensive because that one platform is genuinely full of activity. The problem is that every platform has its own audience skew, its own algorithmic bias toward certain content formats, and its own blind spots. What looks like a broad trend can actually just be a trend within that platform's specific demographic and incentive structure.</p>
+          <p>This matters most at exactly the moment you'd want early warning: the beginning. A topic can be building real momentum among practitioners on a niche forum or in industry-specific discussion long before it shows up on a mainstream platform's trending list, because mainstream platforms tend to surface things only after they've already reached a broader audience. If you're only watching the mainstream layer, you're structurally guaranteed to see things late — not because you're missing signal, but because you're only sampling the part of the signal that arrives last.</p>
+          <p>The opposite failure mode also exists: something can look enormous on one platform because it's tailor-made for that platform's format and audience, while barely registering anywhere else. Without a second or third source to check it against, it's easy to mistake platform-specific virality for broader relevance, and overinvest accordingly.</p>
+          <h3>What multi-channel actually buys you</h3>
+          <ul>
+            <li>Earlier detection, because niche and practitioner-heavy channels often move before mainstream ones.</li>
+            <li>Better false-positive filtering, because a signal that shows up across independent channels is less likely to be a single platform's algorithmic quirk.</li>
+            <li>A more accurate read on breadth, since a topic that only lives in one channel tells you about that audience — not about the category as a whole.</li>
+          </ul>
+          <p>The practical takeaway isn't "monitor everything everywhere," which isn't realistic for most teams. It's to deliberately include at least one channel that behaves differently from your primary one — a niche community alongside a mainstream platform, a professional/industry source alongside a consumer one — so that agreement between them means something, and disagreement is itself useful information about where a trend actually stands.</p>
+          <div class="post-foot">
+            <span class="byline">Antenna Team</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="post" id="tech-scouting-framework">
+      <div class="post-head" onclick="this.closest('.post').classList.toggle('open')">
+        <div>
+          <div class="post-meta">
+            <span class="tag scouting">Scouting</span>
+            <span class="read-time">7 min read</span>
+          </div>
+          <h2>A practical framework for tech scouting</h2>
+          <p class="post-dek">A repeatable process beats a brilliant one-off scan. Here's a simple structure that holds up over time.</p>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="post-body">
+        <div class="post-body-inner">
+          <p>Tech scouting fails most often not because teams miss the right technology, but because their process for finding it isn't repeatable. Someone does an impressive one-time deep dive, produces a great report, and then six months later nobody has kept scanning, and the team is caught flat-footed by something that had actually been visible for a while. A framework that runs consistently, even a simple one, beats an occasional brilliant effort.</p>
+          <h3>1. Define your scouting lanes narrowly</h3>
+          <p>"Watch everything in our industry" isn't a scannable brief — it's too broad to act on and too vague to know when you've covered it. Break your scope into a handful of specific lanes: particular problem areas you're trying to solve, particular categories of technology or approach, particular adjacent industries that tend to produce ideas that migrate into yours. Narrow lanes are easier to scan consistently and easier to judge relevance against.</p>
+          <h3>2. Separate discovery from evaluation</h3>
+          <p>Discovery is casting a wide net — noticing what's emerging across your lanes without immediately judging it. Evaluation is deciding what's worth deeper investigation. Doing both at once tends to bias discovery toward only things that already look obviously important, which defeats the point of scouting early. Let discovery be permissive; apply the judgment later, on a schedule, against clear criteria.</p>
+          <h3>3. Score against criteria that match your actual constraints</h3>
+          <p>Generic "impact vs. feasibility" scoring is a fine starting point but works better when it's specific to your situation: your team's actual capacity to act on something, your typical time horizon for adoption, your tolerance for unproven approaches. A technology that's a great fit for a well-resourced R&amp;D team may be a poor fit for a lean team that needs something closer to production-ready.</p>
+          <h3>4. Close the loop with a decision, not just a report</h3>
+          <ul>
+            <li>Every scouted item should land in one of a few clear buckets: act now, monitor actively, revisit later, or drop.</li>
+            <li>"Monitor actively" needs an owner and a re-check date, or it quietly becomes "drop" by neglect.</li>
+            <li>Feed decisions back into your lanes — what you learn evaluating one item should sharpen how you scope the next scan.</li>
+          </ul>
+          <p>None of this requires exotic tooling to start. It requires discipline about scope, a habit of scanning on a fixed cadence rather than only when something prompts it, and a clear, small set of buckets for what happens after something is found. The teams that get the most out of tech scouting aren't the ones with the cleverest one-time analysis — they're the ones who kept the process running.</p>
+          <div class="post-foot">
+            <span class="byline">Antenna Team</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <div class="cta-band">
+    <h2>Put these ideas into practice</h2>
+    <p>Antenna tracks breakout, rising, and steady signals across channels so you can spend less time hunting for trends and more time acting on the ones that matter.</p>
+    <div class="btn-row">
+      <a href="app.html" class="btn primary">Launch Dashboard</a>
+      <a href="pricing.html" class="btn">See Pricing</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="brand" style="display:flex; align-items:center; gap:10px;">
+      <div class="brand-mark" style="width:28px; height:28px; font-size:14px;">📡</div>
+      <div class="brand-text"><b style="font-size:14px;">Antenna</b></div>
+    </div>
+    <nav class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="blog.html">Blog</a>
+      <a href="use-cases.html">Use Cases</a>
+      <a href="reports.html">Reports</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="app.html">Launch Dashboard</a>
+    </nav>
+    <span class="footer-copy">© 2026 Antenna. Built for research &amp; strategy teams.</span>
+  </div>
+</footer>
+
+<script>
+document.querySelector('.nav-toggle')?.addEventListener('click', function(){
+  var nav = document.querySelector('.site-nav');
+  if(!nav) return;
+  var isOpen = nav.style.display === 'flex';
+  nav.style.display = isOpen ? 'none' : 'flex';
+  nav.style.flexDirection = 'column';
+  nav.style.position = 'absolute';
+  nav.style.top = '64px';
+  nav.style.left = '0';
+  nav.style.right = '0';
+  nav.style.background = 'var(--bg-elev)';
+  nav.style.borderBottom = '1px solid var(--border-soft)';
+  nav.style.padding = '10px';
+  nav.style.zIndex = '60';
+});
+</script>
+
+</body>
+</html>

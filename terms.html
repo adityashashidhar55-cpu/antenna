@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — Antenna</title>
+<meta name="description" content="The terms that govern use of Antenna, an early-stage trend intelligence dashboard. Plain-language, honest terms for a free/freemium SaaS product.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
+<style>
+:root{
+  --bg:#0a0d14; --bg-elev:#10141d; --bg-elev-2:#161b26; --bg-card:#12161f;
+  --border:#232938; --border-soft:#1b202c;
+  --text:#eef1f7; --text-dim:#9aa4b8; --text-faint:#5f6c85;
+  --accent:#22d3a8; --accent-dim:#15806a; --accent-glow:rgba(34,211,168,.18);
+  --breakout:#ff6b5e; --breakout-bg:rgba(255,107,94,.13);
+  --rising:#ffb648; --rising-bg:rgba(255,182,72,.13);
+  --steady:#5ea1ff; --steady-bg:rgba(94,161,255,.13);
+  --radius:14px; --radius-sm:9px;
+  --shadow: 0 10px 40px -12px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(34,211,168,.09), transparent 60%),
+    radial-gradient(900px 500px at -5% 0%, rgba(94,161,255,.07), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  min-height:100vh;
+  font-size:14px;
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#242a38; border-radius:8px; border:2px solid var(--bg);}
+::-webkit-scrollbar-thumb:hover{background:#2f3648;}
+a{color:inherit; text-decoration:none;}
+
+/* ---------- Site header ---------- */
+.site-header{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:20px; padding:16px 32px;
+  background:rgba(10,13,20,.82); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-soft);
+}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand-mark{
+  width:34px; height:34px; border-radius:9px;
+  background:linear-gradient(135deg,var(--accent),#0ea5e9);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; box-shadow:0 4px 18px -4px var(--accent-glow);
+  flex-shrink:0;
+}
+.brand-text{display:flex; flex-direction:column; line-height:1.15;}
+.brand-text b{font-size:16px; letter-spacing:.2px;}
+.brand-text span{font-size:11px; color:var(--text-faint); font-weight:500;}
+
+.site-nav{display:flex; align-items:center; gap:6px;}
+.site-nav a{
+  padding:8px 14px; border-radius:9px; font-size:13.5px; font-weight:500;
+  color:var(--text-dim); transition:background .15s, color .15s;
+}
+.site-nav a:hover{background:var(--bg-elev-2); color:var(--text);}
+.site-nav a.current{background:var(--accent-glow); color:var(--accent);}
+
+.header-actions{display:flex; align-items:center; gap:10px;}
+.btn{
+  display:inline-flex; align-items:center; gap:7px; padding:8.5px 16px; border-radius:9px;
+  font-size:13px; font-weight:600; cursor:pointer; border:1px solid var(--border);
+  background:var(--bg-elev-2); color:var(--text); transition:all .15s; white-space:nowrap;
+}
+.btn:hover{background:var(--bg-card); border-color:#2c3448;}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:#0a0d14;}
+.btn.primary:hover{background:#3fe0b8;}
+
+.nav-toggle{display:none; background:var(--bg-elev-2); border:1px solid var(--border); border-radius:9px; width:36px; height:36px; align-items:center; justify-content:center; color:var(--text); font-size:16px; cursor:pointer;}
+
+/* ---------- Legal page hero ---------- */
+.legal-hero{max-width:760px; margin:0 auto; padding:56px 28px 8px; text-align:center;}
+.legal-hero .eyebrow{
+  display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:700;
+  letter-spacing:.6px; text-transform:uppercase; color:var(--accent);
+  background:var(--accent-glow); border:1px solid rgba(34,211,168,.25);
+  padding:6px 14px; border-radius:20px; margin-bottom:18px;
+}
+.legal-hero h1{font-size:34px; font-weight:800; letter-spacing:-.6px; line-height:1.15; margin-bottom:12px;}
+.legal-hero p.lede{font-size:14.5px; color:var(--text-dim); line-height:1.65; max-width:600px; margin:0 auto;}
+.legal-meta{font-size:12px; color:var(--text-faint); margin-top:16px;}
+
+.legal-toc{max-width:760px; margin:22px auto 0; padding:0 28px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+.legal-toc a{font-size:12px; padding:6px 13px; border-radius:20px; background:var(--bg-elev-2); border:1px solid var(--border); color:var(--text-dim);}
+.legal-toc a:hover{color:var(--text); border-color:#2c3448;}
+
+/* ---------- Legal prose ---------- */
+.legal-wrap{max-width:760px; margin:0 auto; padding:34px 28px 90px;}
+.legal-card{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:34px 34px 8px;}
+.legal-wrap h2{font-size:19px; font-weight:700; letter-spacing:-.2px; margin-bottom:10px; color:var(--text); padding-top:24px; border-top:1px solid var(--border-soft); margin-top:26px;}
+.legal-wrap section:first-of-type h2{border-top:none; padding-top:0; margin-top:0;}
+.legal-wrap h3{font-size:14.5px; font-weight:700; margin-top:18px; margin-bottom:6px; color:var(--text);}
+.legal-wrap p{font-size:13.5px; line-height:1.75; color:var(--text-dim); margin-top:10px;}
+.legal-wrap ul{margin-top:10px; padding-left:20px; display:flex; flex-direction:column; gap:7px;}
+.legal-wrap li{font-size:13.5px; line-height:1.65; color:var(--text-dim);}
+.legal-wrap li::marker{color:var(--accent);}
+.legal-wrap strong{color:var(--text); font-weight:600;}
+.legal-wrap a.inline-link{color:var(--accent); text-decoration:underline; text-underline-offset:2px;}
+.callout{margin-top:16px; padding:14px 16px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-elev-2); font-size:13px; color:var(--text-dim); line-height:1.6;}
+.callout.honest{border-color:rgba(94,161,255,.3); background:var(--steady-bg);}
+.callout strong{color:var(--text);}
+.badge-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
+.badge{font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; letter-spacing:.2px;}
+.badge.breakout{color:var(--breakout); background:var(--breakout-bg);}
+.badge.rising{color:var(--rising); background:var(--rising-bg);}
+.badge.steady{color:var(--steady); background:var(--steady-bg);}
+.badge.peaked{color:var(--text-faint); background:var(--bg-elev-2); border:1px solid var(--border);}
+
+/* ---------- CTA band ---------- */
+.cta-band{
+  max-width:760px; margin:28px auto 0; padding:34px 28px; text-align:center;
+  background:var(--bg-elev); border:1px solid var(--border-soft); border-radius:var(--radius);
+}
+.cta-band h2{font-size:20px; font-weight:700; margin-bottom:8px; letter-spacing:-.2px;}
+.cta-band p{font-size:13.5px; color:var(--text-dim); margin-bottom:18px;}
+.cta-band .btn-row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+
+/* ---------- Footer ---------- */
+.site-footer{
+  border-top:1px solid var(--border-soft); background:var(--bg-elev);
+  padding:36px 32px 28px; margin-top:40px;
+}
+.footer-inner{
+  max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:16px;
+}
+.footer-links{display:flex; gap:18px; flex-wrap:wrap;}
+.footer-links a{font-size:12.5px; color:var(--text-dim);}
+.footer-links a:hover{color:var(--text);}
+.footer-links a.current{color:var(--accent);}
+.footer-copy{font-size:11.5px; color:var(--text-faint);}
+
+@media (max-width:820px){
+  .site-nav{display:none;}
+  .nav-toggle{display:flex;}
+  .legal-hero h1{font-size:27px;}
+  .legal-card{padding:26px 20px 8px;}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="brand" style="display:flex; align-items:center; gap:10px;">
+    <div class="brand-mark">📡</div>
+    <div class="brand-text"><b>Antenna</b><span>Trend Intelligence</span></div>
+  </a>
+  <nav class="site-nav">
+    <a href="index.html">Home</a>
+    <a href="blog.html">Blog</a>
+    <a href="use-cases.html">Use Cases</a>
+    <a href="reports.html">Reports</a>
+    <a href="pricing.html">Pricing</a>
+  </nav>
+  <div class="header-actions">
+    <a href="app.html" class="btn primary">Launch Dashboard</a>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main>
+  <section class="legal-hero">
+    <span class="eyebrow">📄 Legal</span>
+    <h1>Terms of Service</h1>
+    <p class="lede">The plain-language terms that govern your use of Antenna. We've kept this honest and readable rather than dense — if anything is unclear, reach out.</p>
+    <div class="legal-meta">Last updated: August 6, 2026</div>
+  </section>
+
+  <nav class="legal-toc">
+    <a href="#about">1. About Antenna</a>
+    <a href="#accounts">2. Accounts &amp; Access</a>
+    <a href="#plans">3. Free &amp; Paid Plans</a>
+    <a href="#use">4. Acceptable Use</a>
+    <a href="#content">5. Data &amp; AI-Generated Content</a>
+    <a href="#ip">6. Intellectual Property</a>
+    <a href="#availability">7. Availability &amp; "As Is"</a>
+    <a href="#liability">8. Limitation of Liability</a>
+    <a href="#changes">9. Changes</a>
+    <a href="#termination">10. Termination</a>
+    <a href="#contact">11. Contact</a>
+  </nav>
+
+  <div class="legal-wrap">
+    <div class="legal-card">
+
+      <section id="about">
+        <h2>1. About Antenna</h2>
+        <p>Antenna ("we," "us," "the Service") is a trend intelligence dashboard that tracks breakout, rising, and steady trends, along with AI-generated startup ideas and content insights. By accessing or using Antenna, you agree to these Terms of Service.</p>
+        <div class="callout honest">
+          <strong>Honest framing:</strong> Antenna is a real, functioning product, but it is an early-stage, independently-built project — not a large company with a dedicated legal or compliance team. These terms are written plainly and in good faith. If you need something more formal (a signed DPA, a custom SLA, etc.) for your organization, contact us and we'll work with you directly.
+        </div>
+      </section>
+
+      <section id="accounts">
+        <h2>2. Accounts &amp; Access</h2>
+        <p>Antenna does not require you to create a traditional username-and-password account to use its core, free features. Where an email address is collected — for example, to activate a paid plan or to sync your watchlist across devices — your plan and preferences are looked up by that email address rather than by a stored password.</p>
+        <p>You're responsible for the accuracy of any information you provide (such as your email address) and for using a device and browser you trust, since some data (like your local watchlist) is stored in your browser.</p>
+      </section>
+
+      <section id="plans">
+        <h2>3. Free &amp; Paid Plans</h2>
+        <p>Antenna offers a free tier and one or more paid plans with additional features or usage limits. Where paid plans exist, payment is processed by <strong>Stripe</strong>, a third-party payment processor — Antenna does not collect or store your full card number. See our <a class="inline-link" href="privacy.html">Privacy Policy</a> for details on what payment-related data we do and don't see.</p>
+        <p>Because this is an early-stage product, plan features, limits, and pricing may change as the product evolves. We'll make a reasonable effort to communicate material changes, especially to paying users, but we can't guarantee advance notice for every adjustment.</p>
+      </section>
+
+      <section id="use">
+        <h2>4. Acceptable Use</h2>
+        <p>You agree not to:</p>
+        <ul>
+          <li>Attempt to disrupt, overload, or gain unauthorized access to Antenna's systems, backend automation, or data endpoints.</li>
+          <li>Scrape or bulk-extract data from Antenna in a way that materially degrades service for other users.</li>
+          <li>Use Antenna to build a directly competing product using data obtained through the Service in violation of applicable law.</li>
+          <li>Misrepresent your identity to obtain access to paid features you haven't paid for.</li>
+          <li>Use the Service for any unlawful purpose.</li>
+        </ul>
+      </section>
+
+      <section id="content">
+        <h2>5. Data &amp; AI-Generated Content</h2>
+        <p>Antenna aggregates trend signals from public sources and, in some places, uses AI models to generate estimates, forecasts, startup ideas, or content suggestions. Anywhere content is AI-generated or algorithmically derived rather than directly measured, we label it as such in the interface (for example, "AI-estimated" or "derived from observed signal").</p>
+        <p>Trend data, forecasts, and AI-generated ideas are provided for informational and research purposes only. They are not financial, investment, legal, or business advice, and should not be treated as guaranteed or verified fact. You are responsible for independently verifying anything you rely on for a real decision.</p>
+        <div class="badge-row">
+          <span class="badge breakout">Exploding</span>
+          <span class="badge rising">Rising</span>
+          <span class="badge steady">Regular</span>
+          <span class="badge peaked">Peaked</span>
+        </div>
+      </section>
+
+      <section id="ip">
+        <h2>6. Intellectual Property</h2>
+        <p>The Antenna name, interface design, and original written content belong to Antenna. Underlying trend data is aggregated from public sources and is provided for your use within the Service; we don't claim ownership over publicly-sourced facts themselves. You retain ownership of any content you create using the Service, such as items you add to your own watchlist or exports you generate.</p>
+      </section>
+
+      <section id="availability">
+        <h2>7. Availability &amp; "As Is"</h2>
+        <p>Antenna is provided <strong>"as is" and "as available,"</strong> without warranties of any kind, express or implied. This is a real but early-stage project: features may change, break, or be temporarily unavailable, and we make no guarantee of uptime, accuracy, or completeness of the data shown. Use it at your own discretion, and don't rely on it as your sole source of truth for decisions with significant consequences.</p>
+        <p>We may modify, suspend, or discontinue any part of the Service — including free features — at any time, with or without notice.</p>
+      </section>
+
+      <section id="liability">
+        <h2>8. Limitation of Liability</h2>
+        <p>To the fullest extent permitted by law, Antenna and its operator will not be liable for any indirect, incidental, special, or consequential damages arising from your use of, or inability to use, the Service — including but not limited to lost profits, lost data, or business interruption — even if advised of the possibility of such damages.</p>
+        <p>If you're on a paid plan, our total liability to you for any claim relating to the Service is limited to the amount you paid us in the three months preceding the claim.</p>
+      </section>
+
+      <section id="changes">
+        <h2>9. Changes to These Terms</h2>
+        <p>We may update these Terms as the product evolves. When we make a material change, we'll update the "Last updated" date above. Continued use of Antenna after a change means you accept the revised Terms.</p>
+      </section>
+
+      <section id="termination">
+        <h2>10. Termination</h2>
+        <p>You may stop using Antenna at any time. If you're on a paid plan, you can cancel through the billing flow provided at checkout, or by contacting us. We may suspend or terminate access for accounts that violate these Terms, including the Acceptable Use section above.</p>
+      </section>
+
+      <section id="contact">
+        <h2>11. Contact</h2>
+        <p>Questions about these Terms? Reach out at <a class="inline-link" href="mailto:aditya.shashidhar55@gmail.com">aditya.shashidhar55@gmail.com</a>.</p>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="cta-band">
+    <h2>Questions about how Antenna works?</h2>
+    <p>Read our Privacy Policy and Security practices, or reach out directly — we're a small, real team happy to answer questions.</p>
+    <div class="btn-row">
+      <a href="privacy.html" class="btn">Privacy Policy</a>
+      <a href="security.html" class="btn">Security</a>
+      <a href="app.html" class="btn primary">Launch Dashboard</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="brand" style="display:flex; align-items:center; gap:10px;">
+      <div class="brand-mark" style="width:28px; height:28px; font-size:14px;">📡</div>
+      <div class="brand-text"><b style="font-size:14px;">Antenna</b></div>
+    </div>
+    <nav class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="blog.html">Blog</a>
+      <a href="use-cases.html">Use Cases</a>
+      <a href="reports.html">Reports</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="terms.html" class="current">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="security.html">Security</a>
+      <a href="status.html">Status</a>
+      <a href="app.html">Launch Dashboard</a>
+    </nav>
+    <span class="footer-copy">© 2026 Antenna. Built for research &amp; strategy teams.</span>
+  </div>
+</footer>
+
+<script>
+document.querySelector('.nav-toggle')?.addEventListener('click', function(){
+  var nav = document.querySelector('.site-nav');
+  if(!nav) return;
+  var isOpen = nav.style.display === 'flex';
+  nav.style.display = isOpen ? 'none' : 'flex';
+  nav.style.flexDirection = 'column';
+  nav.style.position = 'absolute';
+  nav.style.top = '64px';
+  nav.style.left = '0';
+  nav.style.right = '0';
+  nav.style.background = 'var(--bg-elev)';
+  nav.style.borderBottom = '1px solid var(--border-soft)';
+  nav.style.padding = '10px';
+  nav.style.zIndex = '60';
+});
+</script>
+
+</body>
+</html>

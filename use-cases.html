@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Use Cases — Antenna Trend Intelligence</title>
+<meta name="description" content="How strategy, R&D and product teams use Antenna's real trend data across Hacker News, dev.to, Product Hunt and Reddit for foresight, tech scouting and product research in India & France.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
+<style>
+:root{
+  --bg:#0a0d14; --bg-elev:#10141d; --bg-elev-2:#161b26; --bg-card:#12161f;
+  --border:#232938; --border-soft:#1b202c;
+  --text:#eef1f7; --text-dim:#9aa4b8; --text-faint:#5f6c85;
+  --accent:#22d3a8; --accent-dim:#15806a; --accent-glow:rgba(34,211,168,.18);
+  --breakout:#ff6b5e; --breakout-bg:rgba(255,107,94,.13);
+  --rising:#ffb648; --rising-bg:rgba(255,182,72,.13);
+  --steady:#5ea1ff; --steady-bg:rgba(94,161,255,.13);
+  --radius:14px; --radius-sm:9px;
+  --shadow: 0 10px 40px -12px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(34,211,168,.09), transparent 60%),
+    radial-gradient(900px 500px at -5% 0%, rgba(94,161,255,.07), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  min-height:100vh;
+  font-size:14px;
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#242a38; border-radius:8px; border:2px solid var(--bg);}
+::-webkit-scrollbar-thumb:hover{background:#2f3648;}
+a{color:inherit; text-decoration:none;}
+img{max-width:100%; display:block;}
+.wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+.btn{
+  display:inline-flex; align-items:center; gap:7px; padding:11px 20px; border-radius:9px;
+  font-size:13.5px; font-weight:700; cursor:pointer; border:1px solid var(--border);
+  background:var(--bg-elev-2); color:var(--text); transition:all .15s; white-space:nowrap;
+}
+.btn:hover{background:var(--bg-card); border-color:#2c3448; transform:translateY(-1px);}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:#04241c;}
+.btn.primary:hover{background:#3fe0b8;}
+.btn.secondary{background:transparent; border:1px solid var(--border); color:var(--text-dim);}
+.btn.secondary:hover{background:var(--bg-elev-2); border-color:var(--accent-dim); color:var(--text); transform:translateY(-1px);}
+.btn.lg{padding:13px 26px; font-size:14.5px;}
+
+.mkt-nav{
+  position:sticky; top:0; z-index:50;
+  background:rgba(10,13,20,.85); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-soft);
+}
+.mkt-nav-inner{max-width:1180px; margin:0 auto; padding:16px 28px; display:flex; align-items:center; gap:22px;}
+.mkt-brand{display:flex; align-items:center; gap:10px; margin-right:auto;}
+.mkt-brand-mark{
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),#0ea5e9);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; box-shadow:0 4px 18px -4px var(--accent-glow);
+}
+.mkt-brand-mark.sm{width:28px; height:28px; font-size:14px; border-radius:8px;}
+.mkt-brand-text{display:flex; flex-direction:column; line-height:1.15;}
+.mkt-brand-text b{font-size:16px; letter-spacing:.2px;}
+.mkt-brand-text span{font-size:11px; color:var(--text-faint); font-weight:500;}
+.mkt-links{display:flex; align-items:center; gap:22px;}
+.mkt-links a{font-size:13.5px; font-weight:600; color:var(--text-dim); transition:color .15s;}
+.mkt-links a:hover, .mkt-links a.active{color:var(--text);}
+.mkt-nav-cta{display:flex; align-items:center; gap:10px;}
+.mkt-hamburger{display:none; background:var(--bg-elev-2); border:1px solid var(--border); border-radius:9px; width:36px; height:36px; align-items:center; justify-content:center; color:var(--text); font-size:16px; cursor:pointer;}
+
+.section{padding:64px 0;}
+.section-eyebrow{font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent); margin-bottom:10px;}
+
+.page-hero{padding:60px 0 40px; text-align:center;}
+.page-hero h1{font-size:38px; font-weight:800; letter-spacing:-.8px; margin-bottom:14px;}
+.page-hero p{font-size:15px; color:var(--text-dim); max-width:640px; margin:0 auto; line-height:1.6;}
+.page-hero-nav{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:24px;}
+.page-hero-nav a{font-size:12.5px; font-weight:700; color:var(--text-dim); background:var(--bg-elev-2); border:1px solid var(--border-soft); padding:8px 15px; border-radius:20px;}
+.page-hero-nav a:hover{color:var(--accent); border-color:rgba(34,211,168,.3);}
+
+.usecase-block{padding:56px 0; border-top:1px solid var(--border-soft);}
+.usecase-head{display:flex; align-items:flex-start; gap:18px; margin-bottom:28px; flex-wrap:wrap;}
+.usecase-icon{
+  width:52px; height:52px; border-radius:12px; background:var(--accent-glow); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;
+}
+.usecase-head h2{font-size:25px; font-weight:800; letter-spacing:-.4px; margin-bottom:6px;}
+.usecase-head .usecase-tag{font-size:12px; font-weight:700; color:var(--text-faint); text-transform:uppercase; letter-spacing:.5px;}
+.usecase-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:32px; align-items:start;}
+.usecase-copy p{font-size:13.5px; color:var(--text-dim); line-height:1.75; margin-bottom:14px;}
+.usecase-copy h3{font-size:13.5px; font-weight:700; margin:20px 0 10px; color:var(--text);}
+.usecase-workflow{background:var(--bg-card); border:1px solid var(--border-soft); border-radius:var(--radius); padding:22px 22px; box-shadow:var(--shadow); position:sticky; top:90px;}
+.usecase-workflow h4{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--accent); font-weight:700; margin-bottom:16px;}
+.workflow-step{display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border-soft);}
+.workflow-step:last-child{border-bottom:none; padding-bottom:0;}
+.workflow-step .wf-num{width:22px; height:22px; border-radius:6px; background:var(--bg-elev-2); color:var(--text-dim); font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.workflow-step p{font-size:12.5px; color:var(--text-dim); line-height:1.55;}
+.workflow-step b{color:var(--text);}
+.usecase-features{display:flex; gap:8px; flex-wrap:wrap; margin-top:18px;}
+.usecase-features span{font-size:10.5px; font-weight:700; color:var(--text-dim); background:var(--bg-elev-2); border:1px solid var(--border-soft); padding:4px 10px; border-radius:20px;}
+
+.cta-band{
+  background:var(--bg-card); border:1px solid var(--border-soft); border-radius:var(--radius);
+  padding:48px 40px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px;
+  box-shadow:var(--shadow);
+}
+.cta-band h2{font-size:27px; font-weight:800; letter-spacing:-.5px;}
+.cta-band p{font-size:14px; color:var(--text-dim); max-width:520px; line-height:1.6;}
+.hero-ctas{display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;}
+
+.mkt-footer{border-top:1px solid var(--border-soft); padding:56px 0 28px; margin-top:24px;}
+.mkt-footer-top{display:flex; justify-content:space-between; gap:40px; flex-wrap:wrap; margin-bottom:36px;}
+.mkt-footer-brand{display:flex; gap:12px; max-width:280px;}
+.mkt-footer-brand b{font-size:15px;}
+.mkt-footer-brand p{font-size:12px; color:var(--text-faint); line-height:1.6; margin-top:6px;}
+.mkt-footer-cols{display:flex; gap:56px; flex-wrap:wrap;}
+.mkt-footer-col h4{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-faint); margin-bottom:14px; font-weight:700;}
+.mkt-footer-col{display:flex; flex-direction:column; gap:10px;}
+.mkt-footer-col a{font-size:13px; color:var(--text-dim); transition:color .15s;}
+.mkt-footer-col a:hover{color:var(--accent);}
+.mkt-footer-bottom{
+  border-top:1px solid var(--border-soft); padding-top:22px; display:flex; justify-content:space-between; gap:14px;
+  flex-wrap:wrap; font-size:11.5px; color:var(--text-faint); line-height:1.7;
+}
+.mkt-footer-bottom a{color:var(--accent);}
+
+@media (max-width:900px){
+  .usecase-grid{grid-template-columns:1fr;}
+  .usecase-workflow{position:static;}
+  .mkt-footer-top{flex-direction:column;}
+}
+@media (max-width:720px){
+  .mkt-links, .mkt-nav-cta .btn.secondary{display:none;}
+  .mkt-hamburger{display:flex;}
+  .page-hero h1{font-size:30px;}
+}
+@media (max-width:560px){ .wrap{padding:0 18px;} }
+</style>
+</head>
+<body>
+
+<header class="mkt-nav">
+  <div class="mkt-nav-inner">
+    <a href="index.html" class="mkt-brand">
+      <span class="mkt-brand-mark">📡</span>
+      <span class="mkt-brand-text"><b>Antenna</b><span>Trend Intelligence</span></span>
+    </a>
+    <nav class="mkt-links" id="mktLinks">
+      <a href="index.html">Home</a>
+      <a href="use-cases.html" class="active">Use Cases</a>
+      <a href="reports.html">Reports</a>
+      <a href="blog.html">Blog</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+    <div class="mkt-nav-cta">
+      <a class="btn secondary" href="pricing.html">Pricing</a>
+      <a class="btn primary" href="app.html">Launch Dashboard →</a>
+    </div>
+    <button class="mkt-hamburger" id="mktHamburger" aria-label="Toggle menu">☰</button>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="section-eyebrow">Use Cases</div>
+      <h1>How teams actually use Antenna</h1>
+      <p>Three ways strategy, R&amp;D and product teams work with real trend signal from Antenna — written as practical workflows, not case studies with invented results.</p>
+      <div class="page-hero-nav">
+        <a href="#foresight">Strategic Foresight</a>
+        <a href="#scouting">Tech Scouting</a>
+        <a href="#product">Product Research</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STRATEGIC FORESIGHT ================= -->
+  <section class="usecase-block" id="foresight">
+    <div class="wrap">
+      <div class="usecase-head">
+        <div class="usecase-icon">🧭</div>
+        <div>
+          <div class="usecase-tag">For corporate strategy teams</div>
+          <h2>Strategic Foresight</h2>
+        </div>
+      </div>
+      <div class="usecase-grid">
+        <div class="usecase-copy">
+          <p>
+            Strategy and corporate development teams need an early read on where markets are heading, before it shows up
+            in quarterly analyst reports or a competitor's press release. The problem is rarely a lack of information —
+            it's separating a genuine early signal from noise, opinion pieces and recycled hot takes.
+          </p>
+          <p>
+            Antenna is built around that separation. Instead of summarizing what pundits are saying about a trend, it
+            tracks what builders, developers and early adopters are actually doing and discussing — on Hacker News,
+            dev.to, Product Hunt and Reddit — and turns that into a contextual 0–100 score with a visible momentum
+            status (Exploding, Rising, Regular or Peaked).
+          </p>
+          <h3>What a foresight team would track</h3>
+          <p>
+            A strategy analyst covering a category — say, fintech infrastructure in France or developer tooling in
+            India — would use Antenna's category and country filters to build a running view of that space, watch which
+            trends move from Rising to Exploding over successive checks, and use the watchlist to keep a shortlist for
+            the next strategy review without re-searching from scratch.
+          </p>
+          <p>
+            Where Antenna has generated an AI-estimated forecast note or "why now" explanation for a trend, it's
+            clearly labeled as an AI-derived estimate in the interface — useful as a starting hypothesis for a memo,
+            not a substitute for the team's own judgment.
+          </p>
+        </div>
+        <div class="usecase-workflow">
+          <h4>A sample workflow</h4>
+          <div class="workflow-step"><span class="wf-num">1</span><p>Filter the trend feed by <b>country</b> and <b>category</b> to scope a watch area (e.g. France · Fintech).</p></div>
+          <div class="workflow-step"><span class="wf-num">2</span><p>Sort by <b>momentum status</b> to separate genuinely Exploding trends from long-Regular baseline activity.</p></div>
+          <div class="workflow-step"><span class="wf-num">3</span><p>Open a trend card to see its <b>source breakdown</b> — which channels are actually driving the signal.</p></div>
+          <div class="workflow-step"><span class="wf-num">4</span><p>Ask the <b>AI foresight chat</b> a grounded question, e.g. "which fintech trends here moved from Rising to Exploding recently?"</p></div>
+          <div class="workflow-step"><span class="wf-num">5</span><p><b>Star</b> the trends worth revisiting, then export the watchlist as CSV for the strategy deck.</p></div>
+          <div class="usecase-features">
+            <span>Country &amp; category filters</span>
+            <span>Momentum status</span>
+            <span>Watchlist</span>
+            <span>AI foresight chat</span>
+            <span>CSV export</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TECH SCOUTING ================= -->
+  <section class="usecase-block" id="scouting">
+    <div class="wrap">
+      <div class="usecase-head">
+        <div class="usecase-icon">🔬</div>
+        <div>
+          <div class="usecase-tag">For R&amp;D and innovation teams</div>
+          <h2>Tech Scouting</h2>
+        </div>
+      </div>
+      <div class="usecase-grid">
+        <div class="usecase-copy">
+          <p>
+            R&amp;D and innovation teams scout for emerging technical approaches worth a proof-of-concept — new
+            libraries, architectural patterns, or tooling categories gaining real developer traction. That signal
+            shows up first where developers actually talk shop: Hacker News threads, dev.to write-ups, and
+            Product Hunt launches from small teams shipping something new.
+          </p>
+          <p>
+            Antenna's developer-tools and infrastructure categories are built from exactly those sources, so a
+            scouting team can see which technical trends are gaining cross-source corroboration (multiple
+            independent communities discussing the same shift) rather than a single viral post.
+          </p>
+          <h3>What a scouting team would track</h3>
+          <p>
+            A scouting lead would monitor the Developer Tools and Infra categories weekly, watch the channel
+            breakdown on individual trend cards to confirm a signal isn't isolated to one platform, and use related
+            trends to map out an adjacent technology cluster before greenlighting a spike or a POC.
+          </p>
+          <p>
+            Because Antenna also surfaces startup ideas grounded in real tracked trends, a scouting team can use
+            those as a fast way to see what a plausible early product built on a given technical trend might look
+            like — clearly presented as AI-generated ideation, not confirmed market intelligence.
+          </p>
+        </div>
+        <div class="usecase-workflow">
+          <h4>A sample workflow</h4>
+          <div class="workflow-step"><span class="wf-num">1</span><p>Filter to <b>Developer Tools</b> / <b>Infra</b> categories across both India and France.</p></div>
+          <div class="workflow-step"><span class="wf-num">2</span><p>Check each candidate trend's <b>source breakdown</b> for cross-platform corroboration, not a single-source spike.</p></div>
+          <div class="workflow-step"><span class="wf-num">3</span><p>Open <b>related trends</b> to map the surrounding technology cluster.</p></div>
+          <div class="workflow-step"><span class="wf-num">4</span><p>Review any <b>AI-grounded startup ideas</b> tied to the trend for a quick sense of the possible product surface.</p></div>
+          <div class="workflow-step"><span class="wf-num">5</span><p>Watchlist promising trends and revisit weekly to see if they move from Rising toward Exploding.</p></div>
+          <div class="usecase-features">
+            <span>Category filters</span>
+            <span>Source breakdown</span>
+            <span>Related trends</span>
+            <span>Grounded startup ideas</span>
+            <span>Watchlist</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRODUCT RESEARCH ================= -->
+  <section class="usecase-block" id="product">
+    <div class="wrap">
+      <div class="usecase-head">
+        <div class="usecase-icon">🛍️</div>
+        <div>
+          <div class="usecase-tag">For DTC and e-commerce teams</div>
+          <h2>Product Research</h2>
+        </div>
+      </div>
+      <div class="usecase-grid">
+        <div class="usecase-copy">
+          <p>
+            DTC and e-commerce product teams need to know what categories are gaining genuine attention before
+            committing inventory, ad spend, or a launch calendar to them. Marketing-led trend lists can be lagging or
+            self-fulfilling — they surface what's already being sold. Antenna instead tracks upstream builder and
+            community signal, which often moves before a category shows up in retail data.
+          </p>
+          <p>
+            A product researcher would use Antenna's e-commerce, consumer and media categories to see which
+            product-adjacent trends are Rising or Exploding, cross-reference the momentum status against the
+            trend's blurb and sources, and use any AI-estimated "why now" note as a starting hypothesis for their
+            own positioning — always checked, never taken as verified market research.
+          </p>
+          <h3>What a product research team would track</h3>
+          <p>
+            The workflow typically starts broad — scanning categories relevant to the team's current or planned
+            catalog — then narrows to a shortlist watchlist that gets reviewed alongside internal sales data each
+            planning cycle. Where Antenna surfaces AI-estimated SEO angles or content ideas tied to a trend, those
+            are clearly labeled as AI-generated estimates for the team to validate, not measured search volume.
+          </p>
+        </div>
+        <div class="usecase-workflow">
+          <h4>A sample workflow</h4>
+          <div class="workflow-step"><span class="wf-num">1</span><p>Browse <b>E-Commerce</b>, <b>Consumer</b> and <b>Media</b> categories for both tracked markets.</p></div>
+          <div class="workflow-step"><span class="wf-num">2</span><p>Sort by <b>momentum status</b> to prioritize Rising and Exploding trends over long-flat baselines.</p></div>
+          <div class="workflow-step"><span class="wf-num">3</span><p>Read the trend <b>blurb and sources</b> to sanity-check what's actually being said, not just the score.</p></div>
+          <div class="workflow-step"><span class="wf-num">4</span><p>Review any <b>AI-estimated SEO/content notes</b> attached to the trend as a starting point, not a final answer.</p></div>
+          <div class="workflow-step"><span class="wf-num">5</span><p><b>Watchlist and export</b> the shortlist for the next merchandising or planning review.</p></div>
+          <div class="usecase-features">
+            <span>Category browse</span>
+            <span>Momentum status</span>
+            <span>AI-estimated SEO notes</span>
+            <span>Watchlist</span>
+            <span>CSV export</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="cta">
+    <div class="wrap">
+      <div class="cta-band">
+        <h2>See it on real, live data.</h2>
+        <p>All of the workflows above run on the same live dashboard — open it and try your own filters.</p>
+        <div class="hero-ctas">
+          <a href="app.html" class="btn primary lg">Launch Dashboard →</a>
+          <a href="reports.html" class="btn lg">See Monthly Reports</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="mkt-footer">
+  <div class="wrap">
+    <div class="mkt-footer-top">
+      <div class="mkt-footer-brand">
+        <span class="mkt-brand-mark sm">📡</span>
+        <div>
+          <b>Antenna</b>
+          <p>Trend intelligence for India &amp; France, built from real public signal — Hacker News, dev.to, Product Hunt &amp; Reddit.</p>
+        </div>
+      </div>
+      <div class="mkt-footer-cols">
+        <div class="mkt-footer-col">
+          <h4>Product</h4>
+          <a href="app.html">Dashboard</a>
+          <a href="use-cases.html">Use Cases</a>
+          <a href="reports.html">Reports</a>
+          <a href="pricing.html">Pricing</a>
+        </div>
+        <div class="mkt-footer-col">
+          <h4>Company</h4>
+          <a href="blog.html">Blog</a>
+          <a href="security.html">Security</a>
+          <a href="status.html">Status</a>
+          <a href="https://github.com/adityashashidhar55-cpu/antenna" target="_blank" rel="noopener">Source on GitHub</a>
+        </div>
+        <div class="mkt-footer-col">
+          <h4>Legal</h4>
+          <a href="terms.html">Terms</a>
+          <a href="privacy.html">Privacy</a>
+        </div>
+      </div>
+    </div>
+    <div class="mkt-footer-bottom">
+      <span>© 2026 Antenna. An independent project — not affiliated with Exploding Topics or Trendtracker AI.</span>
+      <span>Independently built · <a href="https://github.com/adityashashidhar55-cpu/antenna" target="_blank" rel="noopener">source on GitHub</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var hb = document.getElementById('mktHamburger');
+  var links = document.getElementById('mktLinks');
+  if(hb && links){
+    hb.addEventListener('click', function(){
+      links.classList.toggle('open');
+      links.style.display = links.classList.contains('open') ? 'flex' : '';
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monthly Trend Reports — Antenna</title>
+<meta name="description" content="Antenna's monthly trend report concept: a periodic digest built directly from the same live trend data tracked on the dashboard, covering India and France.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
+<style>
+:root{
+  --bg:#0a0d14; --bg-elev:#10141d; --bg-elev-2:#161b26; --bg-card:#12161f;
+  --border:#232938; --border-soft:#1b202c;
+  --text:#eef1f7; --text-dim:#9aa4b8; --text-faint:#5f6c85;
+  --accent:#22d3a8; --accent-dim:#15806a; --accent-glow:rgba(34,211,168,.18);
+  --breakout:#ff6b5e; --breakout-bg:rgba(255,107,94,.13);
+  --rising:#ffb648; --rising-bg:rgba(255,182,72,.13);
+  --steady:#5ea1ff; --steady-bg:rgba(94,161,255,.13);
+  --radius:14px; --radius-sm:9px;
+  --shadow: 0 10px 40px -12px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(34,211,168,.09), transparent 60%),
+    radial-gradient(900px 500px at -5% 0%, rgba(94,161,255,.07), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  min-height:100vh;
+  font-size:14px;
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#242a38; border-radius:8px; border:2px solid var(--bg);}
+::-webkit-scrollbar-thumb:hover{background:#2f3648;}
+a{color:inherit; text-decoration:none;}
+img{max-width:100%; display:block;}
+.wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+.btn{
+  display:inline-flex; align-items:center; gap:7px; padding:11px 20px; border-radius:9px;
+  font-size:13.5px; font-weight:700; cursor:pointer; border:1px solid var(--border);
+  background:var(--bg-elev-2); color:var(--text); transition:all .15s; white-space:nowrap;
+}
+.btn:hover{background:var(--bg-card); border-color:#2c3448; transform:translateY(-1px);}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:#04241c;}
+.btn.primary:hover{background:#3fe0b8;}
+.btn.secondary{background:transparent; border:1px solid var(--border); color:var(--text-dim);}
+.btn.secondary:hover{background:var(--bg-elev-2); border-color:var(--accent-dim); color:var(--text); transform:translateY(-1px);}
+.btn.lg{padding:13px 26px; font-size:14.5px;}
+.btn[disabled]{opacity:.55; cursor:not-allowed;}
+.btn[disabled]:hover{transform:none; background:var(--accent);}
+
+.mkt-nav{
+  position:sticky; top:0; z-index:50;
+  background:rgba(10,13,20,.85); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-soft);
+}
+.mkt-nav-inner{max-width:1180px; margin:0 auto; padding:16px 28px; display:flex; align-items:center; gap:22px;}
+.mkt-brand{display:flex; align-items:center; gap:10px; margin-right:auto;}
+.mkt-brand-mark{
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),#0ea5e9);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; box-shadow:0 4px 18px -4px var(--accent-glow);
+}
+.mkt-brand-mark.sm{width:28px; height:28px; font-size:14px; border-radius:8px;}
+.mkt-brand-text{display:flex; flex-direction:column; line-height:1.15;}
+.mkt-brand-text b{font-size:16px; letter-spacing:.2px;}
+.mkt-brand-text span{font-size:11px; color:var(--text-faint); font-weight:500;}
+.mkt-links{display:flex; align-items:center; gap:22px;}
+.mkt-links a{font-size:13.5px; font-weight:600; color:var(--text-dim); transition:color .15s;}
+.mkt-links a:hover, .mkt-links a.active{color:var(--text);}
+.mkt-nav-cta{display:flex; align-items:center; gap:10px;}
+.mkt-hamburger{display:none; background:var(--bg-elev-2); border:1px solid var(--border); border-radius:9px; width:36px; height:36px; align-items:center; justify-content:center; color:var(--text); font-size:16px; cursor:pointer;}
+
+.section{padding:56px 0;}
+.section-eyebrow{font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent); margin-bottom:10px;}
+.section-head{max-width:680px; margin:0 auto 36px; text-align:center;}
+.section-head h2{font-size:28px; font-weight:800; letter-spacing:-.5px; margin-bottom:10px;}
+.section-head p{font-size:14.5px; color:var(--text-dim); line-height:1.6;}
+
+.page-hero{padding:60px 0 30px; text-align:center;}
+.page-hero h1{font-size:38px; font-weight:800; letter-spacing:-.8px; margin-bottom:14px;}
+.page-hero p{font-size:15px; color:var(--text-dim); max-width:640px; margin:0 auto; line-height:1.6;}
+
+.about-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+.about-card{background:var(--bg-card); border:1px solid var(--border-soft); border-radius:var(--radius); padding:22px 20px;}
+.about-card .ac-ic{font-size:22px; margin-bottom:12px;}
+.about-card h3{font-size:14.5px; font-weight:700; margin-bottom:8px;}
+.about-card p{font-size:12.5px; color:var(--text-dim); line-height:1.6;}
+
+.report-toc{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:8px;}
+.report-toc a{font-size:12px; font-weight:600; color:var(--text-dim); background:var(--bg-elev-2); border:1px solid var(--border-soft); padding:7px 14px; border-radius:20px;}
+.report-toc a:hover{color:var(--accent); border-color:rgba(34,211,168,.3);}
+.report-shell{background:var(--bg-card); border:1px solid var(--border-soft); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);}
+.report-shell-head{padding:26px 28px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+.report-shell-head h3{font-size:17px; font-weight:800;}
+.report-shell-head .rpt-date{font-size:11.5px; color:var(--text-faint); font-weight:600;}
+.report-badge{font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--rising); background:var(--rising-bg); padding:4px 10px; border-radius:20px;}
+.report-body{padding:26px 28px; display:flex; flex-direction:column; gap:26px;}
+.report-sub h4{font-size:13.5px; font-weight:700; margin-bottom:12px;}
+.report-sub .sub-desc{font-size:12px; color:var(--text-faint); margin-bottom:12px; line-height:1.6;}
+.report-placeholder{
+  border:1.5px dashed var(--border); border-radius:var(--radius-sm); padding:18px 18px;
+  background:var(--bg-elev-2); color:var(--text-faint); font-size:12px; line-height:1.7;
+}
+.report-placeholder .ph-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; font-weight:800; color:var(--rising); margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+.report-placeholder .ph-code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:11px; color:var(--accent); background:rgba(34,211,168,.08); padding:1px 6px; border-radius:5px;}
+.ph-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+.ph-grid .report-placeholder{min-height:96px; display:flex; flex-direction:column; justify-content:center;}
+
+.subscribe-box{
+  background:var(--bg-elev-2); border:1px solid var(--border-soft); border-radius:var(--radius-sm);
+  padding:18px 20px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+}
+.subscribe-box input{
+  flex:1; min-width:200px; background:var(--bg-card); border:1px solid var(--border-soft); color:var(--text-faint);
+  padding:10px 13px; border-radius:9px; font-size:13px; outline:none;
+}
+.coming-soon-pill{font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--text-faint); background:var(--bg-card); border:1px solid var(--border-soft); padding:3px 9px; border-radius:20px;}
+.subscribe-note{font-size:11px; color:var(--text-faint); margin-top:10px; line-height:1.6;}
+
+.cta-band{
+  background:var(--bg-card); border:1px solid var(--border-soft); border-radius:var(--radius);
+  padding:48px 40px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px;
+  box-shadow:var(--shadow);
+}
+.cta-band h2{font-size:27px; font-weight:800; letter-spacing:-.5px;}
+.cta-band p{font-size:14px; color:var(--text-dim); max-width:520px; line-height:1.6;}
+.hero-ctas{display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;}
+
+.mkt-footer{border-top:1px solid var(--border-soft); padding:56px 0 28px; margin-top:24px;}
+.mkt-footer-top{display:flex; justify-content:space-between; gap:40px; flex-wrap:wrap; margin-bottom:36px;}
+.mkt-footer-brand{display:flex; gap:12px; max-width:280px;}
+.mkt-footer-brand b{font-size:15px;}
+.mkt-footer-brand p{font-size:12px; color:var(--text-faint); line-height:1.6; margin-top:6px;}
+.mkt-footer-cols{display:flex; gap:56px; flex-wrap:wrap;}
+.mkt-footer-col h4{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-faint); margin-bottom:14px; font-weight:700;}
+.mkt-footer-col{display:flex; flex-direction:column; gap:10px;}
+.mkt-footer-col a{font-size:13px; color:var(--text-dim); transition:color .15s;}
+.mkt-footer-col a:hover{color:var(--accent);}
+.mkt-footer-bottom{
+  border-top:1px solid var(--border-soft); padding-top:22px; display:flex; justify-content:space-between; gap:14px;
+  flex-wrap:wrap; font-size:11.5px; color:var(--text-faint); line-height:1.7;
+}
+.mkt-footer-bottom a{color:var(--accent);}
+
+@media (max-width:900px){
+  .about-grid{grid-template-columns:1fr;}
+  .ph-grid{grid-template-columns:1fr;}
+  .mkt-footer-top{flex-direction:column;}
+}
+@media (max-width:720px){
+  .mkt-links, .mkt-nav-cta .btn.secondary{display:none;}
+  .mkt-hamburger{display:flex;}
+  .page-hero h1{font-size:30px;}
+}
+@media (max-width:560px){ .wrap{padding:0 18px;} }
+</style>
+</head>
+<body>
+
+<header class="mkt-nav">
+  <div class="mkt-nav-inner">
+    <a href="index.html" class="mkt-brand">
+      <span class="mkt-brand-mark">📡</span>
+      <span class="mkt-brand-text"><b>Antenna</b><span>Trend Intelligence</span></span>
+    </a>
+    <nav class="mkt-links" id="mktLinks">
+      <a href="index.html">Home</a>
+      <a href="use-cases.html">Use Cases</a>
+      <a href="reports.html" class="active">Reports</a>
+      <a href="blog.html">Blog</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+    <div class="mkt-nav-cta">
+      <a class="btn secondary" href="pricing.html">Pricing</a>
+      <a class="btn primary" href="app.html">Launch Dashboard →</a>
+    </div>
+    <button class="mkt-hamburger" id="mktHamburger" aria-label="Toggle menu">☰</button>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="section-eyebrow">Monthly Trend Reports</div>
+      <h1>A monthly digest, built from the same live data</h1>
+      <p>Antenna's monthly report isn't a separately-researched publication — it's a structured pull from the same trend data tracked on the dashboard, packaged into a readable monthly snapshot for India &amp; France.</p>
+      <div class="report-toc">
+        <a href="#about">What's in it</a>
+        <a href="#how">How it's built</a>
+        <a href="#sample">This month's shell</a>
+        <a href="#subscribe">Get notified</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>What's in the monthly report</h2>
+        <p>Each edition is organized around the same categories and momentum states you'd see filtering the live dashboard yourself.</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="ac-ic">🚀</div>
+          <h3>Top breakout trends</h3>
+          <p>The trends that moved into "Exploding" status that month, per market, pulled directly from stored trend snapshots — not a curated top-10 list assembled by hand.</p>
+        </div>
+        <div class="about-card">
+          <div class="ac-ic">🌍</div>
+          <h3>Regional split</h3>
+          <p>A side-by-side read on how India and France's tracked categories differed that month, based on the same country tags used in the dashboard filters.</p>
+        </div>
+        <div class="about-card">
+          <div class="ac-ic">🧵</div>
+          <h3>Source mix</h3>
+          <p>Which channels — Hacker News, dev.to, Product Hunt, Reddit — were driving the month's signal, so the report stays traceable back to real activity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW IT'S BUILT ================= -->
+  <section class="section" id="how" style="border-top:1px solid var(--border-soft);">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>How it's built — honestly</h2>
+        <p>No separate research team writing this from scratch each month. Here's exactly what goes into it.</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="ac-ic">📡</div>
+          <h3>Pulled from stored data</h3>
+          <p>Trend names, scores, momentum status and source counts come straight from Antenna's stored trend data — the same records the dashboard reads from.</p>
+        </div>
+        <div class="about-card">
+          <div class="ac-ic">🤖</div>
+          <h3>AI-written commentary, labeled</h3>
+          <p>Any narrative summary or "why now" framing is AI-generated from the underlying data and marked as an AI-estimated summary, not a human analyst's independent research.</p>
+        </div>
+        <div class="about-card">
+          <div class="ac-ic">🕒</div>
+          <h3>A monthly cadence</h3>
+          <p>Compiled roughly once a month as a snapshot in time — a between-checks summary, not a substitute for watching the live dashboard for anything time-sensitive.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SAMPLE REPORT SHELL ================= -->
+  <section class="section" id="sample" style="border-top:1px solid var(--border-soft);">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>This month's report — structure preview</h2>
+        <p>The layout below is the real structure the monthly report will use. The marked sections are placeholders waiting on a data integration pass — nothing here is invented trend data.</p>
+      </div>
+
+      <div class="report-shell">
+        <div class="report-shell-head">
+          <div>
+            <h3>Antenna Monthly Trend Report</h3>
+            <div class="rpt-date"><!-- REPORT_MONTH_LABEL_INSERT --> Month/Year to be inserted automatically</div>
+          </div>
+          <span class="report-badge">Structure preview — not yet populated</span>
+        </div>
+        <div class="report-body">
+
+          <div class="report-sub">
+            <h4>🚀 Top Breakout Trends</h4>
+            <p class="sub-desc">The highest-scoring "Exploding" trends this month, one list per market.</p>
+            <div class="report-placeholder">
+              <div class="ph-label">⏳ Awaiting data integration</div>
+              This section will be populated automatically each month with the top breakout trends for India and France,
+              pulled directly from stored trend data at report-generation time.
+              <span class="ph-code">&lt;!-- TOP_BREAKOUT_TRENDS_INSERT --&gt;</span>
+            </div>
+          </div>
+
+          <div class="report-sub">
+            <h4>🌍 Regional Split</h4>
+            <p class="sub-desc">How India and France's category mix compared this month.</p>
+            <div class="report-placeholder">
+              <div class="ph-label">⏳ Awaiting data integration</div>
+              This section will be filled with a real category-by-country breakdown computed from the month's stored
+              trend records.
+              <span class="ph-code">&lt;!-- REGIONAL_SPLIT_INSERT --&gt;</span>
+            </div>
+          </div>
+
+          <div class="report-sub">
+            <h4>🧵 Source Mix</h4>
+            <p class="sub-desc">Which channels drove the month's signal.</p>
+            <div class="report-placeholder">
+              <div class="ph-label">⏳ Awaiting data integration</div>
+              This section will show the real Hacker News / dev.to / Product Hunt / Reddit split behind the month's
+              tracked trends.
+              <span class="ph-code">&lt;!-- SOURCE_MIX_INSERT --&gt;</span>
+            </div>
+          </div>
+
+          <div class="report-sub">
+            <h4>🤖 AI Foresight Summary</h4>
+            <p class="sub-desc">A short AI-generated narrative synthesis of the month's most notable shifts.</p>
+            <div class="report-placeholder">
+              <div class="ph-label">⏳ Awaiting data integration · will be labeled "AI-estimated" when live</div>
+              This section will hold a short AI-generated summary of the month's notable trend movements, clearly
+              labeled as an AI-derived estimate rather than a verified analyst take.
+              <span class="ph-code">&lt;!-- AI_FORESIGHT_SUMMARY_INSERT --&gt;</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SUBSCRIBE ================= -->
+  <section class="section" id="subscribe" style="border-top:1px solid var(--border-soft);">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Get notified when a new report is out</h2>
+        <p>Email delivery isn't wired up yet — the form below is a preview of what's coming, not a working signup.</p>
+      </div>
+      <div class="subscribe-box">
+        <input type="email" placeholder="you@company.com" disabled aria-label="Email address (coming soon)">
+        <button class="btn primary" disabled>Notify Me</button>
+        <span class="coming-soon-pill">Coming soon</span>
+      </div>
+      <p class="subscribe-note">In the meantime, the fastest way to stay current is the live dashboard itself — it updates continuously rather than waiting for a monthly cycle.</p>
+    </div>
+  </section>
+
+  <section class="section" id="cta">
+    <div class="wrap">
+      <div class="cta-band">
+        <h2>Don't wait for the monthly digest.</h2>
+        <p>The dashboard behind this report updates continuously — open it to see today's data.</p>
+        <div class="hero-ctas">
+          <a href="app.html" class="btn primary lg">Launch Dashboard →</a>
+          <a href="use-cases.html" class="btn lg">Explore Use Cases</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="mkt-footer">
+  <div class="wrap">
+    <div class="mkt-footer-top">
+      <div class="mkt-footer-brand">
+        <span class="mkt-brand-mark sm">📡</span>
+        <div>
+          <b>Antenna</b>
+          <p>Trend intelligence for India &amp; France, built from real public signal — Hacker News, dev.to, Product Hunt &amp; Reddit.</p>
+        </div>
+      </div>
+      <div class="mkt-footer-cols">
+        <div class="mkt-footer-col">
+          <h4>Product</h4>
+          <a href="app.html">Dashboard</a>
+          <a href="use-cases.html">Use Cases</a>
+          <a href="reports.html">Reports</a>
+          <a href="pricing.html">Pricing</a>
+        </div>
+        <div class="mkt-footer-col">
+          <h4>Company</h4>
+          <a href="blog.html">Blog</a>
+          <a href="security.html">Security</a>
+          <a href="status.html">Status</a>
+          <a href="https://github.com/adityashashidhar55-cpu/antenna" target="_blank" rel="noopener">Source on GitHub</a>
+        </div>
+        <div class="mkt-footer-col">
+          <h4>Legal</h4>
+          <a href="terms.html">Terms</a>
+          <a href="privacy.html">Privacy</a>
+        </div>
+      </div>
+    </div>
+    <div class="mkt-footer-bottom">
+      <span>© 2026 Antenna. An independent project — not affiliated with Exploding Topics or Trendtracker AI.</span>
+      <span>Independently built · <a href="https://github.com/adityashashidhar55-cpu/antenna" target="_blank" rel="noopener">source on GitHub</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var hb = document.getElementById('mktHamburger');
+  var links = document.getElementById('mktLinks');
+  if(hb && links){
+    hb.addEventListener('click', function(){
+      links.classList.toggle('open');
+      links.style.display = links.classList.contains('open') ? 'flex' : '';
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
