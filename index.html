@@ -276,6 +276,113 @@ table.compare-table{width:100%; border-collapse:collapse;}
 }
 .cta-band > *{position:relative; z-index:1;}
 
+/* ---------- Trend card expand affordance (every card is openable) ---------- */
+.trend-card{cursor:pointer; outline:none;}
+.trend-card:focus-visible{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow);}
+.tc-expand-btn{
+  position:absolute; top:14px; right:15px; width:26px; height:26px; border-radius:50%;
+  background:var(--bg-elev-2); border:1px solid var(--border-soft); color:var(--text-faint);
+  display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1), color .15s, border-color .15s, background .15s;
+  pointer-events:none;
+}
+.trend-card:hover .tc-expand-btn{color:var(--accent); border-color:var(--accent-dim); transform:rotate(90deg);}
+.trend-card.featured .tc-expand-btn, .fan-card .tc-expand-btn{top:16px; right:16px;}
+
+/* ---------- Expandable trend modal (vanilla port of the Aceternity-style expandable card) ---------- */
+.tcm-overlay{
+  position:fixed; inset:0; background:rgba(6,8,13,.72); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  z-index:200; opacity:0; visibility:hidden; transition:opacity .28s ease, visibility 0s linear .28s;
+}
+.tcm-overlay.open{opacity:1; visibility:visible; transition:opacity .28s ease;}
+.tcm-wrap{
+  position:fixed; inset:0; z-index:201; display:flex; align-items:center; justify-content:center; padding:24px;
+  opacity:0; visibility:hidden; pointer-events:none; transition:opacity .25s ease, visibility 0s linear .25s;
+}
+.tcm-wrap.open{opacity:1; visibility:visible; pointer-events:auto; transition:opacity .25s ease;}
+.tcm-modal{
+  width:100%; max-width:640px; max-height:min(720px,86vh); overflow:auto; -webkit-overflow-scrolling:touch;
+  background:var(--bg-card); border:1px solid var(--border-soft); border-radius:20px; position:relative;
+  box-shadow:0 40px 100px -20px rgba(0,0,0,.7); transform:scale(.92) translateY(14px); opacity:0;
+  transition:transform .32s cubic-bezier(.19,1,.22,1), opacity .28s ease;
+}
+.tcm-wrap.open .tcm-modal{transform:scale(1) translateY(0); opacity:1;}
+.tcm-visual{position:relative; height:200px; overflow:hidden; flex-shrink:0;}
+.tcm-visual::after{
+  content:''; position:absolute; inset:0; bottom:-1px; height:80px; top:auto;
+  background:linear-gradient(to top, var(--bg-card), transparent);
+}
+.tcm-visual-spark{position:absolute; inset:0; z-index:1;}
+.tcm-visual-spark svg{width:100%; height:100%; display:block;}
+.tcm-close{
+  position:absolute; top:16px; right:16px; z-index:5; width:36px; height:36px; border-radius:50%;
+  background:rgba(10,13,20,.55); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.14); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; transition:transform .2s, background .15s;
+}
+.tcm-close:hover{background:rgba(10,13,20,.8); transform:rotate(90deg);}
+.tcm-body{padding:22px 26px 28px; position:relative; z-index:1;}
+.tcm-topline{display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;}
+.tcm-title{font-size:23px; font-weight:800; letter-spacing:-.3px; line-height:1.25; margin-bottom:12px;}
+.tcm-blurb{font-size:13.5px; color:var(--text-dim); line-height:1.65; margin-bottom:12px;}
+.tcm-detail{font-size:12.5px; color:var(--text-faint); line-height:1.65; padding:12px 14px; background:var(--bg-elev-2); border:1px solid var(--border-soft); border-radius:10px; margin-bottom:18px;}
+.tcm-sources{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:11.5px; color:var(--text-faint); margin-bottom:20px;}
+.tcm-sources span.src-chip{background:var(--bg-elev-2); border:1px solid var(--border-soft); padding:4px 10px; border-radius:20px; font-weight:600;}
+body.tcm-locked{overflow:hidden;}
+
+/* ---------- Fan / coverflow trend carousel ---------- */
+.fan-section{padding:8px 0 56px;}
+.fan-stage{display:flex; align-items:center; justify-content:center; width:100%; position:relative; padding:26px 0 10px;}
+.fan-layout{position:relative; display:flex; align-items:center; justify-content:center; width:100%; height:300px; max-width:960px;}
+.fan-card{
+  position:absolute; width:200px; padding:16px 16px 14px; border-radius:16px; background:var(--bg-card);
+  border:1px solid var(--border-soft); box-shadow:0 20px 45px -18px rgba(0,0,0,.6); cursor:pointer;
+  display:flex; flex-direction:column; gap:10px; opacity:0; will-change:transform;
+  transition:transform .5s cubic-bezier(.22,1,.36,1), box-shadow .25s ease, border-color .25s ease;
+}
+.fan-card:hover{border-color:#2c3448; box-shadow:0 26px 55px -16px rgba(0,0,0,.7);}
+.fan-card .trend-texture{width:36px; height:36px; border-radius:10px;}
+.fan-card .tc-name{font-size:13px; font-weight:700; line-height:1.3;}
+.fan-card .tc-meta{margin-top:5px;}
+.fan-card .tc-spark-lg{height:44px; margin-top:2px;}
+.fan-nav{display:flex; align-items:center; justify-content:center; gap:16px; margin-top:8px;}
+.fan-arrow{
+  display:flex; align-items:center; justify-content:center; width:42px; height:42px; border-radius:50%;
+  background:var(--bg-elev-2); border:1px solid var(--border-soft); color:var(--text-dim); cursor:pointer;
+  transition:color .15s, border-color .15s, transform .15s;
+}
+.fan-arrow:hover{color:var(--accent); border-color:var(--accent-dim); transform:translateY(-1px);}
+.fan-dots{display:flex; align-items:center; gap:6px;}
+.fan-dot{width:6px; height:6px; border-radius:50%; background:var(--border); transition:all .25s;}
+.fan-dot.active{background:var(--accent); width:16px; border-radius:4px;}
+
+/* ---------- Globe / global coverage section ---------- */
+.globe-section{padding:70px 0 78px; position:relative; overflow:hidden;}
+.globe-stage{position:relative; display:flex; align-items:center; justify-content:center; margin-top:44px; min-height:460px;}
+.globe-canvas-wrap{position:relative; width:400px; height:400px; flex-shrink:0;}
+.globe-canvas-wrap canvas{width:100%; height:100%; display:block;}
+.globe-glow{position:absolute; inset:-40px; border-radius:50%; background:radial-gradient(circle, rgba(34,211,168,.14), transparent 68%); pointer-events:none; z-index:-1;}
+.globe-features{position:absolute; inset:0; pointer-events:none;}
+.feature-box{
+  position:absolute; width:196px; background:var(--bg-card); border:1px solid var(--border-soft); border-radius:12px;
+  padding:13px 15px; box-shadow:0 18px 40px -16px rgba(0,0,0,.6); pointer-events:auto;
+  opacity:0; transform:translateY(14px) scale(.94); transition:opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
+}
+.feature-box.in-view{opacity:1; transform:translateY(0) scale(1);}
+.feature-box .fb-ic{width:26px; height:26px; border-radius:8px; background:var(--accent-glow); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:13px; margin-bottom:8px;}
+.feature-box .fb-t{font-size:12.5px; font-weight:700; margin-bottom:4px;}
+.feature-box .fb-d{font-size:11px; color:var(--text-faint); line-height:1.5;}
+.feature-box.fb-1{top:2%; left:0;}
+.feature-box.fb-2{top:34%; left:-4%;}
+.feature-box.fb-3{bottom:4%; left:4%;}
+.feature-box.fb-4{top:0; right:0;}
+.feature-box.fb-5{top:36%; right:-4%;}
+.feature-box.fb-6{bottom:6%; right:2%;}
+.globe-caption{text-align:center; font-size:11.5px; color:var(--text-faint); margin-top:8px; max-width:520px; margin-left:auto; margin-right:auto; line-height:1.6;}
+
+@media (prefers-reduced-motion: reduce){
+  .fan-card, .feature-box, .tcm-modal, .tc-expand-btn{transition-duration:.01ms !important;}
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width:900px){
   .how-grid{grid-template-columns:repeat(2,1fr);}
@@ -283,6 +390,13 @@ table.compare-table{width:100%; border-collapse:collapse;}
   .mkt-footer-top{flex-direction:column;}
   .browser-frame-body{grid-template-columns:1fr;}
   .bf-nav{display:none;}
+  .globe-stage{flex-direction:column; gap:8px;}
+  .globe-canvas-wrap{width:280px; height:280px;}
+  .globe-features{position:static; display:grid; grid-template-columns:repeat(2,1fr); gap:12px; width:100%; max-width:520px; margin:8px auto 0; pointer-events:auto;}
+  .feature-box{position:static !important;}
+  .fan-layout{height:250px;}
+  .fan-card{width:158px; padding:13px 13px 11px;}
+  .fan-card .tc-spark-lg{height:36px;}
 }
 @media (max-width:720px){
   .mkt-links, .mkt-nav-cta .btn.secondary{display:none;}
@@ -292,11 +406,19 @@ table.compare-table{width:100%; border-collapse:collapse;}
   .compare-table th, .compare-table td{padding:10px 12px;}
   .bf-kpis, .bf-mini-cards{grid-template-columns:1fr;}
   .source-badges{gap:8px;}
+  .tcm-modal{max-height:92vh;}
+  .tcm-visual{height:150px;}
+  .tcm-title{font-size:19px;}
 }
 @media (max-width:560px){
   .how-grid{grid-template-columns:1fr;}
   .sandbox-grid{grid-template-columns:1fr;}
   .wrap{padding:0 18px;}
+  .globe-features{grid-template-columns:1fr;}
+  .fan-layout{height:230px;}
+  .fan-card{width:132px; padding:11px 11px 9px;}
+  .fan-card .tc-name{font-size:11.5px;}
+  .fan-card .tc-spark-lg{height:30px;}
 }
 </style>
 </head>
@@ -395,7 +517,8 @@ table.compare-table{width:100%; border-collapse:collapse;}
 
       <!-- Sample trend card mockup — mirrors the real .trend-card component -->
       <div class="hero-cardshow">
-        <div class="trend-card featured">
+        <div class="trend-card featured" data-trend-id="t0" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open trend details: AI Coding Agents for Regional Languages">
+          <div class="tc-expand-btn" aria-hidden="true">↗</div>
           <div class="tc-top-row">
             <div class="trend-texture tx-devtools" aria-hidden="true"></div>
             <div class="tc-top" style="flex:1;">
@@ -423,6 +546,29 @@ table.compare-table{width:100%; border-collapse:collapse;}
           </div>
           <div class="tc-foot"><span class="src">Sources: Hacker News · dev.to · Product Hunt</span><span>Updated recently</span></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FAN CAROUSEL — flip through trends ================= -->
+  <section class="section fan-section" id="explore">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-eyebrow">Explore the feed</div>
+        <h2>Flip through what's trending</h2>
+        <p>Every card below is openable — click or hit Enter on any trend for the full picture. This is an illustrative preview; the live dashboard has the real, continuously updating feed.</p>
+      </div>
+      <div class="fan-stage">
+        <div class="fan-layout" id="fanLayout" aria-label="Trend carousel"></div>
+      </div>
+      <div class="fan-nav">
+        <button class="fan-arrow" id="fanPrev" aria-label="Previous trend">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="fan-dots" id="fanDots"></div>
+        <button class="fan-arrow" id="fanNext" aria-label="Next trend">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </div>
   </section>
@@ -519,6 +665,32 @@ table.compare-table{width:100%; border-collapse:collapse;}
     </div>
   </section>
 
+  <!-- ================= GLOBE — global coverage + features ================= -->
+  <section class="section globe-section" id="coverage">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-eyebrow">Where the signal comes from</div>
+        <h2>Two markets, tracked in one radar</h2>
+        <p>Antenna is deliberately narrow, not global-by-default — dedicated coverage for India &amp; France, backed by a focused feature set.</p>
+      </div>
+      <div class="globe-stage">
+        <div class="globe-features" id="globeFeatures">
+          <div class="feature-box fb-1" data-fb="1"><div class="fb-ic">🎯</div><div class="fb-t">Trend Radar</div><div class="fb-d">Visualize momentum shifts across the whole feed before they peak.</div></div>
+          <div class="feature-box fb-2" data-fb="2"><div class="fb-ic">💬</div><div class="fb-t">AI Foresight Analyst</div><div class="fb-d">A chatbot grounded in the same stored data shown on the dashboard.</div></div>
+          <div class="feature-box fb-3" data-fb="3"><div class="fb-ic">◎</div><div class="fb-t">Contextual Scoring</div><div class="fb-d">0–100, derived from observed volume, velocity &amp; corroboration.</div></div>
+          <div class="feature-box fb-4" data-fb="4"><div class="fb-ic">💡</div><div class="fb-t">Startup Ideas</div><div class="fb-d">AI-grounded opportunities, each tied back to a real tracked trend.</div></div>
+          <div class="feature-box fb-5" data-fb="5"><div class="fb-ic">🌐</div><div class="fb-t">4 Real Sources</div><div class="fb-d">Hacker News, dev.to, Product Hunt &amp; Reddit — no purchased panels.</div></div>
+          <div class="feature-box fb-6" data-fb="6"><div class="fb-ic">★</div><div class="fb-t">Watchlist</div><div class="fb-d">Pin the trends you're tracking and follow their trajectory over time.</div></div>
+        </div>
+        <div class="globe-canvas-wrap">
+          <div class="globe-glow" aria-hidden="true"></div>
+          <canvas id="globeCanvas" width="400" height="400" role="img" aria-label="Rotating globe highlighting India and France, Antenna's two tracked markets"></canvas>
+        </div>
+      </div>
+      <p class="globe-caption">India &amp; France are highlighted markers on the globe — every feature above runs across both.</p>
+    </div>
+  </section>
+
   <!-- ================= TRUST BAR ================= -->
   <section class="trust-bar">
     <div class="wrap">
@@ -542,7 +714,8 @@ table.compare-table{width:100%; border-collapse:collapse;}
       </div>
       <div class="sandbox-grid">
 
-        <div class="trend-card">
+        <div class="trend-card" data-trend-id="t1" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open trend details: Vertical SaaS for Independent Retail">
+          <div class="tc-expand-btn" aria-hidden="true">↗</div>
           <div class="tc-top-row">
             <div class="trend-texture tx-saas" aria-hidden="true"></div>
             <div class="tc-top" style="flex:1;">
@@ -568,7 +741,8 @@ table.compare-table{width:100%; border-collapse:collapse;}
           <div class="tc-foot"><span class="src">Reddit · Product Hunt</span><span>Preview</span></div>
         </div>
 
-        <div class="trend-card">
+        <div class="trend-card" data-trend-id="t2" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open trend details: Creator Commerce Checkout Tools">
+          <div class="tc-expand-btn" aria-hidden="true">↗</div>
           <div class="tc-top-row">
             <div class="trend-texture tx-ecom" aria-hidden="true"></div>
             <div class="tc-top" style="flex:1;">
@@ -594,7 +768,8 @@ table.compare-table{width:100%; border-collapse:collapse;}
           <div class="tc-foot"><span class="src">dev.to · Hacker News</span><span>Preview</span></div>
         </div>
 
-        <div class="trend-card">
+        <div class="trend-card" data-trend-id="t3" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open trend details: On-Device LLM Inference Libraries">
+          <div class="tc-expand-btn" aria-hidden="true">↗</div>
           <div class="tc-top-row">
             <div class="trend-texture tx-devtools" aria-hidden="true"></div>
             <div class="tc-top" style="flex:1;">
@@ -620,7 +795,8 @@ table.compare-table{width:100%; border-collapse:collapse;}
           <div class="tc-foot"><span class="src">Hacker News · dev.to</span><span>Preview</span></div>
         </div>
 
-        <div class="trend-card">
+        <div class="trend-card" data-trend-id="t4" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open trend details: Vernacular Short-Form Content Apps">
+          <div class="tc-expand-btn" aria-hidden="true">↗</div>
           <div class="tc-top-row">
             <div class="trend-texture tx-media" aria-hidden="true"></div>
             <div class="tc-top" style="flex:1;">
@@ -646,7 +822,8 @@ table.compare-table{width:100%; border-collapse:collapse;}
           <div class="tc-foot"><span class="src">Reddit · dev.to</span><span>Preview</span></div>
         </div>
 
-        <div class="trend-card">
+        <div class="trend-card" data-trend-id="t5" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open trend details: B2B Fintech Payment Rails">
+          <div class="tc-expand-btn" aria-hidden="true">↗</div>
           <div class="tc-top-row">
             <div class="trend-texture tx-fintech" aria-hidden="true"></div>
             <div class="tc-top" style="flex:1;">
@@ -672,7 +849,8 @@ table.compare-table{width:100%; border-collapse:collapse;}
           <div class="tc-foot"><span class="src">Reddit · Product Hunt</span><span>Preview</span></div>
         </div>
 
-        <div class="trend-card">
+        <div class="trend-card" data-trend-id="t6" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Open trend details: Developer-First Observability Tools">
+          <div class="tc-expand-btn" aria-hidden="true">↗</div>
           <div class="tc-top-row">
             <div class="trend-texture tx-infra" aria-hidden="true"></div>
             <div class="tc-top" style="flex:1;">
@@ -800,6 +978,29 @@ table.compare-table{width:100%; border-collapse:collapse;}
 
 </main>
 
+<!-- ================= EXPANDABLE TREND MODAL ================= -->
+<div class="tcm-overlay" id="tcmOverlay"></div>
+<div class="tcm-wrap" id="tcmWrap">
+  <div class="tcm-modal" id="tcmModal" role="dialog" aria-modal="true" aria-labelledby="tcmTitle">
+    <div class="tcm-visual" id="tcmVisual">
+      <div class="tcm-visual-spark" id="tcmVisualSpark"></div>
+      <button class="tcm-close" id="tcmClose" aria-label="Close trend details">&times;</button>
+    </div>
+    <div class="tcm-body">
+      <div class="tcm-topline">
+        <span class="badge" id="tcmBadge"></span>
+        <span class="cat-pill" id="tcmCat"></span>
+        <span class="score-pill" id="tcmScore"></span>
+      </div>
+      <h3 class="tcm-title" id="tcmTitle"></h3>
+      <p class="tcm-blurb" id="tcmBlurb"></p>
+      <p class="tcm-detail" id="tcmDetail"></p>
+      <div class="tcm-sources" id="tcmSources"></div>
+      <a href="app.html" class="btn primary">See live data in the dashboard →</a>
+    </div>
+  </div>
+</div>
+
 <footer class="mkt-footer">
   <div class="wrap">
     <div class="mkt-footer-top">
@@ -868,6 +1069,322 @@ table.compare-table{width:100%; border-collapse:collapse;}
       r.style.display = (cat === 'all' || r.getAttribute('data-cat') === cat) ? '' : 'none';
     });
   });
+})();
+
+// ---------- Trend data + expandable modal + fan carousel + globe ----------
+(function(){
+  var COLOR = {breakout:'var(--breakout)', rising:'var(--rising)', steady:'var(--steady)', peaked:'var(--text-faint)'};
+  var BADGE_LABEL = {breakout:'Exploding', rising:'Rising', steady:'Regular', peaked:'Peaked'};
+  var CAT_LABEL = {devtools:'Developer Tools', saas:'SaaS', ecom:'E-Commerce', media:'Media', fintech:'Fintech', infra:'Infra'};
+  var PREVIEW_DETAIL = "This is an illustrative preview card — the score, curve and mention counts above are for layout demonstration only, not a live data pull. Launch the dashboard for the real, continuously updating trend feed with full source-level evidence.";
+
+  var TRENDS = {
+    t0:{flag:'🇮🇳', name:'AI Coding Agents for Regional Languages', badge:'breakout', cat:'devtools', score:87,
+      blurb:'Sustained multi-source mentions across dev.to and Hacker News threads discussing regional-language coding assistants, with early Product Hunt launches corroborating the signal.',
+      sources:['Hacker News','dev.to','Product Hunt'], curve:[88,84,78,66,52,36,22,10,4]},
+    t1:{flag:'🇫🇷', name:'Vertical SaaS for Independent Retail', badge:'rising', cat:'saas', score:64,
+      blurb:'Steady growth in Product Hunt launches and Reddit discussion threads targeting small French retailers moving off spreadsheets.',
+      sources:['Reddit','Product Hunt'], curve:[78,74,68,58,52,40,32,22,14]},
+    t2:{flag:'🇮🇳', name:'Creator Commerce Checkout Tools', badge:'steady', cat:'ecom', score:51,
+      blurb:'Consistent, non-spiky mention volume across dev.to and Hacker News — an established niche rather than a fresh breakout.',
+      sources:['dev.to','Hacker News'], curve:[52,55,48,53,46,50,44,48,44]},
+    t3:{flag:'🇫🇷', name:'On-Device LLM Inference Libraries', badge:'breakout', cat:'devtools', score:79,
+      blurb:'Sharp week-over-week increase in Hacker News front-page appearances and dev.to tutorial posts.',
+      sources:['Hacker News','dev.to'], curve:[90,82,76,58,48,30,16,12,3]},
+    t4:{flag:'🇮🇳', name:'Vernacular Short-Form Content Apps', badge:'peaked', cat:'media', score:38,
+      blurb:'Mention volume climbed earlier and has since flattened — a useful signal for teams deciding whether it’s still worth prioritizing.',
+      sources:['Reddit','dev.to'], curve:[66,42,24,14,18,22,26,24,28]},
+    t5:{flag:'🇫🇷', name:'B2B Fintech Payment Rails', badge:'rising', cat:'fintech', score:58,
+      blurb:'Cross-source corroboration between Reddit fintech communities and Product Hunt launches over recent weeks.',
+      sources:['Reddit','Product Hunt'], curve:[80,76,64,58,46,42,30,26,15]},
+    t6:{flag:'🇮🇳', name:'Developer-First Observability Tools', badge:'steady', cat:'infra', score:47,
+      blurb:'A mature, low-volatility category with a steady baseline of Hacker News and dev.to activity.',
+      sources:['Hacker News','dev.to'], curve:[48,52,44,50,42,48,40,46,42]},
+    t7:{flag:'🇫🇷', name:'AI Meeting Notetakers for SMBs', badge:'breakout', cat:'saas', score:82,
+      blurb:'A fast-climbing cluster of Product Hunt launches and Hacker News “Show HN” posts targeting small-business meeting workflows.',
+      sources:['Product Hunt','Hacker News'], curve:[85,79,70,60,44,30,18,9,2]},
+    t8:{flag:'🇮🇳', name:'Social Commerce Live-Selling Tools', badge:'rising', cat:'ecom', score:61,
+      blurb:'Reddit seller communities and Product Hunt listings both point to growing interest in live-selling storefronts.',
+      sources:['Reddit','Product Hunt'], curve:[74,70,60,50,44,34,26,18,10]}
+  };
+
+  function buildSparkSVG(curve, color, big){
+    var vh = big ? 200 : 100;
+    var scaleY = vh/100;
+    var pts = curve.map(function(v,i){ return (i*40)+','+(v*scaleY).toFixed(1); }).join(' ');
+    var last = curve[curve.length-1]*scaleY;
+    var poly = '0,'+vh+' '+pts+' 320,'+vh;
+    var gid = 'sp'+Math.random().toString(36).slice(2,9);
+    return '<svg viewBox="0 0 320 '+vh+'" preserveAspectRatio="none">'+
+      '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="'+color+'" stop-opacity="0.35"/>'+
+      '<stop offset="100%" stop-color="'+color+'" stop-opacity="0"/></linearGradient></defs>'+
+      '<polygon points="'+poly+'" fill="url(#'+gid+')"/>'+
+      '<polyline points="'+pts+'" fill="none" style="stroke:'+color+'" stroke-width="'+(big?3.5:2.75)+'" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<circle class="tc-peak-dot" cx="320" cy="'+last.toFixed(1)+'" r="'+(big?5:4)+'" fill="'+color+'"/>'+
+      '</svg>';
+  }
+
+  // ---------- Expandable modal (every trend card opens this) ----------
+  var tcmOverlay = document.getElementById('tcmOverlay');
+  var tcmWrap = document.getElementById('tcmWrap');
+  var tcmVisual = document.getElementById('tcmVisual');
+  var tcmVisualSpark = document.getElementById('tcmVisualSpark');
+  var tcmClose = document.getElementById('tcmClose');
+  var tcmBadge = document.getElementById('tcmBadge');
+  var tcmCat = document.getElementById('tcmCat');
+  var tcmScore = document.getElementById('tcmScore');
+  var tcmTitle = document.getElementById('tcmTitle');
+  var tcmBlurb = document.getElementById('tcmBlurb');
+  var tcmDetail = document.getElementById('tcmDetail');
+  var tcmSources = document.getElementById('tcmSources');
+  var lastFocused = null;
+
+  function openTrendModal(id){
+    var t = TRENDS[id];
+    if(!t || !tcmOverlay) return;
+    lastFocused = document.activeElement;
+    var color = COLOR[t.badge];
+    tcmVisual.className = 'tcm-visual tx-'+t.cat;
+    tcmVisualSpark.innerHTML = buildSparkSVG(t.curve, color, true);
+    tcmBadge.className = 'badge '+t.badge;
+    tcmBadge.textContent = BADGE_LABEL[t.badge];
+    tcmCat.textContent = CAT_LABEL[t.cat];
+    tcmScore.textContent = t.score;
+    tcmTitle.textContent = t.flag+' '+t.name;
+    tcmBlurb.textContent = t.blurb;
+    tcmDetail.textContent = PREVIEW_DETAIL;
+    tcmSources.innerHTML = '<span>Sources:</span> ' + t.sources.map(function(s){ return '<span class="src-chip">'+s+'</span>'; }).join('');
+    tcmOverlay.classList.add('open');
+    tcmWrap.classList.add('open');
+    document.body.classList.add('tcm-locked');
+    if(tcmClose) tcmClose.focus();
+  }
+  function closeTrendModal(){
+    tcmOverlay.classList.remove('open');
+    tcmWrap.classList.remove('open');
+    document.body.classList.remove('tcm-locked');
+    if(lastFocused && lastFocused.focus) lastFocused.focus();
+  }
+  if(tcmClose){
+    tcmClose.addEventListener('click', closeTrendModal);
+    tcmOverlay.addEventListener('click', closeTrendModal);
+    // tcmWrap sits above tcmOverlay and covers the full viewport, so a click on the
+    // dimmed area outside the modal card lands on tcmWrap itself, not tcmOverlay —
+    // close whenever the click target is the wrap background (not a modal descendant).
+    tcmWrap.addEventListener('click', function(e){
+      if(e.target === tcmWrap) closeTrendModal();
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && tcmWrap.classList.contains('open')) closeTrendModal();
+    });
+  }
+  document.addEventListener('click', function(e){
+    var card = e.target.closest('[data-trend-id]');
+    if(card){ openTrendModal(card.getAttribute('data-trend-id')); }
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter' && e.key !== ' ') return;
+    var card = e.target.closest('[data-trend-id]');
+    if(card){ e.preventDefault(); openTrendModal(card.getAttribute('data-trend-id')); }
+  });
+
+  // ---------- Fan / coverflow carousel ----------
+  var fanLayout = document.getElementById('fanLayout');
+  var fanDots = document.getElementById('fanDots');
+  var fanPrev = document.getElementById('fanPrev');
+  var fanNext = document.getElementById('fanNext');
+  var FAN_ORDER = ['t0','t1','t2','t3','t4','t5','t6','t7','t8'];
+  var MAX_VISIBLE = 7, HALF = 3;
+  var centerIndex = HALF;
+  var fanCardEls = [];
+
+  var FAN_POSITIONS = [
+    {rot:-21, scale:.72, x:-290, y:34, z:1},
+    {rot:-14, scale:.80, x:-210, y:20, z:2},
+    {rot:-7,  scale:.90, x:-110, y:8,  z:3},
+    {rot:0,   scale:1,   x:0,    y:0,  z:10},
+    {rot:7,   scale:.90, x:110,  y:8,  z:3},
+    {rot:14,  scale:.80, x:210,  y:20, z:2},
+    {rot:21,  scale:.72, x:290,  y:34, z:1}
+  ];
+
+  function renderFanCards(){
+    if(!fanLayout) return;
+    fanLayout.innerHTML = '';
+    fanCardEls = [];
+    FAN_ORDER.forEach(function(id){
+      var t = TRENDS[id];
+      var el = document.createElement('div');
+      el.className = 'fan-card';
+      el.style.left = '50%';
+      el.style.top = '50%';
+      el.setAttribute('data-trend-id', id);
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('aria-haspopup', 'dialog');
+      el.setAttribute('aria-label', 'Open trend details: '+t.name);
+      var color = COLOR[t.badge];
+      el.innerHTML =
+        '<div class="tc-expand-btn" aria-hidden="true">↗</div>'+
+        '<div class="trend-texture tx-'+t.cat+'" aria-hidden="true"></div>'+
+        '<div class="tc-name">'+t.flag+' '+t.name+'</div>'+
+        '<div class="tc-meta"><span class="badge '+t.badge+'">'+BADGE_LABEL[t.badge]+'</span><span class="score-pill">'+t.score+'</span></div>'+
+        '<div class="tc-spark-lg">'+buildSparkSVG(t.curve, color, false)+'</div>';
+      fanLayout.appendChild(el);
+      fanCardEls.push(el);
+    });
+    if(fanDots){
+      fanDots.innerHTML = FAN_ORDER.map(function(_,i){ return '<span class="fan-dot'+(i===centerIndex?' active':'')+'" data-i="'+i+'"></span>'; }).join('');
+    }
+  }
+
+  function layoutFan(){
+    if(!fanLayout) return;
+    var total = FAN_ORDER.length;
+    var visible = {};
+    for(var slot=0; slot<MAX_VISIBLE; slot++){
+      var idx = ((centerIndex + slot - HALF) % total + total) % total;
+      visible[idx] = slot;
+    }
+    fanCardEls.forEach(function(el, i){
+      var slot = visible[i];
+      if(slot === undefined){
+        el.style.opacity = '0';
+        el.style.pointerEvents = 'none';
+        el.style.zIndex = 0;
+        el.style.transform = 'translate(-50%,-50%) translateY(40px) scale(.5)';
+      } else {
+        var p = FAN_POSITIONS[slot];
+        el.style.opacity = '1';
+        el.style.pointerEvents = 'auto';
+        el.style.zIndex = p.z;
+        el.style.transform = 'translate(-50%,-50%) translateX('+p.x+'px) translateY('+p.y+'px) rotate('+p.rot+'deg) scale('+p.scale+')';
+      }
+    });
+    if(fanDots){
+      var dots = fanDots.querySelectorAll('.fan-dot');
+      dots.forEach(function(d,i){ d.classList.toggle('active', i===centerIndex); });
+    }
+  }
+
+  function cycleFan(dir){
+    var total = FAN_ORDER.length;
+    centerIndex = ((centerIndex + dir) % total + total) % total;
+    layoutFan();
+  }
+
+  if(fanPrev) fanPrev.addEventListener('click', function(){ cycleFan(-1); });
+  if(fanNext) fanNext.addEventListener('click', function(){ cycleFan(1); });
+  if(fanDots) fanDots.addEventListener('click', function(e){
+    var d = e.target.closest('.fan-dot');
+    if(d){ centerIndex = parseInt(d.getAttribute('data-i'),10); layoutFan(); }
+  });
+
+  if(fanLayout){
+    renderFanCards();
+    layoutFan();
+    window.addEventListener('resize', layoutFan);
+  }
+
+  // ---------- Feature-box reveal on scroll ----------
+  var featureBoxes = document.querySelectorAll('.feature-box');
+  if('IntersectionObserver' in window && featureBoxes.length){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+      });
+    }, {threshold:0.2});
+    featureBoxes.forEach(function(fb){ io.observe(fb); });
+  } else {
+    featureBoxes.forEach(function(fb){ fb.classList.add('in-view'); });
+  }
+
+  // ---------- Globe canvas (dot-sphere, no external deps) ----------
+  var canvas = document.getElementById('globeCanvas');
+  if(canvas && canvas.getContext){
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var R = Math.min(W,H) * 0.42;
+    var cx = W/2, cy = H/2;
+    var N = 260;
+    var points = [];
+    var golden = Math.PI * (3 - Math.sqrt(5));
+    for(var i=0;i<N;i++){
+      var yv = 1 - (i/(N-1))*2;
+      var radiusAtY = Math.sqrt(Math.max(0, 1 - yv*yv));
+      var theta = golden * i;
+      points.push({x:Math.cos(theta)*radiusAtY, y:yv, z:Math.sin(theta)*radiusAtY});
+    }
+    function latLonToXYZ(lat, lon){
+      var phi = (90 - lat) * Math.PI/180;
+      var theta = (lon + 180) * Math.PI/180;
+      return {x:-Math.sin(phi)*Math.cos(theta), y:Math.cos(phi), z:Math.sin(phi)*Math.sin(theta)};
+    }
+    var markers = [
+      {p:latLonToXYZ(21, 78), color:'#22d3a8'},
+      {p:latLonToXYZ(46, 2), color:'#5ea1ff'}
+    ];
+    var angle = 0;
+    var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+    function rotateY(p, a){
+      var cosA = Math.cos(a), sinA = Math.sin(a);
+      return {x:p.x*cosA + p.z*sinA, y:p.y, z:-p.x*sinA + p.z*cosA};
+    }
+    function hexAlpha(hex, alpha){
+      var h = hex.replace('#','');
+      var r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+      return 'rgba('+r+','+g+','+b+','+alpha.toFixed(3)+')';
+    }
+    function drawGlobe(){
+      ctx.clearRect(0,0,W,H);
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(94,161,255,0.14)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      var drawList = [];
+      points.forEach(function(p){
+        var rp = rotateY(p, angle);
+        drawList.push({sx:cx+rp.x*R, sy:cy-rp.y*R, z:rp.z, isMarker:false});
+      });
+      markers.forEach(function(m){
+        var rp = rotateY(m.p, angle);
+        drawList.push({sx:cx+rp.x*R, sy:cy-rp.y*R, z:rp.z, isMarker:true, color:m.color});
+      });
+      drawList.sort(function(a,b){ return a.z - b.z; });
+      drawList.forEach(function(d){
+        var depth = (d.z + 1) / 2;
+        if(d.isMarker){
+          var alpha = 0.4 + depth*0.6;
+          var size = 3 + depth*3.5;
+          ctx.beginPath();
+          ctx.arc(d.sx, d.sy, size+5, 0, Math.PI*2);
+          ctx.fillStyle = hexAlpha(d.color, 0.18*alpha);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(d.sx, d.sy, size, 0, Math.PI*2);
+          ctx.fillStyle = hexAlpha(d.color, alpha);
+          ctx.fill();
+        } else {
+          var a2 = 0.10 + depth*0.55;
+          var s2 = 0.6 + depth*1.5;
+          ctx.beginPath();
+          ctx.arc(d.sx, d.sy, s2, 0, Math.PI*2);
+          ctx.fillStyle = 'rgba(154,164,184,'+a2.toFixed(3)+')';
+          ctx.fill();
+        }
+      });
+    }
+    function tick(){
+      if(!reduceMotion) angle += 0.0035;
+      drawGlobe();
+      requestAnimationFrame(tick);
+    }
+    tick();
+  }
 })();
 </script>
 
